@@ -193,6 +193,39 @@ the realistic sources are (a) Tanzania gov/CGIAR material, (b) direct requests t
 for advisory archives (draft email kept by Bradley). Pure-Kenyan bilingual agri PSAs will lean
 on social-media posts (X/Facebook) where agencies post both languages.
 
+**Digitized bilingual archives (recon 2026-07-10).**
+- **UCLA Digital Library** (digital.library.ucla.edu, ark:/21198/z1hf19gd): bilingual En+Sw but
+  **image-only, pre-2005, individual-image download**, and the site is behind a **bot-wall**
+  (blocked our fetcher and WebFetch). Automated use needs a real browser (Selenium/Playwright)
+  + OCR (tesseract `eng`+`swa`, not installed here). High effort; historical, not PSAs.
+- **IFRA Nairobi Press Archive** (ifrapressarch.nakalona.fr, Omeka on Huma-Num/Nakala):
+  reachable, has **PDF downloads + a Nakala API** (nakala.fr/data/…). But it's digitized
+  **newspaper clippings** (e.g. "Two years of pain and rejection") — news, mostly English,
+  third-party press copyright. Better licensing/access than commercial e-papers, same
+  news≠PSA limitation.
+
+## Recommended collection strategy (ranked, after 2026-07-10 recon)
+
+The recon shows clean, **redistributable, bilingual En↔Sw *PSA* pairs are scarce** — most
+bilingual material is either news (excluded), image-only (OCR), copyrighted, or IP/bot-walled.
+Spend effort here, in order:
+
+1. **Official gov/NGO social posts (X, Facebook)** — the main place agencies post the *same*
+   PSA in En + Sw. Fits the brief, public, citable. Use warmed-up accounts + `x_collect.py`.
+2. **Direct requests to KALRO (KAOP) & Mediae (iShamba/SSU)** — email drafts ready; likely the
+   fastest route to clean bilingual *agricultural* advisories.
+3. **CGIAR CGSpace bilingual advisory PDFs** — CC-licensed, extraction proven; download
+   manually (429-throttled). Mostly Tanzania-focused.
+4. **Tanzania TSN state papers (Daily News + HabariLEO) / MAELEZO** — strongest parallel-*news*
+   lead; use only where an official advisory appears verbatim in both. Needs team OK on
+   Tanzania sources.
+5. **Everything else (e-papers, press archives, UCLA/IFRA)** — do NOT bulk-scrape: copyright /
+   OCR / bot-walls / news-not-PSA. Only hand-transcribe official notices printed verbatim.
+
+For the **modeling** stage (not the hand-built PSA set), if the team wants extra En–Sw parallel
+volume, use existing public corpora (MAFAND-MT, GlobalVoices, CCAligned, OPUS) rather than
+re-scraping news.
+
 ## Known limitations & workarounds
 
 - **kilimo.go.ke main site is down (2026-07-10, from both EU and KE)**; some subdomains
