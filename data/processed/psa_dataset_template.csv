@@ -1,0 +1,2 @@
+PSA_ID,Domain,Sub_Category,English,Kiswahili,Target_Language,Source,Date,Metadata
+EXAMPLE_000,Health,Disease Prevention,"EXAMPLE ROW — DELETE BEFORE SUBMITTING. Ministry of Health: Avoid unnecessary travel to Ebola hotspots.","MFANO — FUTA KABLA YA KUWASILISHA. Wizara ya Afya: Epuka safari zisizo za lazima kwenda maeneo yenye Ebola.",,https://example.gov.ke/press/ebola-advisory,2026-07-01,"tone=urgent; platform=website; urgency=high"

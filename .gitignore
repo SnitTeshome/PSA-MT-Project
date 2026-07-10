@@ -1,0 +1,11 @@
+# cached raw fetches — regenerable, sometimes large
+data_cache/
+
+# local credentials (X scraping accounts, tokens)
+.env
+accounts.db
+
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
