@@ -90,7 +90,7 @@ but must be cleared with the team / Dr. Ombui. Two caveats to raise:
 
 | Source | URL | Bilingual mechanism | Recon 2026-07-10 |
 |---|---|---|---|
-| **TZ Ministry of Agriculture (Wizara ya Kilimo)** | www.kilimo.go.tz | explicit `/language/sw` ↔ `/language/en` toggle over the same pages; has Press Releases (Taarifa kwa Vyombo vya Habari), Announcements (Matangazo), News (Habari) | **200 OK from EU**, no block. Best lead. Verify the toggle translates article *body* (may be cookie-based) before building the fetcher |
+| **TZ Ministry of Agriculture (Wizara ya Kilimo)** | www.kilimo.go.tz | `/language/sw` ↔ `/language/en` toggle | **200 OK from EU, no block — BUT toggle is UI-only** (verified 2026-07-10): menus translate, **news/press-release bodies stay in the original Swahili** in both states. NOT an article-level parallel source. Still useful as clean **monolingual Swahili**; English press releases may exist as separate (unpaired) items |
 | FAO Tanzania | fao.org/tanzania (en + sw) | parallel language sites | robots.txt disallows scraping → manual collection only |
 | TARI (Taasisi ya Utafiti wa Kilimo) | tari.go.tz | bilingual site | unreachable from EU 2026-07-10; retry later |
 | Tanzania Meteorological Authority (agromet, Kiswahili) | tma.go.tz / meteo.go.tz | Sw advisories | unreachable from EU 2026-07-10 |
@@ -99,6 +99,41 @@ but must be cleared with the team / Dr. Ombui. Two caveats to raise:
 Also consider regional bilingual bodies: **EAC** (East African Community) and cross-border NGO
 campaigns publish En+Sw. Tanzanian media (TBC, Mwananchi/The Citizen sister papers) run
 parallel En/Sw agriculture content.
+
+## Findings log (fetch attempts, 2026-07-10)
+
+**AICCRA / CGIAR CGSpace — bilingual advisory PDFs (partial success).**
+CGSpace (cgspace.cgiar.org) hosts real farmer-advisory posters/factsheets in both English
+and Kiswahili. Confirmed a **true parallel pair**:
+- SW: "Kilimo kinachohimili mabadiliko ya tabianchi: maamuzi kumi muhimu…" — item
+  `c4d42102-…`, PDF bitstream `94c0db78-3fb6-4c8a-90d6-7dc22387e201` (4 pp; extracted OK,
+  11,416 chars: *"Mabadiliko ya tabianchi na hali ya hewa yanayosababisha mabadiliko ya
+  misimu ya kilimo huathiri uzalishaji…"*)
+- EN twin: "Climate smart agriculture: top ten decisions to make with weather info" (IITA)
+  — item `62fd7239-…`, PDF bitstream `287a1fb1-170c-4359-9bfc-41b7954ac505`
+- pymupdf extraction **works**. Tool: `scripts/collect/fetch_cgspace.py`.
+
+Failures / constraints hit (recorded per instruction):
+- CGSpace **blocks datacenter IPs** (connection refused) — must use the KE residential exit.
+- Even via the exit it **rate-limits hard (HTTP 429)** — the SW poster fetched fine (cached),
+  but the EN poster 429'd repeatedly even after a 30 s cooldown. Bulk auto-download is
+  throttled; use long delays (30–60 s/file) or **download manually from a browser**.
+- `hdl.handle.net/…/bitstreams/…/download` → 404; `/bitstreams/<uuid>/download` → refused.
+  Only the API form `…/server/api/core/bitstreams/<uuid>/content` works.
+- **Content is Tanzania-focused**: the Kiswahili agricultural material on CGSpace is mostly
+  CCAFS/IITA East-Africa work centred on Babati, Tanzania — ties into the Tanzania lead below.
+
+**Mediae / iShamba (recorded).** Landing pages expose no direct factsheet/PDF downloads
+(content sits behind the SMS service / deeper nav). Email request is the realistic route —
+draft kept by Bradley.
+
+**Absence of a Kenyan equivalent (recorded).** A CGSpace search for Kenyan bilingual advisories
+returned mostly **English research papers *about* advisory services** (iShamba bias studies,
+GPT advisory evaluations) — not bilingual bulletins. Kenya's actual bilingual advisories go out
+by **SMS/KAOP** and are not archived as parallel PDFs. So for clean En+Sw *agricultural* pairs,
+the realistic sources are (a) Tanzania gov/CGIAR material, (b) direct requests to KALRO/Mediae
+for advisory archives (draft email kept by Bradley). Pure-Kenyan bilingual agri PSAs will lean
+on social-media posts (X/Facebook) where agencies post both languages.
 
 ## Known limitations & workarounds
 
