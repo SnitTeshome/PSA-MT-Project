@@ -46,6 +46,32 @@ short bilingual posts are exactly PSA-shaped. Collection options, in order of pr
    `scripts/collect/README.md` for setup/limitations.
 3. Wayback Machine snapshots of the account pages (no auth, patchy coverage).
 
+## SMS advisory services & bilingual government docs (high-potential lead)
+
+Agencies push short, directive, farmer-facing advisories over **SMS** — these are the most
+PSA-shaped agricultural text in Kenya, and several channels operate in both English and
+Kiswahili. Delivery is SMS, so the text must be captured where it's **published/archived**,
+not scraped off the wire (subscribing needs a phone number and only yields your own region).
+
+| Channel | What | Bilingual? | How to get the text |
+|---|---|---|---|
+| **iShamba** (ishamba.com; JOIN to 21606) | Weekly weather, market prices, 2 agronomy tips to 500k+ farmers | broadcasts in En + Sw | Ask iShamba/Mediae for sample advisory archives; some appear in their blog/case studies |
+| **KAOP SMS** (kaop.co.ke, KALRO) | Ward-level agro-advisories for all 47 counties, portal + SMS | advisories issued in local languages incl. Sw | Portal likely needs login; request advisory archive from KALRO |
+| **KALRO/KMD/AICCRA agro-weather advisories** | Seasonal/dekadal advisories to ~471k farmers via SMS + radio | En + Sw + local | AICCRA & Alliance-Bioversity-CIAT **publish advisory examples in reports** (PDFs) — often show the En and Sw text side by side |
+| **Shamba Shape Up / iShamba factsheets** (mediae.org) | TV show + downloadable factsheets | show is En + Sw; factsheets in both | Download factsheets from the Mediae/SSU site |
+
+Action: email KALRO (KAOP) and Mediae (iShamba/SSU) requesting sample bilingual advisory
+archives for a university NLP project — this is the fastest route to clean, PSA-shaped En+Sw
+agricultural pairs. AICCRA/CIAT PDF reports are scrapeable now with `pymupdf`.
+
+**Bilingual government documents** (Bradley's observation, confirmed): agencies publish
+Kiswahili editions of official docs. Verified example: NDMA Service Charter exists as a true
+En+Kiswahili pair (`NLP/NDMA/NDMA_Service_Charter_2024-_{English,Kiswahili}*.pdf`) — parallel
+service-commitment statements. These are directive but are service-standard commitments, so
+they fit **Governance / Public Service Delivery** better than Agriculture. Worth harvesting for
+that domain. Look for the same En/Sw pairing on other agencies' charters, gazette notices, and
+public-education booklets.
+
 ## Known limitations & workarounds
 
 - **kilimo.go.ke main site is down (2026-07-10, from both EU and KE)**; some subdomains
