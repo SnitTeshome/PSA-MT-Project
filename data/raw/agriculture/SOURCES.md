@@ -72,6 +72,34 @@ they fit **Governance / Public Service Delivery** better than Agriculture. Worth
 that domain. Look for the same En/Sw pairing on other agencies' charters, gazette notices, and
 public-education booklets.
 
+## Tanzania sources — high En+Sw volume (CHECK ACCEPTABILITY FIRST)
+
+Tanzania runs government in Kiswahili and mirrors official content in English, so En+Sw
+parallel material is far more abundant and cleaner than in Kenya. And these sites do **not**
+IP-block foreign connections (no tunnel needed).
+
+**⚠️ Decision needed before collecting:** the project is framed around **Kenyan** PSAs
+("making government information more accessible" in Kenya). Using Tanzanian sources for the
+En↔Sw pairs is linguistically valid (the schema has no country field; Week-1 is only En+Sw),
+but must be cleared with the team / Dr. Ombui. Two caveats to raise:
+1. **Dialect:** Tanzanian Kiswahili is more standard/formal (Kiswahili sanifu); Kenyan is more
+   code-switched. Could be a benefit (cleaner) or a mismatch (less representative of Kenyan
+   register). A mix of both may be ideal.
+2. **Target languages stay Kenyan:** Somali/Dholuo/Ekegusii translations come later and are
+   Kenya-specific; Tanzania only helps the En+Sw base.
+
+| Source | URL | Bilingual mechanism | Recon 2026-07-10 |
+|---|---|---|---|
+| **TZ Ministry of Agriculture (Wizara ya Kilimo)** | www.kilimo.go.tz | explicit `/language/sw` ↔ `/language/en` toggle over the same pages; has Press Releases (Taarifa kwa Vyombo vya Habari), Announcements (Matangazo), News (Habari) | **200 OK from EU**, no block. Best lead. Verify the toggle translates article *body* (may be cookie-based) before building the fetcher |
+| FAO Tanzania | fao.org/tanzania (en + sw) | parallel language sites | robots.txt disallows scraping → manual collection only |
+| TARI (Taasisi ya Utafiti wa Kilimo) | tari.go.tz | bilingual site | unreachable from EU 2026-07-10; retry later |
+| Tanzania Meteorological Authority (agromet, Kiswahili) | tma.go.tz / meteo.go.tz | Sw advisories | unreachable from EU 2026-07-10 |
+| FAOLEX policy PDFs (TZ) | faolex.fao.org | some En + Sw policy docs | long-form policy, not PSAs — low priority |
+
+Also consider regional bilingual bodies: **EAC** (East African Community) and cross-border NGO
+campaigns publish En+Sw. Tanzanian media (TBC, Mwananchi/The Citizen sister papers) run
+parallel En/Sw agriculture content.
+
 ## Known limitations & workarounds
 
 - **kilimo.go.ke main site is down (2026-07-10, from both EU and KE)**; some subdomains
