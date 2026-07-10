@@ -100,6 +100,20 @@ Also consider regional bilingual bodies: **EAC** (East African Community) and cr
 campaigns publish En+Sw. Tanzanian media (TBC, Mwananchi/The Citizen sister papers) run
 parallel En/Sw agriculture content.
 
+**TSN state papers — strongest TZ parallel lead (recon 2026-07-10).** Tanzania Standard
+Newspapers (99% government-owned) publishes **Daily News (English)** and **HabariLEO
+(Kiswahili)** — the mandatory-read papers in every ministry, both carrying official ministry
+press releases. Same state publisher in both languages ⇒ the same agriculture announcement
+often appears in each. Upstream source is **MAELEZO** (Tanzania Information Services Dept, the
+govt PR arm both papers draw from). Reachable from EU, no block:
+- dailynews.co.tz → 200 · habarileo.co.tz → 200 · epaper.tsn.go.tz → 200 · maelezo.go.tz → 000
+Approach: match a Daily News agriculture press-release article to its HabariLEO counterpart by
+date/topic (they won't share a URL scheme; align by publication date + subject). Same-publisher
+govt releases are often near-verbatim across the two, unlike independent papers. Caveat still:
+these are news-desk rewrites, so treat as PSA source **only where an official advisory is
+carried verbatim**; otherwise it's parallel-news augmentation (team scope decision). ePaper is
+image-PDF (OCR needed) — prefer the HTML article pages.
+
 ## Findings log (fetch attempts, 2026-07-10)
 
 **AICCRA / CGIAR CGSpace — bilingual advisory PDFs (partial success).**
@@ -126,6 +140,23 @@ Failures / constraints hit (recorded per instruction):
 **Mediae / iShamba (recorded).** Landing pages expose no direct factsheet/PDF downloads
 (content sits behind the SMS service / deeper nav). Email request is the realistic route —
 draft kept by Bradley.
+
+**Parallel press / translated news & e-papers (analysed 2026-07-10).** Yes, some outlets
+publish the same story in En and Sw — chiefly broadcaster Swahili services (**BBC Swahili,
+DW Swahili, VOA Swahili, Xinhua Swahili**), and paired titles (Taifa Leo/Daily Nation KE;
+Mwananchi/The Citizen TZ). Verdict for this project:
+- **News ≠ PSA.** The brief explicitly excludes "news story or opinion piece." So parallel
+  articles can't enter the PSA dataset *except* where an official advisory/PSA is **quoted
+  verbatim** in both a Sw and En article (extract the quoted directive, cite both URLs).
+- **Alignment is loose.** These are adaptations, not sentence-aligned translations → would
+  need a sentence aligner (LASER/vecalign) to pair, adding noise.
+- **E-papers** (Nation/Standard ePaper): paywalled, image-based PDF scans → OCR + licensing
+  problems. Poor for automated parallel extraction. Skip.
+- **Better path if the team wants news-derived parallel data for the *modeling* stage:** use
+  existing public En–Sw parallel corpora that already mined these sources —
+  **MAFAND-MT, GlobalVoices, CCAligned, OPUS (incl. Tanzil, JW300 successors)** — rather than
+  re-scraping. Keep the hand-collected set strictly PSAs; augment with these at training time
+  if scope allows (a team decision).
 
 **Absence of a Kenyan equivalent (recorded).** A CGSpace search for Kenyan bilingual advisories
 returned mostly **English research papers *about* advisory services** (iShamba bias studies,
