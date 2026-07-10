@@ -25,6 +25,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
+import urllib3
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -94,8 +95,14 @@ def _rate_limit(url: str) -> None:
     _last_hit[domain] = time.time()
 
 
-def fetch_url(url: str, use_cache: bool = True) -> bytes:
-    """Fetch a URL politely; return response body bytes. Raises on any failure."""
+def fetch_url(url: str, use_cache: bool = True, verify_tls: bool = True) -> bytes:
+    """Fetch a URL politely; return response body bytes. Raises on any failure.
+
+    verify_tls=False is a per-source opt-out for gov sites that serve a
+    self-signed/incomplete certificate chain (e.g. kamis.kilimo.go.ke,
+    observed 2026-07-10). Only use it for public read-only pages, and note
+    it in the source inventory.
+    """
     cache_file = CACHE_DIR / hashlib.sha256(url.encode()).hexdigest()[:24]
     if use_cache and cache_file.exists():
         return cache_file.read_bytes()
@@ -105,7 +112,10 @@ def fetch_url(url: str, use_cache: bool = True) -> bytes:
                               f"source or collect this one manually")
 
     _rate_limit(url)
-    resp = _get_session().get(url, headers=_headers(), timeout=30)
+    if not verify_tls:
+        print(f"WARNING: TLS verification disabled for {url} (broken gov cert chain)")
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    resp = _get_session().get(url, headers=_headers(), timeout=30, verify=verify_tls)
 
     if resp.status_code == 403:
         raise RuntimeError(f"{url} returned 403 — likely CDN bot block; try again "

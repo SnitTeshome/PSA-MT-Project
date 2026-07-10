@@ -14,7 +14,7 @@ Kiswahili) — record both URLs in `Source`.
 | # | Source | URL | Sub-categories | Languages | Recon 2026-07-10 | Notes |
 |---|--------|-----|----------------|-----------|------------------|-------|
 | 1 | Ministry of Agriculture & Livestock Development | kilimo.go.ke | all five | En, some Sw | **main site DOWN 2026-07-10 — confirmed unreachable from both EU server and KE connection** | Use Wayback CDX for its press-release history; watch for the site coming back |
-| 1b | KAMIS — Kenya Agricultural Market Information System | kamis.kilimo.go.ke | Agribusiness & Market Access | En | works from KE connection (user-confirmed 2026-07-10); unreachable from EU datacenter IP | Market prices/advisories; pair with Sw social posts; collect from KE browser |
+| 1b | KAMIS — Kenya Agricultural Market Information System | kamis.kilimo.go.ke | Agribusiness & Market Access | En | **fetch confirmed 2026-07-10 via KE exit** — blocks non-KE IPs; also serves a self-signed cert chain → needs `fetch_url(..., verify_tls=False)` | Market prices/advisories; pair with Sw social posts |
 | 2 | KALRO (Kenya Agricultural & Livestock Research Org.) | kalro.org | Crop Production, Livestock, Training | mostly En | robots.txt 200 — check allow rules before scraping | Extension advisories, e-extension app content often bilingual |
 | 2b | KAOP — Kenya Agricultural Observatory Platform (KALRO) | kaop.co.ke | Crop Production, Sustainable Farming | En, advisories sometimes Sw | 200 OK from EU server | Ward-level agro-weather advisories for farmers — very PSA-shaped |
 | 3 | KEPHIS (plant health) | kephis.go.ke | Crop Production (pest/disease alerts) | En | robots.txt 200 | Pest alerts are classic PSAs (short, directive) |
