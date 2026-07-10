@@ -204,22 +204,55 @@ on social-media posts (X/Facebook) where agencies post both languages.
   third-party press copyright. Better licensing/access than commercial e-papers, same
   news≠PSA limitation.
 
+## Broadcast (radio/TV) transcription (recon 2026-07-10)
+
+Is there transcribed Kenyan broadcast news? Findings:
+- **Kenyan TV/radio news is not published as open text transcripts.** KBC broadcasts En + Sw
+  but as audio bulletins, not transcribed corpora. Vernacular stations run ag programmes
+  (untranscribed). So there's no ready "transcribed news announcements" text dump to scrape.
+- **BUT Farm Radio International (scripts.farmradio.fm)** is the strong lead here: a library of
+  farmer **radio scripts and radio *spots*** (spots = short PSA-style announcements) in Swahili
+  and English, on agriculture/health/environment. Selective (not full) parallel coverage;
+  robots.txt disallows scripted access; licensing not stated on-page (FRI scripts are
+  historically Creative Commons — **confirm CC-BY before use**). Route: manual download / email
+  FRI for the resource pack. **This is arguably the best PSA-shaped bilingual agri text found.**
+- CGIAR + IFPRI + FRI have used **ASR to transcribe Swahili/Hausa farmer voice messages** — a
+  possible research dataset; ask FRI/IFPRI if the transcripts are shareable.
+
+## Agricultural NGOs — bilingual announcements/sensitizations (recon 2026-07-10, Kenya priority)
+
+| Org | URL | Why | Bilingual? | Status |
+|---|---|---|---|---|
+| **Biovision Africa Trust — The Organic Farmer / Mkulima Mbunifu** | biovisionafricatrust.org, infonet-biovision.org | TOF (English) has a Swahili sister magazine **Mkulima Mbunifu**; Infonet-Biovision is a big farmer knowledge base | **Yes — En + Sw parallel magazines** | **Top NGO lead**; back-issues often PDF/CC. Verify parallelism per issue |
+| **Access Agriculture** | accessagriculture.org | Farmer training videos + factsheets in many languages | En + Sw factsheets, often CC | Strong; check factsheet licensing/download |
+| **KENAFF (Kenya National Farmers' Federation)** | kenaff.org | Umbrella farmer org; member advisories, "The Kenya Farmer" | En, some Sw | Probe site + socials |
+| **Ukulima True campaign** (CABI/AgroChem) | — | Pesticide-safety **sensitization** campaign, farmer-facing | En + Sw messaging | Behaviour-change PSAs; find campaign assets |
+| **PlantVillage / potato WhatsApp advisory bot** | plantvillage.psu.edu | Advisory bot answers in **En and Sw** | Yes | Bot output, not a public archive — ask for logs |
+| Farming Systems Kenya; Uhai Kenya; Biovision GIZ Western Kenya | farmingsystemskenya.org; uhaikenya.org | smallholder extension | mixed | Lower priority; check for Sw material |
+
+**Tanzania NGOs (secondary):** Mkulima Mbunifu is actually Tanzania-based (En/Sw); **SAGCOT**,
+**ESAFF Tanzania**, **Farm Africa TZ**, **AGRA** publish farmer material, some bilingual.
+Same acceptability caveat as other TZ sources.
+
 ## Recommended collection strategy (ranked, after 2026-07-10 recon)
 
 The recon shows clean, **redistributable, bilingual En↔Sw *PSA* pairs are scarce** — most
 bilingual material is either news (excluded), image-only (OCR), copyrighted, or IP/bot-walled.
 Spend effort here, in order:
 
-1. **Official gov/NGO social posts (X, Facebook)** — the main place agencies post the *same*
+1. **Farm Radio International scripts/spots + Biovision (TOF / Mkulima Mbunifu)** — the best
+   PSA-shaped bilingual *agricultural* text found; likely CC-licensed. Manual download / email;
+   confirm licensing. `radio spots` and magazine tips are short and directive = ideal PSAs.
+2. **Official gov/NGO social posts (X, Facebook)** — the main place agencies post the *same*
    PSA in En + Sw. Fits the brief, public, citable. Use warmed-up accounts + `x_collect.py`.
-2. **Direct requests to KALRO (KAOP) & Mediae (iShamba/SSU)** — email drafts ready; likely the
-   fastest route to clean bilingual *agricultural* advisories.
-3. **CGIAR CGSpace bilingual advisory PDFs** — CC-licensed, extraction proven; download
-   manually (429-throttled). Mostly Tanzania-focused.
-4. **Tanzania TSN state papers (Daily News + HabariLEO) / MAELEZO** — strongest parallel-*news*
+3. **Direct requests to KALRO (KAOP), Mediae (iShamba/SSU), Farm Radio, Biovision** — email
+   drafts; fastest route to clean bilingual advisories.
+4. **CGIAR CGSpace bilingual advisory PDFs** — CC-licensed, extraction proven; download
+   manually (429-throttled). Mostly Tanzania-focused. Fetch list: `CGSPACE_FETCH_LIST.md`.
+5. **Tanzania TSN state papers (Daily News + HabariLEO) / MAELEZO** — strongest parallel-*news*
    lead; use only where an official advisory appears verbatim in both. Needs team OK on
    Tanzania sources.
-5. **Everything else (e-papers, press archives, UCLA/IFRA)** — do NOT bulk-scrape: copyright /
+6. **Everything else (e-papers, press archives, UCLA/IFRA)** — do NOT bulk-scrape: copyright /
    OCR / bot-walls / news-not-PSA. Only hand-transcribe official notices printed verbatim.
 
 For the **modeling** stage (not the hand-built PSA set), if the team wants extra En–Sw parallel
