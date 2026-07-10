@@ -20,16 +20,24 @@ Kiswahili. The official API is paid, so options in order of preference:
 
 1. **Manual copy** — posts are short; paste text + post URL into the CSV. Fastest for
    tens of PSAs per account.
-2. **[twscrape](https://github.com/vladkens/twscrape)** — async scraper that works
-   through real X accounts:
+2. **[twscrape](https://github.com/vladkens/twscrape)** via
+   [`x_collect.py`](x_collect.py) — async scraper that works through real X accounts:
    - `pip install twscrape` (pure Python, httpx-based)
    - You must add one or more X accounts: `twscrape add_accounts` then `twscrape login_accounts`
      (username, password, and the login email — accounts need an email that can receive
      verification codes).
    - **Use dedicated throwaway accounts only** — scraping accounts get rate-limited and
-     sometimes suspended. Never attach a personal account.
+     sometimes suspended. Never attach a personal account. **Warm the account up** (a week or
+     two of light manual use) before pointing the scraper at it.
    - Store account credentials in a local `.env`/accounts db — never commit them.
    - X login flows change often; expect breakage and pin a recent twscrape version.
+   - `x_collect.py` builds in human-like traffic: randomized think-time (right-skewed),
+     occasional longer "reading" dwells, randomized account/action order, per-session time
+     and post caps, and periodic long breaks. Run it through the residential exit
+     (`FETCH_PROXY`). Verify the pacing logic with `python scripts/collect/x_collect.py
+     --dry-run` (no network/accounts needed). Output is a **candidate review CSV**
+     (`_candidates_x.csv`, gitignored) — a human confirms true En+Sw pairs before they enter
+     the schema file; the script never invents pairings.
 3. **Wayback Machine** snapshots of account pages (no auth; patchy coverage):
    `http://web.archive.org/cdx/search/cdx?url=twitter.com/kilimoKE/status/*&output=json`
 

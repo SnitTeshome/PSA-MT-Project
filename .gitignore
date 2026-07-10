@@ -9,3 +9,5 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 .DS_Store
+_candidates_x.csv
+_candidates_*.csv

@@ -19,7 +19,7 @@ Kiswahili) — record both URLs in `Source`.
 | 2b | KAOP — Kenya Agricultural Observatory Platform (KALRO) | kaop.co.ke | Crop Production, Sustainable Farming | homepage En-only (checked 2026-07-10) | 200 OK from EU server | Ward-level advisories likely behind app/registration — needs a browser look |
 | 3 | KEPHIS (plant health) | kephis.go.ke | Crop Production (pest/disease alerts) | En | robots.txt 200 | Pest alerts are classic PSAs (short, directive) |
 | 4 | AFA (Agriculture & Food Authority) | agricultureauthority.go.ke | Agribusiness & Market Access | En | 200 OK | Directorates (tea, coffee, horticulture) issue notices |
-| 5 | NDMA (National Drought Management Authority) | ndma.go.ke → knowledgeweb.ndma.go.ke | Sustainable Farming, Livestock | **publishes En AND Kiswahili editions** (e.g. Service Charter in both, 2026-07-10) | main site refuses non-KE connections — **works via KE exit**; bulletins live on the knowledgeweb portal (County + National Early Warning Bulletins) | Best bilingual-gov lead so far — browse knowledgeweb for Sw bulletin editions |
+| 5 | NDMA (National Drought Management Authority) | ndma.go.ke → knowledgeweb.ndma.go.ke | Livestock, Sustainable Farming | **County Early Warning bulletins are English-only** (checked 23 May-2026 county PDFs: multi-page technical reports, not short PSAs). Only NDMA's Service Charter exists as a true En+Kiswahili pair | portal reachable via KE exit but slow; download = DevExpress server-side zip (see note below) | **Downgraded**: good agri context, but not bilingual PSA-shaped text. Mine the Service Charter for directive bilingual sentences; otherwise deprioritise |
 | 6 | Kenya Meteorological Dept — agromet advisories | meteo.go.ke | Crop Production, Sustainable Farming | dekadal bulletin PDF is **En-only** (checked Dekad 18/2026); site "Swahili" toggle is JS-based (`/sw/` 404s) — likely a translation widget, which would NOT count as source-published parallel text | reachable from EU; robots 404 | Advisory sections are good PSA raw material *if* an official Sw counterpart exists — check KMD's Kiswahili forecast products (Taarifa) from a browser |
 | 7 | County govt agriculture depts (e.g. Kisii, Kakamega, Meru) | *.go.ke county sites | all five | En/Sw mixed | not yet probed | County press offices often post Sw versions on Facebook |
 | 7b | KCSAP — Kenya Climate Smart Agriculture Project | kcsap.go.ke | Sustainable Farming, Training | En | 200 OK from EU server | Project bulletins/success stories; check for farmer-facing advisories |
@@ -59,3 +59,20 @@ short bilingual posts are exactly PSA-shaped. Collection options, in order of pr
   unreliable on stylized layouts — transcribe manually, note `platform=poster` in Metadata.
 - Respect robots.txt (checked per domain in fetchers), rate-limit with randomized sleeps.
 - Week-2 note: if the merged dataset grows large, the brief suggests DVC or Git LFS.
+
+## NDMA knowledgeweb download mechanism (for anyone trying to automate it)
+
+The bulletin grid (`CountyBulletins.aspx`) has no direct file links. "Download Selected" is a
+DevExpress `ASPxGridView` toolbar button whose click sets `e.processOnServer = true` and runs
+server-side `docGrid_ToolbarItemClick`, which **zips the selected PDFs from disk**
+(`D:\KMSApp\Content\LibraryDocuments\<name>.pdf`) via Telerik `ZipFile.CreateEntryFromFile`
+and streams the zip back. Implications:
+- There is no stable per-file GET URL to scrape; you must reproduce the ASP.NET postback
+  (`__VIEWSTATE` + `__EVENTVALIDATION` + the grid callback for `btnDownload`) — brittle.
+- The `Content/LibraryDocuments/` path is **not** web-served directly (tested: 404), it's a
+  server filesystem path used by the zip code.
+- Some entries are broken on their side (a `FileNotFoundException` for a missing PDF aborts
+  the whole zip). Select a small batch and avoid the broken months.
+- **Verdict:** since the content is English-only anyway, automating this is low priority.
+  If ever needed, Selenium/Playwright driving the grid is more robust than replaying the
+  postback. A batch already lives locally at `NLP/NDMA/EW_Bulletins.zip` (23 counties, May 2026).
