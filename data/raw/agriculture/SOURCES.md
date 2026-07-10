@@ -158,6 +158,33 @@ Mwananchi/The Citizen TZ). Verdict for this project:
   re-scraping. Keep the hand-collected set strictly PSAs; augment with these at training time
   if scope allows (a team decision).
 
+**Kenya state-media equivalents (recon 2026-07-10).** Ran the same playbook as Tanzania:
+- **Kenya News Agency (kenyanews.go.ke)** — the state news agency (closest KE analogue to
+  TSN+MAELEZO). Reachable (broken cert → verify_tls=False). **English-only**: sections are
+  News/Features/Technology/International, no Swahili desk. So unlike TSN/HabariLEO, Kenya's
+  *state* news output has no institutional Swahili twin. Structural gap, not a fetch failure.
+- **MyGov (mygov.go.ke)** — govt weekly pullout; reachable, English-led, no Swahili section on
+  landing. **KBC (kbc.co.ke)** — reachable; broadcaster runs Sw + En but as separate bulletins,
+  not paired text.
+- **Daily Nation ePaper** (epaper.nation.africa): **robots.txt disallows** automated access;
+  content is paywalled + copyrighted (Nation Media Group). NOT scraped — see note below. Also
+  low-value: English-only (Taifa Leo is the Sw sister but independently written, not a
+  translation), and it's news, which the brief excludes as PSA material.
+
+- **People Daily ePaper** (epaper.peopledaily.digital): People Daily is a *free* paper, and its
+  robots.txt only blocks Googlebot from `/stage/` paths (production reader not disallowed). So
+  the robots/paywall objection is milder than Nation's. But it's still: a PageSuite HTML5 reader
+  serving **page images** (→ OCR needed), **English-only**, **news** (excluded as PSA), and
+  copyrighted (Mediamax). Same verdict: not a fit for the parallel PSA set.
+
+> **Copyright/ToS boundary (applies to all newspaper e-editions):** don't auto-scrape newspaper
+> e-editions for this dataset. Nation is paywalled + robots-disallowed; even a free one (People
+> Daily) is copyrighted and image-based. The project's final dataset may be released CC-BY, and
+> republishing a newspaper's articles under CC-BY would infringe. Legitimate use: a human reading
+> an edition may manually transcribe an **official government notice/advisory printed verbatim**
+> (public, PSA-shaped) and cite it; bulk article scraping is out of scope. Do not script logins
+> to paywalled subscriber editions.
+
 **Absence of a Kenyan equivalent (recorded).** A CGSpace search for Kenyan bilingual advisories
 returned mostly **English research papers *about* advisory services** (iShamba bias studies,
 GPT advisory evaluations) — not bilingual bulletins. Kenya's actual bilingual advisories go out
