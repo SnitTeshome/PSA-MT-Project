@@ -10,6 +10,33 @@ Write one `fetch_<source>.py` per source and route all HTTP through
 randomized rate-limiting, retries, and response caching (`data_cache/`, gitignored).
 Parse with BeautifulSoup/lxml; extract PDFs with `pymupdf` (`fitz`).
 
+- [`fetch_cgspace.py`](fetch_cgspace.py) — CGSpace (CGIAR) bilingual advisory PDFs by
+  bitstream UUID. Blocked from datacenter IPs; needs a residential exit + long delays.
+  **Still 429s hard even through the KE tunnel** (retested 2026-07-12, ~25 min after the
+  prior 429 — same result) — treat every CGSpace file as a manual browser download for
+  now, script only for text-extraction convenience once you have the bytes.
+- [`fetch_infonet_magazines.py`](fetch_infonet_magazines.py) — TOF Magazine (English) /
+  Mkulima Mbunifu (Swahili) back issues from Infonet-Biovision, CC-licensed, robots.txt
+  allows it. `--list {tof|mkm}` prints all slugs; pass slugs to download. Output goes to
+  `data/raw/agriculture/farmradio_manual/{tof_magazine_en,mkulima_mbunifu_sw}/` — see that
+  folder's README for the confirmed En+Sw pairs found so far.
+- [`fetch_farmradio.py`](fetch_farmradio.py) — Farm Radio International script pairs.
+  robots.txt is actually wide open (`Disallow:` blank, `Crawl-delay: 10`) — see the
+  `_robots_allows()` fix below, an earlier recon note calling this site
+  robots-disallowed was wrong. Pairing trick: every script page emits a WPML
+  `hreflang="en-ca"` alternate-language link, so crawl the *Swahili*-locale topic hub
+  (`/sw/mada/<topic>/`, e.g. `kilimo` for agriculture — 6 pages, ~50 articles) instead of
+  the ~94-page English hub, and follow hreflang to the guaranteed English twin. `--list
+  [topic]` / `--fetch-all [topic]` (default topic `kilimo`). Writes a **candidate review
+  CSV** (`data/raw/agriculture/_candidates_farmradio.csv`, gitignored) — same
+  human-confirms-before-schema convention as `x_collect.py`.
+
+**`fetchlib._robots_allows()` bug fixed 2026-07-12**: it used to fetch `robots.txt` with
+bare `urllib.robotparser` (no headers), and some CDNs 403 headerless requests — Python's
+robotparser fails safe on 401/403 by disallowing *everything*, which wrongly blocked
+sites (Farm Radio) whose real robots.txt is wide open. Fixed to fetch robots.txt through
+the same browser-header session as every other request.
+
 Dependencies (all CPU-only, light): `pandas`, `requests`, `beautifulsoup4`, `lxml`,
 `pymupdf`, `langdetect` (optional, enables the validator's language check).
 

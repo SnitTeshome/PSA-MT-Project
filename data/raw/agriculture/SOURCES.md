@@ -204,6 +204,49 @@ on social-media posts (X/Facebook) where agencies post both languages.
   third-party press copyright. Better licensing/access than commercial e-papers, same
   news≠PSA limitation.
 
+## Farm Radio + Biovision manual/scripted downloads (2026-07-11 → 2026-07-12)
+
+`farmradio_manual/` was reorganized 2026-07-12 into four subfolders — see
+`farmradio_manual/README.md` for the full breakdown, file-by-file URLs, and licensing notes.
+Summary:
+
+- **`confirmed_pairs/`** — true En+Sw parallel PSA-shaped text, dataset-ready: the CGSpace
+  climate-smart-agriculture poster, a genuine bilingual TOF "Plant Extract Special" (issue
+  17, Sept/Oct 2006), and (added 2026-07-12) a second CGSpace pair — "Soil fertility
+  management in Babati" — found by searching CGSpace's discover API for the English
+  equivalent of one of the 5 Kiswahili-only items in `CGSPACE_FETCH_LIST.md`. Of the other
+  4, no English twin exists on CGSpace at all — they're Swahili-*original* IITA extension
+  handbooks (sunflower/rice/cassava/bean, all Tanzania, all CC-BY-4.0), not translations;
+  moved to the monolingual bucket rather than left mislabeled as "needs an EN match."
+- **`tof_magazine_en/`** / **`mkulima_mbunifu_sw/`** — monolingual background material
+  from Infonet-Biovision (CC-licensed, robots.txt allows it). TOF and Mkulima Mbunifu are
+  sister publications, **not** issue-by-issue translations — don't pair by number. Full
+  archives (~230 TOF EN, 100+ MKM SW) are being bulk-fetched 2026-07-12 via
+  `fetch_infonet_magazines.py` (run `ls farmradio_manual/tof_magazine_en | wc -l` etc. for
+  current counts — this was still running in the background as of this note).
+- **`farm_radio_scripts/`** (3 .docx, hand-downloaded 2026-07-11) — the agriculture-relevant
+  subset of the original `NLP/Project/FarmRadio/` dump (6 DRC/Togo health-and-gender files
+  were wrong-variant, wrong-domain, deleted 2026-07-11). Superseded in volume 2026-07-12 by
+  `fetch_farmradio.py` (below), which pulls the same kind of pairs at scale — kept here as
+  the original hand-picked set.
+- **`_candidates_farmradio.csv`** (gitignored, sibling to this file) — bulk output of
+  `fetch_farmradio.py --fetch-all kilimo`, confirmed En+Sw script pairs crawled from Farm
+  Radio's Swahili-locale agriculture hub (52/52 articles fetched 2026-07-12 — complete).
+  Human review still
+  required before promoting rows into `agriculture_psas.csv`: dialogue-script format may
+  need trimming to PSA length, and Farm Radio's own pages carry **no CC statement** ("All
+  Rights Reserved") — confirm licensing before any redistribution beyond class use.
+
+**Two infra fixes made while running this (2026-07-12):**
+1. `fetchlib._robots_allows()` had a bug — it fetched `robots.txt` with no browser headers,
+   and Farm Radio's CDN 403s headerless requests; Python's robotparser fails safe on 403 by
+   disallowing *everything*. This wrongly made `scripts.farmradio.fm` look
+   robots-disallowed when its real policy (`Disallow:` blank) is wide open. Fixed in
+   `fetchlib.py` to reuse the same header'd session as normal fetches.
+2. CGSpace is **still** hard 429-rate-limited even through the KE residential tunnel, even
+   after a ~25 min cooldown from the previous 429 — this isn't a one-off, budget for
+   browser-download-only on CGSpace going forward.
+
 ## Broadcast (radio/TV) transcription (recon 2026-07-10)
 
 Is there transcribed Kenyan broadcast news? Findings:

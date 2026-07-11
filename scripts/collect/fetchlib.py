@@ -76,9 +76,21 @@ def _robots_allows(url: str) -> bool:
     domain = urlparse(url).netloc
     if domain not in _robots:
         rp = urllib.robotparser.RobotFileParser()
-        rp.set_url(f"https://{domain}/robots.txt")
         try:
-            rp.read()
+            # NOT rp.read() — that does its own bare urlopen() with no headers,
+            # and several CDNs 403 headerless requests (same bot-protection this
+            # module works around everywhere else). robotparser's fail-safe on a
+            # 401/403 is to disallow everything, which wrongly blocks sites whose
+            # actual robots.txt is wide open (found 2026-07-12 on
+            # scripts.farmradio.fm: real policy is "Disallow:" i.e. allow-all,
+            # but a headerless fetch of robots.txt itself got a 403). Fetch it
+            # through the same session/headers as everything else instead.
+            resp = _get_session().get(f"https://{domain}/robots.txt",
+                                       headers=_headers(), timeout=15)
+            if resp.status_code in (401, 403):
+                rp = None  # can't read it — treat as no restrictions declared
+            else:
+                rp.parse(resp.text.splitlines())
         except Exception:
             rp = None  # robots.txt unreachable — treat as no restrictions declared
         _robots[domain] = rp

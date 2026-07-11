@@ -1,6 +1,11 @@
 # cached raw fetches — regenerable, sometimes large
 data_cache/
 
+# bulk monolingual magazine archives — regenerable in one command (see
+# farmradio_manual/README.md), several hundred MB, low marginal value vs. repo size
+data/raw/agriculture/farmradio_manual/tof_magazine_en/
+data/raw/agriculture/farmradio_manual/mkulima_mbunifu_sw/
+
 # local credentials (X scraping accounts, tokens)
 .env
 accounts.db
