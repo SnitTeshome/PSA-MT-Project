@@ -310,6 +310,38 @@ Is there transcribed Kenyan broadcast news? Findings:
 **ESAFF Tanzania**, **Farm Africa TZ**, **AGRA** publish farmer material, some bilingual.
 Same acceptability caveat as other TZ sources.
 
+## Prior-art check: existing public datasets (2026-07-14/15)
+
+Before collecting more by hand, checked whether an existing published dataset could be
+cited/credited instead of re-scraping — GitHub, Kaggle, HuggingFace, and Zenodo, plus the
+specific hypothesis that someone scraped Kenyan government Twitter accounts before the
+2023 API lockdown. **Conclusion: nothing usable found for the hand-curated PSA set.**
+
+- **Twitter-based Kenyan datasets are a structural dead end for this project, regardless
+  of vintage.** Checked `github.com/jayneamol/kweli` (PolitiKweli, a Swahili-English
+  political misinformation dataset with a "fact" label that looked promising) — pulled
+  and inspected all 3 CSVs directly: every file is `tweet id, label` only, **no tweet
+  text at all**. This isn't a one-off gap; sharing raw tweet text was against Twitter's
+  developer terms for academic redistribution even before the 2023 API lockdown, so
+  "ID-only" is the norm for this whole class of dataset, not just this one. Rehydrating
+  IDs now needs paid API access, and a large fraction of 2022-era political tweets will
+  be deleted/suspended regardless. Ombui et al. (2019, 260k Kenyan tweets, hate-speech
+  labels) is referenced widely in papers but no public download surfaced either — even
+  if found, expect the same ID-only pattern.
+- **General Swahili-English parallel corpora exist in volume** (OPUS, ParaCrawl,
+  MAFAND-MT, WikiMatrix, SAWA, CCAligned, Kencorpus) but are web-crawl/news-based, not
+  PSA-shaped, and not government-specific — these fit the "augment at the modeling
+  stage" category already noted above, not the hand-collected PSA set.
+- **SDTC** (Swahili Dholuo Topic Classification, Zenodo DOI 10.5281/zenodo.14353500,
+  CC-BY) has an "Agriculture and Food" topic label, which looked promising, but: (a) the
+  record is access-restricted — logging into Zenodo did not unlock it (checked
+  2026-07-15), next step would be emailing the depositors directly, and (b) even
+  unlocked it's monolingual Swahili/Dholuo topic-classified informal short text, not
+  bilingual official advisories, so it's a low-priority lead either way.
+- No dataset anywhere in this search matched the actual requirement: genuine, credible,
+  official-source, PSA-shaped (short/directive) Kenyan agriculture content. The 41
+  hand-collected rows remain the project's real asset for this domain.
+
 ## Recommended collection strategy (ranked, after 2026-07-10 recon)
 
 The recon shows clean, **redistributable, bilingual En↔Sw *PSA* pairs are scarce** — most
