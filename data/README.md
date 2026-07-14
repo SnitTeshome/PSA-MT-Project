@@ -30,13 +30,21 @@ data/
 
 ## Acceptability rules (from the group instructions)
 
-- **Bilingual**: the same PSA in both English and Kiswahili — a true parallel pair, not two
-  unrelated messages.
+- **Bilingual preferred**: the same PSA in both English and Kiswahili — a true parallel pair,
+  not two unrelated messages.
 - **Short and action-oriented**: instructs, warns, or advises the public.
 - **Credible official source**: government agency, NGO, or verified media.
-- **Not acceptable**: paraphrased/invented translations, unsourced entries, single-language
-  PSAs, long-form articles.
+- **Not acceptable**: unsourced entries, long-form articles (news stories, technical reports).
 - Aim for **diverse sub-categories** within your domain.
+
+**Update (2026-07-14, lecturer-approved):** a single-language **English** source is now
+acceptable when it is a certain, verifiable Kenyan PSA (official government advisory —
+short, directive, public-facing — not a news story). Bilingual source pairs are still
+**preferred and should be prioritised first**; English-only is the fallback for a source
+that's clearly good enough to be worth including despite having no published Kiswahili twin.
+For these rows, the Kiswahili column is filled with a **team translation** (not sourced from
+the publisher) — mark this explicitly in `Metadata` (e.g. `translation=team, source_lang=en`)
+so it's never confused with a source-published parallel pair.
 
 Start your domain file by copying the template header (delete the `EXAMPLE_000` row):
 

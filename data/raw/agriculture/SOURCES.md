@@ -4,24 +4,29 @@ Week-1 milestone: ≥10 documented reliable sources. Status column reflects reac
 run 2026-07-10 from a Hetzner (EU) server — `unreachable (EU)` may still work from a Kenyan
 connection/mobile; retest locally before ruling a source out.
 
-Hard constraint: entries must be **true En+Sw parallel pairs from the source itself** — no
-self-translated text. Sources that publish in only one language are still useful when the same
-agency posts the paired translation on another channel (e.g. website in English, X/Facebook in
-Kiswahili) — record both URLs in `Source`.
+Hard constraint (relaxed 2026-07-14, lecturer-approved): **prioritise true En+Sw parallel
+pairs from the source itself** — no self-translated text — but a high-quality **English-only
+source is acceptable when it is a certain, verifiable Kenyan PSA** (official government
+advisory/recommendation, short and directive — not a news story or a long technical report).
+Sources that publish in only one language are still useful when the same agency posts the
+paired translation on another channel (e.g. website in English, X/Facebook in Kiswahili) —
+record both URLs in `Source`. Practical effect: this un-downgrades several previously-shelved
+English-only Kenyan government sources (NDMA county bulletin *recommendations* sections,
+KEPHIS pest/disease alerts) — see their rows below and the Recommended collection strategy.
 
 ## Government (primary)
 
 | # | Source | URL | Sub-categories | Languages | Recon 2026-07-10 | Notes |
 |---|--------|-----|----------------|-----------|------------------|-------|
-| 1 | Ministry of Agriculture & Livestock Development | kilimo.go.ke | all five | En, some Sw | **main site DOWN 2026-07-10 — confirmed unreachable from both EU server and KE connection** | Use Wayback CDX for its press-release history; watch for the site coming back |
-| 1b | KAMIS — Kenya Agricultural Market Information System | kamis.kilimo.go.ke | Agribusiness & Market Access | En | **fetch confirmed 2026-07-10 via KE exit** — blocks non-KE IPs; also serves a self-signed cert chain → needs `fetch_url(..., verify_tls=False)` | Market prices/advisories; pair with Sw social posts |
+| 1 | Ministry of Agriculture & Livestock Development | kilimo.go.ke | all five | En only (confirmed 2026-07-14) | **Back up 2026-07-14** (was down 2026-07-10) — homepage + `/press-release/` fetched via KE exit, 244KB/163KB pages, real content (title "Home - MoALD"). No `/sw/`, `hreflang="sw"`, or "Kiswahili" string found anywhere in either page — **no institutional Swahili section exists**, this isn't a fetch gap | `/press-release/` page itself is mostly a nav/sitemap listing (statistics unit, tenders, policy PDFs), not a dated article feed — if real press releases exist they're elsewhere on the site; worth a deeper crawl but don't expect bilingual pairing |
+| 1b | KAMIS — Kenya Agricultural Market Information System | kamis.kilimo.go.ke | Agribusiness & Market Access | En only (confirmed 2026-07-14) | **fetch confirmed 2026-07-10 via KE exit**, content itself pulled 2026-07-14 — blocks non-KE IPs; also serves a self-signed cert chain → needs `fetch_url(..., verify_tls=False)`. Site is a Yii app (`/index.php/site/market`), no language switcher, no Swahili string anywhere | Market prices/advisories; tabular data (prices), not directive PSA text either way; pair with Sw social posts if pursued further |
 | 2 | KALRO (Kenya Agricultural & Livestock Research Org.) | kalro.org | Crop Production, Livestock, Training | mostly En | robots.txt 200 — check allow rules before scraping | Extension advisories, e-extension app content often bilingual |
-| 2b | KAOP — Kenya Agricultural Observatory Platform (KALRO) | kaop.co.ke | Crop Production, Sustainable Farming | homepage En-only (checked 2026-07-10) | 200 OK from EU server | Ward-level advisories likely behind app/registration — needs a browser look |
-| 3 | KEPHIS (plant health) | kephis.go.ke | Crop Production (pest/disease alerts) | En | robots.txt 200 | Pest alerts are classic PSAs (short, directive) |
+| 2b | KAOP — Kenya Agricultural Observatory Platform (KALRO) | kaop.co.ke | Crop Production, Sustainable Farming | homepage En-only (checked 2026-07-10) | 200 OK from EU server; **Playwright browser check done 2026-07-14** | No login wall (unlike PIMS), but the county→constituency→ward→Submit form (labelled "Agronomic Advisory") **doesn't produce any visible output or backend request** when driven programmatically — tried full Baringo→Baringo Central→Kabarnet chain, submit click fires no network call and page doesn't navigate. Either broken, JS-event-bound in a way headless Chromium isn't triggering, or the advisory content genuinely isn't wired up yet. Only live feature confirmed is a weather chatbot widget (not advisory text). Dead end for automated collection — if pursued further it needs a human in a real browser, not more automation attempts |
+| 3 | KEPHIS (plant health) | kephis.go.ke | Crop Production (pest/disease alerts) | En | robots.txt 200; homepage + `/news-events` fetched 2026-07-14 (real content, no dated alert feed found there — mostly press-story items, not short alerts) | Pest alerts are classic PSAs (short, directive) — homepage links to **Pest Information Management System (PIMS)** at `pims254.netlify.app`, a JS-rendered SPA. Checked via Playwright 2026-07-14: the public landing page is just an "about PIMS" blurb; the actual `#/published` pest listing **redirects to an admin sign-in wall** — no public pest-alert content is reachable without an account. Dead end for automated collection, same pattern as KAOP |
 | 4 | AFA (Agriculture & Food Authority) | agricultureauthority.go.ke | Agribusiness & Market Access | En | 200 OK | Directorates (tea, coffee, horticulture) issue notices |
-| 5 | NDMA (National Drought Management Authority) | ndma.go.ke → knowledgeweb.ndma.go.ke | Livestock, Sustainable Farming | **County Early Warning bulletins are English-only** (checked 23 May-2026 county PDFs: multi-page technical reports, not short PSAs). Only NDMA's Service Charter exists as a true En+Kiswahili pair | portal reachable via KE exit but slow; download = DevExpress server-side zip (see note below) | **Downgraded**: good agri context, but not bilingual PSA-shaped text. Mine the Service Charter for directive bilingual sentences; otherwise deprioritise |
+| 5 | NDMA (National Drought Management Authority) | ndma.go.ke → knowledgeweb.ndma.go.ke | Livestock, Sustainable Farming | **County Early Warning bulletins are English-only** — bulletin body is a multi-page technical report, **but every bulletin ends in a numbered §7 RECOMMENDATIONS section, per sector (Agriculture, Livestock/Veterinary, Water, Nutrition/Health), that IS short directive PSA text** (confirmed 2026-07-14, e.g. Baringo May 2026: "Promote drought-tolerant and early-maturing crop varieties to enhance resilience to climate variability."). Only NDMA's Service Charter exists as a true En+Kiswahili pair | portal reachable via KE exit but slow; download = DevExpress server-side zip (see note below); local batch already at `NLP/NDMA/EW_Bulletins.zip` (23 counties, May 2026) — no new fetch needed | **Re-promoted 2026-07-14** (was downgraded) under the relaxed English-only rule: extract just the §7.1.4 Agriculture + relevant §7.1.3 Livestock recommendation lines from each of the 23 county PDFs already on disk — real, certain, Kenya-specific PSAs, zero additional fetching required. Service Charter still separately useful for bilingual Governance-domain sentences (not Agriculture) |
 | 6 | Kenya Meteorological Dept — agromet advisories | meteo.go.ke | Crop Production, Sustainable Farming | dekadal bulletin PDF is **En-only** (checked Dekad 18/2026); site "Swahili" toggle is JS-based (`/sw/` 404s) — likely a translation widget, which would NOT count as source-published parallel text | reachable from EU; robots 404 | Advisory sections are good PSA raw material *if* an official Sw counterpart exists — check KMD's Kiswahili forecast products (Taarifa) from a browser |
-| 7 | County govt agriculture depts (e.g. Kisii, Kakamega, Meru) | *.go.ke county sites | all five | En/Sw mixed | not yet probed | County press offices often post Sw versions on Facebook |
+| 7 | County govt agriculture depts (e.g. Kisii, Kakamega, Meru) | *.go.ke county sites | all five | **En-only confirmed 2026-07-14 (Kakamega, Meru)** | **Probed for the first time 2026-07-14** via KE exit — both county homepages + their agriculture/livestock/fisheries department pages fetched (200 OK), zero "Swahili"/"Kiswahili" string hits in either. `kisii.go.ke` returned 403 (blocked/wrong UA?), `county.kisii.go.ke` unreachable — correct domain not yet found | Extends the national-level finding (kilimo.go.ke, KAMIS, Kenya News Agency, MyGov all English-only) down to county level: **Kenya's institutional agriculture web presence has no Swahili twin anywhere probed so far.** County press offices' Facebook pages (not their websites) remain the only untested lead — needs `x_collect.py`-style social scraping, not more site crawling |
 | 7b | KCSAP — Kenya Climate Smart Agriculture Project | kcsap.go.ke | Sustainable Farming, Training | En | 200 OK from EU server | Project bulletins/success stories; check for farmer-facing advisories |
 
 ## NGO / verified media
@@ -126,6 +131,10 @@ and Kiswahili. Confirmed a **true parallel pair**:
 - EN twin: "Climate smart agriculture: top ten decisions to make with weather info" (IITA)
   — item `62fd7239-…`, PDF bitstream `287a1fb1-170c-4359-9bfc-41b7954ac505`
 - pymupdf extraction **works**. Tool: `scripts/collect/fetch_cgspace.py`.
+- Note (2026-07-14): `NLP/NDMA/ENGLISH CI A4 .pdf` + `SWAHILI CI A4.pdf` are **duplicate copies of
+  this exact same pair** (byte-identical extracted text, 11,413 SW chars) saved under a
+  different name in a different folder — not a second discovery, don't double-count or
+  double-promote.
 
 Failures / constraints hit (recorded per instruction):
 - CGSpace **blocks datacenter IPs** (connection refused) — must use the KE residential exit.

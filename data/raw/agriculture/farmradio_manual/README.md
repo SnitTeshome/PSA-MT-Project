@@ -16,6 +16,28 @@ confuse them:
 | `cgspace-climate-smart-agriculture-{EN,SW}.pdf` | CGSpace (CGIAR) — same poster already logged in `CGSPACE_FETCH_LIST.md` | https://cgspace.cgiar.org/items/62fd7239-9d39-4528-a513-5fb949251490 (EN) / https://cgspace.cgiar.org/items/c4d42102-1c9b-4936-b17b-7e2173964cda (SW) |
 | `cgspace-soil-fertility-babati-{EN,SW}.pdf` — **not yet downloaded** (see `CGSPACE_FETCH_LIST.md`, CGSpace 429'd twice 2026-07-12 even via the KE tunnel) | CGSpace, found by searching the discover API for an English twin of a Kiswahili-only item | bitstreams `a8785e00-01cc-43ca-ae3b-9914fb532925` (EN) / `4ff8daa4-34bd-41af-9182-a0be12894492` (SW) at `https://cgspace.cgiar.org/server/api/core/bitstreams/<uuid>/content` — download from a browser |
 
+**Promotion status (2026-07-14):** the TOF plant-extract pair has been promoted — 3 clean
+recipe-level pairs (African marigold, sweet potato, tea) extracted into
+`agriculture_psas.csv` as `AGRI_001`–`AGRI_003`. The CGSpace climate-smart-agriculture pair
+was **not** auto-extracted: it's a multi-column infographic poster, and `pymupdf`'s reading
+order fragments/reorders the "10 decisions" text in a way that risks silently mismatched
+EN/SW sentence pairs if reflowed programmatically. It's still confirmed dataset-ready
+material — just needs a person to read the two PDFs side by side and hand-pick aligned
+sentences, rather than trusting an automated extraction.
+
+**Farm Radio candidates QA + promotion status (2026-07-14):** ran
+`scripts/qa_azure_language_check.py`-style Azure language detection over all 52 rows of
+`_candidates_farmradio.csv` (both `sw_text` and `en_text` columns) as a pre-screen —
+**0 flagged**, every row's language matches its column label with high confidence, so the
+`fetch_farmradio.py` hreflang-based pairing produced no mislabeled pairs. 2 rows promoted
+as a worked example: `AGRI_008`/`AGRI_009`, individual "Radio Spot #1"/"#2" units trimmed
+out of row 1's post-harvest-losses script (a script can contain several distinct spots
+delimited by `Radio Spot #N:` / `Kidokezo #N:` — extract one spot at a time, don't dump
+the whole multi-spot script as one row). Only 1 of the 52 rows was checked for this exact
+`Radio Spot #N` delimiter structure — **the other 51 still need a human trimming pass**
+(some are interview/dialogue format, not spot format, so the extraction shape differs;
+see fetch_farmradio.py's docstring for the article/dialogue HTML structure each came from).
+
 The plant-extract pair is the **strongest find in this whole batch**: page-for-page
 parallel, short directive recipes (PSA-shaped), fetched straight from the publisher's own
 bilingual special edition (page 1 of the EN copy explicitly states "The Kiswahili version
