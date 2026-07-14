@@ -20,34 +20,53 @@ they're not included here.
 
 Setup (once):
     pip install playwright requests
-    playwright install chromium
+    # NOT "playwright install chromium" — this script drives your installed Brave
+    # browser instead (BRAVE_PATH below), so no extra ~300MB browser download needed.
 
 Usage:
-    # Step 1 — one-time interactive login. Opens a real (visible) browser window,
-    # you log into Facebook normally (handles 2FA/checkpoints yourself), then press
-    # Enter in the terminal once you're logged in and on your own feed. This saves
-    # a persistent browser profile to ~/.psa_mt_fb_profile so future runs are already
+    # Step 1 — one-time interactive login. Opens a real, visible Brave window (a fresh
+    # one, using its own dedicated profile dir — does not touch your regular Brave
+    # session/tabs/cookies). Log into Facebook normally in it (handles 2FA/checkpoints
+    # yourself), then press Enter in the terminal once you're logged in and on your own
+    # feed. This saves the session to ~/.psa_mt_fb_profile so future runs are already
     # logged in — you only do this once.
     python local_collect_facebook_cgspace.py login
 
     # Step 2 — scrape the county Pages (uses the saved login from step 1)
     python local_collect_facebook_cgspace.py facebook
 
-    # Step 3 — try the CGSpace Babati PDFs
+    # Step 3 — try the CGSpace Babati PDFs (public/open-access, no account needed —
+    # the earlier failure was CGSpace's IP-based rate-limiting, not a login wall)
     python local_collect_facebook_cgspace.py cgspace
 
-Each step writes a local file (fb_results.json / cgspace_*.pdf) — paste the JSON content
-(or the PDF-extracted text it prints) back into the chat, or attach the files, and I'll
-fold whatever's genuinely PSA-shaped into agriculture_psas.csv.
+Each step writes local files (fb_results.json / cgspace_*.pdf) in whatever directory you
+run the script from.
+
+Getting results back onto the server: if you have your own SSH access to wherever this
+project's files are hosted, a plain `scp`/`rsync` of the output files to the right path
+there is the simplest route — no chat paste needed. (Ask your own Claude session for the
+exact host/path if you don't have it memorized; that's environment-specific and not
+something to hardcode into a script shared with the team.)
 """
 
 import json
+import shutil
 import sys
 import time
 from pathlib import Path
 
 PROFILE_DIR = str(Path.home() / ".psa_mt_fb_profile")
 OUT_FILE = Path("fb_results.json")
+
+# Brave's default install path on macOS. Override with BRAVE_PATH env var if yours
+# differs, or if you're not on macOS.
+import os
+BRAVE_PATH = os.environ.get(
+    "BRAVE_PATH", "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
+)
+if not Path(BRAVE_PATH).exists():
+    sys.exit(f"Brave not found at {BRAVE_PATH} — set BRAVE_PATH env var to its actual "
+              f"location, e.g. export BRAVE_PATH='/path/to/Brave Browser'")
 
 # County government Facebook Pages found 2026-07-14 by grepping each county's official
 # .go.ke homepage for a facebook.com link — see SOURCES.md section 7 for the domain list
@@ -90,7 +109,9 @@ def login():
     from playwright.sync_api import sync_playwright
 
     with sync_playwright() as p:
-        ctx = p.chromium.launch_persistent_context(PROFILE_DIR, headless=False)
+        ctx = p.chromium.launch_persistent_context(
+            PROFILE_DIR, headless=False, executable_path=BRAVE_PATH
+        )
         page = ctx.new_page()
         page.goto("https://www.facebook.com/")
         input("Log into Facebook in the window that opened, then press Enter here once "
@@ -107,7 +128,9 @@ def scrape_facebook():
 
     results = {}
     with sync_playwright() as p:
-        ctx = p.chromium.launch_persistent_context(PROFILE_DIR, headless=False)
+        ctx = p.chromium.launch_persistent_context(
+            PROFILE_DIR, headless=False, executable_path=BRAVE_PATH
+        )
         page = ctx.new_page()
         for county, url in COUNTY_PAGES.items():
             print(f"Fetching {county} ({url})...")
