@@ -4,6 +4,13 @@ Week-1 milestone: ≥10 documented reliable sources. Status column reflects reac
 run 2026-07-10 from a Hetzner (EU) server — `unreachable (EU)` may still work from a Kenyan
 connection/mobile; retest locally before ruling a source out.
 
+**Scope note (2026-07-15, Bradley's explicit call):** although the group project brief frames
+this as "Kenyan PSAs," English-language PSA content from **other African countries** is now
+being treated as in-scope for this domain's dataset too (not just modeling-stage
+augmentation) — see the "Africa-wide expansion" section below. This is a deliberate scope
+decision, not an oversight; flag it to the team/instructor if the grading rubric turns out to
+be Kenya-only.
+
 Hard constraint (relaxed 2026-07-14, lecturer-approved): **prioritise true En+Sw parallel
 pairs from the source itself** — no self-translated text — but a high-quality **English-only
 source is acceptable when it is a certain, verifiable Kenyan PSA** (official government
@@ -397,3 +404,45 @@ and streams the zip back. Implications:
 - **Verdict:** since the content is English-only anyway, automating this is low priority.
   If ever needed, Selenium/Playwright driving the grid is more robust than replaying the
   postback. A batch already lives locally at `NLP/NDMA/EW_Bulletins.zip` (23 counties, May 2026).
+
+## Africa-wide expansion (2026-07-15) — English-language PSAs beyond Kenya
+
+Replicating the Kenya approach (find a national drought/disaster-management body with a
+distinct, PDF-based RECOMMENDATIONS section, same as NDMA) across other English-language
+African countries, plus expanding Farm Radio International's coverage beyond Kenya/Tanzania.
+
+**National drought/disaster agencies checked so far (East Africa first, then branching out):**
+
+| Country | Agency | Domain | Result |
+|---|---|---|---|
+| Rwanda | MINEMA (Ministry in Charge of Emergency Management) | minema.gov.rw | **Confirmed match** — `National_Drought_Contingency_Plan.pdf` has a genuine "Table 16: Recommendations" section (No / Recommendation / Proposed actions / Stakeholders columns), MINAGRI listed as a stakeholder on the agriculture-relevant rows. 3 rows extracted (`AGRI_042`-`044`). |
+| Uganda | MAAIF (Ministry of Agriculture, Animal Industry and Fisheries) | agriculture.go.ug | **Dead end** — their flagship document is a "Statistical Abstract" (pure data tables, 0 "recommend" mentions across 86k characters checked). Not PSA-shaped. |
+| Uganda | OPM/NECOC (National Emergency Coordination and Operations Centre) | necoc.opm.go.ug | **Unreachable** — Cloudflare 522 (origin server timeout), not a block. Worth retrying later; structurally this looked like the closest match (district-level early warning bulletins). |
+| South Sudan | RRC (Relief and Rehabilitation Commission) | rrc.gov.ss, southsudanrrc.org | **Unreachable** — both domains failed to connect (curl exit code, no HTTP response at all). |
+| Ghana | Ghana Meteorological Agency (GMet) | meteo.gov.gh | **Confirmed match** — Dekadal Agromet Bulletin, "3.1 AGRO-ADVISORIES" section, crop-by-crop table (Maize/Rice/Sorghum/Soyabean/Tomatoes × Weather Risks/Recommendations). 2 rows extracted (`AGRI_049`-`050`). NADMO (disaster mgmt) checked separately — narrative only, no recs section. |
+| Gambia | Dept. of Water Resources + Dept. of Agriculture (MoFWR) | meteogambia.gm | **Confirmed match, strongest structural fit found** — Dekadal Early Warning Bulletin for Food Security, explicitly numbered "1.4.1 Recommendations for Agricultural Stakeholders" section. 3 rows extracted (`AGRI_051`-`053`). Note: `ndma.gm` (the actual disaster agency, same name as Kenya's) appears **compromised/hijacked** (spam content mixed in) — do not use as a source. |
+| Liberia | Liberia Meteorological Service, Ministry of Transport | meteoliberia.com | **Confirmed match** — Dekadal Early Warning Bulletin has a clean "Farmers Advisories" section (Field Prep/Crop Mgmt/Livestock Mgmt/General Precautions). 3 rows extracted (`AGRI_054`-`056`). A second bulletin (Agromet Dekadal) exists but the dekad checked was health/malaria-focused, not agriculture — worth rechecking other months. |
+| Sierra Leone | WFP Food Security Monitoring System Report (co-published w/ Min. of Agriculture & Forestry, Min. of Health) | docs.wfp.org | Verified "Recommendations" section exists, but co-authored by WFP not purely government — same provenance category as FEWS NET. Not yet extracted; flag to team if strict "government-authored" sourcing matters. |
+| Nigeria | NiMet + NAERLS (Agromet & Livestock Weather Bulletins) | nimet.gov.ng, naerls.gov.ng | On-paper strong candidate (explicitly described as containing farmer advisories) but **not verified** — site access kept failing (redirects, self-signed cert on naerls.gov.ng, empty pages). Not fabricated, just unconfirmed — needs a follow-up session. |
+| Nigeria | NEMA | nema.gov.ng | Checked directly — narrative news posts only, no downloadable bulletin, no recommendations section. Not usable. |
+| Southern Africa (Zambia, Malawi, Zimbabwe, Botswana, Namibia, Lesotho, Eswatini, South Africa) | (various) | **Research in progress** — dispatched to a parallel research agent 2026-07-15, results pending. |
+| FEWS NET (pan-African, ~20 countries) | fews.net | **Checked, no match** — Food Security Outlook reports are pure descriptive analysis/projection, no distinct recommendations section (same shape as NDMA's narrative body, not its productive recommendations section). |
+
+**Farm Radio International — confirmed genuinely pan-African, not Kenya/Tanzania-only.**
+Their `/topic/agriculture/` English-language hub has **300 articles** (crawled 30 pages,
+2026-07-15), covering at minimum Ghana (9), Ethiopia (8), Zambia (5), Tanzania (4), Malawi
+(4), Mozambique (3), Mali (3), Nigeria (3), Uganda (3), Cameroon (2), Kenya (2), Togo (1)
+identified by country name in the title alone — 248 of 300 articles don't name a country in
+the title (the country is often only in the body text), so the real per-country count is
+much higher than this table shows. "Backgrounder"-format articles have a reliable, clean
+**"Key messages"/"should know" bulleted list** that extracts cleanly (same quality as the
+Kenya post-harvest-losses "Radio Spot #N" pattern) — confirmed on Zambia (cassava brown
+streak disease), Ghana (vegetable production). 4 rows extracted so far (`AGRI_045`-`048`,
+Zambia/Ghana/Tanzania/Ethiopia) as a proof of concept — the other ~296 articles are a large
+untapped reserve for future sessions. Same licensing caveat as before: Farm Radio pages
+carry no CC statement ("All Rights Reserved") — confirm before redistribution beyond class
+use, same as the existing Kenya-sourced Farm Radio rows.
+
+Full article index (all 300 URLs + titles): was written to a scratch file this session, not
+yet committed to the repo — regenerate by crawling `scripts.farmradio.fm/topic/agriculture/`
+pages 1-30+ (see `fetch_farmradio.py` for the fetching pattern to adapt).
