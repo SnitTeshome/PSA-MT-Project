@@ -11,6 +11,14 @@ for the 2026-07-15 continuation logs). Note: 2 rows (`AGRI_169`-`170`) are trans
 Chichewa, not English — the project's first non-English/Kiswahili source — flagged for a
 native-speaker check before final submission.
 
+**`PSA_ID` numbers are not a row count.** IDs are assigned once and never reused or
+renumbered — if a row is later found to be a duplicate and merged into another row, its
+ID is retired rather than reassigned, leaving a gap. So the highest `AGRI_###` in the
+file will not always equal the total row count, and that's expected, not a bug: trust an
+actual count (`validate_psa_csv.py`'s output, or counting rows directly) as the source of
+truth for "how many rows," not the max ID. This holds regardless of how the dataset
+changes going forward.
+
 | Sub-category | Rows |
 |---|---|
 | Crop Production | 109 |

@@ -6,7 +6,9 @@ Usage:
 Checks (hard failures exit 1 with a descriptive message):
   - exact header match with the shared schema
   - every mandatory field filled (Target_Language is the only optional one)
-  - PSA_ID format <PREFIX>_### and uniqueness
+  - PSA_ID format <PREFIX>_### and uniqueness (IDs are retired, not reused, when a
+    duplicate row is merged and removed — so gaps in the numbering are expected and
+    the highest ID is not a row count; this script's own summary stats are)
   - no exact-duplicate English or Kiswahili texts
   - no EXAMPLE_* template rows left in
   - English/Kiswahili not identical (would mean a copy-paste, not a translation)
