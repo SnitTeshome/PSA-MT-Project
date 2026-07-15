@@ -33,11 +33,12 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, __file__.rsplit("/", 1)[0])
-from fetchlib import fetch_url  # noqa: E402
+from fetchlib import fetch_url, confirm_bulk_download  # noqa: E402
 
 from bs4 import BeautifulSoup  # noqa: E402
 
 BASE = "https://scripts.farmradio.fm"
+EST_MB_PER_PAIR = 0.1  # two HTML article pages (EN+SW), no PDFs
 OUT_CSV = (Path(__file__).resolve().parents[2]
            / "data/raw/agriculture/_candidates_farmradio.csv")
 
@@ -118,6 +119,8 @@ def main(argv):
         topic = argv[1] if len(argv) > 1 else "kilimo"
         urls = list_sw_articles(topic)
         print(f"{len(urls)} Swahili article(s) found under topic '{topic}'")
+        if not confirm_bulk_download(len(urls), EST_MB_PER_PAIR, "Farm Radio International"):
+            return
         OUT_CSV.parent.mkdir(parents=True, exist_ok=True)
         write_header = not OUT_CSV.exists()
         with OUT_CSV.open("a", newline="", encoding="utf-8") as f:

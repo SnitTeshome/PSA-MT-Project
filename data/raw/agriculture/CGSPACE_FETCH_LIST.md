@@ -1,11 +1,13 @@
 # CGSpace (CGIAR) bilingual advisory — fetch list
 
 CGIAR farmer-advisory posters/factsheets, CC-licensed, PSA-shaped. Access notes:
-- CGSpace **blocks datacenter IPs** and **429-rate-limits** the residential exit → easiest to
-  **download the PDFs from a browser** on the item pages below. For scripted use,
-  `scripts/collect/fetch_cgspace.py <bitstream_uuid>` via a residential exit with long delays.
+- CGSpace **429-rate-limits** hard → easiest to **download the PDFs from a browser** on
+  the item pages below. For scripted use, `scripts/collect/fetch_cgspace.py
+  <bitstream_uuid>` with long delays between files.
 - Most of this material is **Tanzania-focused** (CCAFS/IITA East Africa) — see the Tanzania
   acceptability caveat in SOURCES.md.
+- Each PDF on this list is ~1-3 MB; `fetch_cgspace.py` prints an estimated total size and
+  asks for confirmation before downloading anything to local disk.
 
 ## Confirmed English + Kiswahili parallel pair (verified 2026-07-10)
 
@@ -14,13 +16,13 @@ CGIAR farmer-advisory posters/factsheets, CC-licensed, PSA-shaped. Access notes:
 | SW | Kilimo kinachohimili mabadiliko ya tabianchi: maamuzi kumi muhimu… | https://cgspace.cgiar.org/items/c4d42102-1c9b-4936-b17b-7e2173964cda | 94c0db78-3fb6-4c8a-90d6-7dc22387e201 |
 | EN | Climate smart agriculture: top ten decisions to make with weather info | https://cgspace.cgiar.org/items/62fd7239-9d39-4528-a513-5fb949251490 | 287a1fb1-170c-4359-9bfc-41b7954ac505 |
 
-Script-fetch (via residential exit):
+Script-fetch:
 `python scripts/collect/fetch_cgspace.py 94c0db78-3fb6-4c8a-90d6-7dc22387e201 287a1fb1-170c-4359-9bfc-41b7954ac505`
 
 ## Kiswahili extension items — resolved 2026-07-12
 
 Searched CGSpace's discover API (`/server/api/discover/search/objects?query=...`, works
-fine over plain WebFetch even though direct/proxied fetches of the item pages 429) for an
+fine over plain WebFetch even though direct fetches of the item pages 429) for an
 English twin of each. Result: **one has a genuine EN twin, the other four are Swahili-original
 extension handbooks with no English counterpart on CGSpace at all** — don't keep treating
 those four as "needs matching," they're monolingual by nature, not an unfinished search.
@@ -35,7 +37,7 @@ those four as "needs matching," they're monolingual by nature, not an unfinished
   (Other usage rights)", not explicit CC-BY-4.0 like the four below — check before reuse
   beyond class work.
 - PDF bytes not yet downloaded (CGSpace 429'd both the initial discover-API call and a
-  retry ~25 min later, via the KE tunnel) — download both bitstream URLs
+  retry ~25 min later) — download both bitstream URLs
   (`https://cgspace.cgiar.org/server/api/core/bitstreams/<uuid>/content`) from a browser.
 
 **Confirmed Swahili-original, no English twin exists** (monolingual — useful as
@@ -59,7 +61,7 @@ API calls are needed to act on this list — go straight to browser download.
 
 ## Browse for more (enumerate later)
 
-- CGSpace discover API (works via WebFetch / residential exit):
+- CGSpace discover API (works via WebFetch):
   `https://cgspace.cgiar.org/server/api/discover/search/objects?query=<terms>&size=20`
   Useful queries: `ushauri wa kilimo hali ya hewa`, `kilimo bora`, `mkulima kiongozi`,
   `advisory Kenya kiswahili`.

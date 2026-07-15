@@ -1,4 +1,4 @@
-"""Recon pass over Kenyan government agriculture sites via the KE residential exit.
+"""Recon pass over Kenyan government agriculture sites.
 
 Re-checks sites SOURCES.md flagged as down/unreachable/unprobed as of 2026-07-10:
 kilimo.go.ke (main ministry site was down), KAMIS (confirmed reachable but content
@@ -6,7 +6,7 @@ never pulled), and county agriculture depts (never probed at all). Read-only rec
 does not write to agriculture_psas.csv. Prints a findings summary to update SOURCES.md
 by hand after review.
 
-Usage (needs FETCH_PROXY=socks5h://<ke-exit> set, see proxy_notes_private.md):
+Usage (set FETCH_PROXY if a proxy is needed):
     python fetch_kenya_gov_recon.py
 """
 

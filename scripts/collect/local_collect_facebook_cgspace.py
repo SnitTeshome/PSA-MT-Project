@@ -1,17 +1,16 @@
-"""Run this on YOUR OWN device (not the shared container) — the two things left in
-BRADLEY_ACTIONS.md that a script can actually help with, but that need a real browser
-session / a non-datacenter IP to have a chance of working:
+"""Run this on your own device — the two things left in BRADLEY_ACTIONS.md that a
+script can actually help with, but that need a real, logged-in browser session:
 
-1. Facebook county government Pages — scraping from the container hits Facebook's
-   anti-automation wall (the page hangs forever on the loading splash screen, confirmed
-   2026-07-14) and the lightweight mbasic/m.facebook.com endpoints are robots.txt
-   disallowed outright. Running this on your own device, logged into your own Facebook
-   account in a real browser, is the only approach left that isn't fighting both a
-   technical block and Facebook's stated policy at once.
+1. Facebook county government Pages — scraping without a logged-in session hits
+   Facebook's anti-automation wall (the page hangs forever on the loading splash
+   screen, confirmed 2026-07-14) and the lightweight mbasic/m.facebook.com endpoints
+   are robots.txt disallowed outright. Running this on your own device, logged into
+   your own Facebook account in a real browser, is the only approach left that isn't
+   fighting both a technical block and Facebook's stated policy at once.
 
-2. The 2 still-missing CGSpace Babati soil-fertility PDFs — CGSpace blocks datacenter
-   IPs and 429-rate-limits even through the KE tunnel (confirmed repeatedly). Worth one
-   try directly from your own network before falling back to a manual browser download.
+2. The 2 still-missing CGSpace Babati soil-fertility PDFs — CGSpace rate-limits
+   aggressively (confirmed repeatedly). Worth one more try before falling back to a
+   manual browser download.
 
 Everything else in BRADLEY_ACTIONS.md (X account creation/warm-up, sending outreach
 emails, transcribing a printed newspaper notice, raising team decisions) is inherently
@@ -36,17 +35,15 @@ Usage:
     python local_collect_facebook_cgspace.py facebook
 
     # Step 3 — try the CGSpace Babati PDFs (public/open-access, no account needed —
-    # the earlier failure was CGSpace's IP-based rate-limiting, not a login wall)
+    # the earlier failure was rate-limiting, not a login wall)
     python local_collect_facebook_cgspace.py cgspace
 
 Each step writes local files (fb_results.json / cgspace_*.pdf) in whatever directory you
-run the script from.
+run the script from. Both 'facebook' and 'cgspace' print an estimated data size and ask
+for confirmation before downloading anything. Set PSA_AUTO_CONFIRM=1 to skip that prompt.
 
-Getting results back onto the server: if you have your own SSH access to wherever this
-project's files are hosted, a plain `scp`/`rsync` of the output files to the right path
-there is the simplest route — no chat paste needed. (Ask your own Claude session for the
-exact host/path if you don't have it memorized; that's environment-specific and not
-something to hardcode into a script shared with the team.)
+Copy the output files into the project's data folder afterwards (e.g. via a file sync
+tool, USB, or whatever you normally use to move files onto this machine).
 """
 
 import json
@@ -105,6 +102,23 @@ CGSPACE_TARGETS = {
 }
 
 
+def confirm_download(item_count: int, est_mb_per_item: float, source_name: str) -> bool:
+    """Print an estimated download size and require explicit confirmation before
+    fetching anything, since results get saved to this machine's local disk. Set
+    PSA_AUTO_CONFIRM=1 to skip the prompt."""
+    est_total_mb = item_count * est_mb_per_item
+    print(f"\nAbout to fetch {item_count} item(s) from {source_name} — "
+          f"roughly {est_total_mb:.0f} MB total (~{est_mb_per_item:.1f} MB/item).")
+    if os.environ.get("PSA_AUTO_CONFIRM") == "1":
+        print("PSA_AUTO_CONFIRM=1 set — continuing without prompt.")
+        return True
+    reply = input("Continue? [y/N]: ").strip().lower()
+    if reply != "y":
+        print("Aborted — nothing downloaded.")
+        return False
+    return True
+
+
 def login():
     from playwright.sync_api import sync_playwright
 
@@ -125,6 +139,9 @@ def scrape_facebook():
 
     if not Path(PROFILE_DIR).exists():
         sys.exit("No saved session found — run 'login' first.")
+
+    if not confirm_download(len(COUNTY_PAGES), 0.5, "Facebook (county government Pages)"):
+        return
 
     results = {}
     with sync_playwright() as p:
@@ -155,6 +172,9 @@ def scrape_facebook():
 
 def download_cgspace():
     import requests
+
+    if not confirm_download(len(CGSPACE_TARGETS), 2.0, "CGSpace (CGIAR repository)"):
+        return
 
     for label, uuid in CGSPACE_TARGETS.items():
         url = f"https://cgspace.cgiar.org/server/api/core/bitstreams/{uuid}/content"

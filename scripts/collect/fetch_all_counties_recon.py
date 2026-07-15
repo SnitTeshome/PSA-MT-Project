@@ -9,7 +9,7 @@ direct verification (www.nyeri.go.ke, confirmed 200 OK).
 
 Read-only recon — does not write to agriculture_psas.csv. Prints a findings summary.
 
-Usage (needs FETCH_PROXY=socks5h://<ke-exit> set, see proxy_notes_private.md):
+Usage (set FETCH_PROXY if a proxy is needed):
     python fetch_all_counties_recon.py
 """
 

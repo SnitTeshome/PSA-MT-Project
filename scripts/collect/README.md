@@ -10,9 +10,18 @@ Write one `fetch_<source>.py` per source and route all HTTP through
 randomized rate-limiting, retries, and response caching (`data_cache/`, gitignored).
 Parse with BeautifulSoup/lxml; extract PDFs with `pymupdf` (`fitz`).
 
+- [`fetch_n2africa.py`](fetch_n2africa.py) — N2Africa's own extension-materials catalog
+  (n2africa.org/agem, 80+ CC-licensed PDFs). Best source found so far: a genuine EN+Swahili
+  bilingual checklist authored directly (no translation needed), Swahili-original brochures
+  with no English counterpart, and a "Better [crop] through good agricultural practices"
+  leaflet series repeated per country — that series shares a heavily templated intro/Step
+  1-7 structure across countries for the same crop, so only country-specific passages
+  (regional variety-selection guidance) are worth extracting per country, not the whole
+  leaflet again. `--list [keyword]` prints the catalog filtered by title/country; pass a
+  File-column value to download. Serves an incomplete cert chain, same as some Kenyan gov
+  sites — fetches with `verify_tls=False`.
 - [`fetch_cgspace.py`](fetch_cgspace.py) — CGSpace (CGIAR) bilingual advisory PDFs by
-  bitstream UUID. Blocked from datacenter IPs; needs a residential exit + long delays.
-  **Still 429s hard even through the KE tunnel** (retested 2026-07-12, ~25 min after the
+  bitstream UUID. Rate-limits hard and repeatedly (retested 2026-07-12, ~25 min after the
   prior 429 — same result) — treat every CGSpace file as a manual browser download for
   now, script only for text-extraction convenience once you have the bytes.
 - [`fetch_infonet_magazines.py`](fetch_infonet_magazines.py) — TOF Magazine (English) /
@@ -60,20 +69,19 @@ Kiswahili. The official API is paid, so options in order of preference:
    - X login flows change often; expect breakage and pin a recent twscrape version.
    - `x_collect.py` builds in human-like traffic: randomized think-time (right-skewed),
      occasional longer "reading" dwells, randomized account/action order, per-session time
-     and post caps, and periodic long breaks. Run it through the residential exit
-     (`FETCH_PROXY`). Verify the pacing logic with `python scripts/collect/x_collect.py
+     and post caps, and periodic long breaks. Set `FETCH_PROXY` if a proxy is needed.
+     Verify the pacing logic with `python scripts/collect/x_collect.py
      --dry-run` (no network/accounts needed). Output is a **candidate review CSV**
      (`_candidates_x.csv`, gitignored) — a human confirms true En+Sw pairs before they enter
      the schema file; the script never invents pairings.
 3. **Wayback Machine** snapshots of account pages (no auth; patchy coverage):
    `http://web.archive.org/cdx/search/cdx?url=twitter.com/kilimoKE/status/*&output=json`
 
-## KE-only sources
+## Sites that are strict about rate limits or connection type
 
-Some gov sites (e.g. `kamis.kilimo.go.ke`) accept Kenyan residential connections but not
-datacenter/foreign IPs. If you're scraping from a server abroad, either collect those
-sources manually from a local browser, or route requests through a machine on a Kenyan
-connection and point fetchlib at it with `export FETCH_PROXY=socks5h://host:port`
+A few gov sites (e.g. `kamis.kilimo.go.ke`) are picky about connection type or rate-limit
+hard. If a fetch keeps failing, either collect that source manually from a browser, or set
+`FETCH_PROXY=socks5h://host:port` to route through a different connection
 (SOCKS URLs need `pip install "requests[socks]"`; unset = direct connection).
 
 ## Ground rules

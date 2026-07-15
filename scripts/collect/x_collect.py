@@ -7,8 +7,8 @@ Design goals:
   - Human-like traffic: randomized think-time between actions, randomized action
     ordering, per-session caps, and jitter — so activity doesn't look like a bot
     hammering an endpoint.
-  - Route through the Kenyan residential exit (FETCH_PROXY) so origin IP is
-    consistent and residential.
+  - Route through a stable connection (FETCH_PROXY) if a target account or
+    endpoint needs a consistent origin IP.
   - It does NOT auto-pair languages. It dumps candidate posts (with URL, author,
     date, detected language) to a review CSV; a human confirms true En+Sw pairs
     and moves them into the schema CSV. Inventing pairings would violate the
@@ -124,7 +124,7 @@ async def collect(accounts, per_account):
 
     proxy = os.environ.get("FETCH_PROXY")
     if not proxy:
-        print("WARNING: FETCH_PROXY not set — collecting via this host's IP, not the KE exit")
+        print("Note: FETCH_PROXY not set — collecting directly")
 
     api = API()  # reads accounts.db in the CWD
     OUT.parent.mkdir(parents=True, exist_ok=True)

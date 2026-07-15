@@ -14,7 +14,7 @@ confuse them:
 |---|---|---|
 | `tof-issue-no-17-septoct-2006-plant-extract-special-{english,swahili}-version.pdf` | Infonet-Biovision, TOF Magazine issue 17 special edition | https://infonet-biovision.org/tof-issue-no-17-septoct-2006-plant-extract-special-english-version and `-swahili-version` |
 | `cgspace-climate-smart-agriculture-{EN,SW}.pdf` | CGSpace (CGIAR) — same poster already logged in `CGSPACE_FETCH_LIST.md` | https://cgspace.cgiar.org/items/62fd7239-9d39-4528-a513-5fb949251490 (EN) / https://cgspace.cgiar.org/items/c4d42102-1c9b-4936-b17b-7e2173964cda (SW) |
-| `cgspace-soil-fertility-babati-{EN,SW}.pdf` — **not yet downloaded** (see `CGSPACE_FETCH_LIST.md`, CGSpace 429'd twice 2026-07-12 even via the KE tunnel) | CGSpace, found by searching the discover API for an English twin of a Kiswahili-only item | bitstreams `a8785e00-01cc-43ca-ae3b-9914fb532925` (EN) / `4ff8daa4-34bd-41af-9182-a0be12894492` (SW) at `https://cgspace.cgiar.org/server/api/core/bitstreams/<uuid>/content` — download from a browser |
+| `cgspace-soil-fertility-babati-{EN,SW}.pdf` — **not yet downloaded** (see `CGSPACE_FETCH_LIST.md`, CGSpace 429'd twice 2026-07-12) | CGSpace, found by searching the discover API for an English twin of a Kiswahili-only item | bitstreams `a8785e00-01cc-43ca-ae3b-9914fb532925` (EN) / `4ff8daa4-34bd-41af-9182-a0be12894492` (SW) at `https://cgspace.cgiar.org/server/api/core/bitstreams/<uuid>/content` — download from a browser |
 
 **Promotion status (2026-07-14):** the TOF plant-extract pair has been promoted — 3 clean
 recipe-level pairs (African marigold, sweet potato, tea) extracted into
@@ -46,8 +46,8 @@ of this Plant Extract Special has been published in The Organic Farmer..."). Fet
 statement found but it's the publisher's own site, not a scrape of a third party.
 
 The `cgspace-*` pair is the same material already recorded in `CGSPACE_FETCH_LIST.md` —
-kept here as the actual downloaded PDF (browser download, since CGSpace blocks
-datacenter IPs / 429s scripted fetches) rather than a duplicate discovery.
+kept here as the actual downloaded PDF (browser download, since CGSpace rate-limits
+scripted fetches hard) rather than a duplicate discovery.
 
 ## tof_magazine_en/ — The Organic Farmer, English, monolingual
 

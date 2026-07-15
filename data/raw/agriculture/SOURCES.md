@@ -1,8 +1,7 @@
 # Agriculture domain — source inventory
 
 Week-1 milestone: ≥10 documented reliable sources. Status column reflects reachability checks
-run 2026-07-10 from a Hetzner (EU) server — `unreachable (EU)` may still work from a Kenyan
-connection/mobile; retest locally before ruling a source out.
+run 2026-07-10; retest before ruling a source out.
 
 **Scope note (2026-07-15, Bradley's explicit call):** although the group project brief frames
 this as "Kenyan PSAs," English-language PSA content from **other African countries** is now
@@ -25,14 +24,14 @@ KEPHIS pest/disease alerts) — see their rows below and the Recommended collect
 
 | # | Source | URL | Sub-categories | Languages | Recon 2026-07-10 | Notes |
 |---|--------|-----|----------------|-----------|------------------|-------|
-| 1 | Ministry of Agriculture & Livestock Development | kilimo.go.ke | all five | En only (confirmed 2026-07-14) | **Back up 2026-07-14** (was down 2026-07-10) — homepage + `/press-release/` fetched via KE exit, 244KB/163KB pages, real content (title "Home - MoALD"). No `/sw/`, `hreflang="sw"`, or "Kiswahili" string found anywhere in either page — **no institutional Swahili section exists**, this isn't a fetch gap | `/press-release/` page itself is mostly a nav/sitemap listing (statistics unit, tenders, policy PDFs), not a dated article feed — if real press releases exist they're elsewhere on the site; worth a deeper crawl but don't expect bilingual pairing |
-| 1b | KAMIS — Kenya Agricultural Market Information System | kamis.kilimo.go.ke | Agribusiness & Market Access | En only (confirmed 2026-07-14) | **fetch confirmed 2026-07-10 via KE exit**, content itself pulled 2026-07-14 — blocks non-KE IPs; also serves a self-signed cert chain → needs `fetch_url(..., verify_tls=False)`. Site is a Yii app (`/index.php/site/market`), no language switcher, no Swahili string anywhere | Market prices/advisories; tabular data (prices), not directive PSA text either way; pair with Sw social posts if pursued further |
+| 1 | Ministry of Agriculture & Livestock Development | kilimo.go.ke | all five | En only (confirmed 2026-07-14) | **Back up 2026-07-14** (was down 2026-07-10) — homepage + `/press-release/` fetched, 244KB/163KB pages, real content (title "Home - MoALD"). No `/sw/`, `hreflang="sw"`, or "Kiswahili" string found anywhere in either page — **no institutional Swahili section exists**, this isn't a fetch gap | `/press-release/` page itself is mostly a nav/sitemap listing (statistics unit, tenders, policy PDFs), not a dated article feed — if real press releases exist they're elsewhere on the site; worth a deeper crawl but don't expect bilingual pairing |
+| 1b | KAMIS — Kenya Agricultural Market Information System | kamis.kilimo.go.ke | Agribusiness & Market Access | En only (confirmed 2026-07-14) | **fetch confirmed 2026-07-10**, content itself pulled 2026-07-14 — serves a self-signed cert chain → needs `fetch_url(..., verify_tls=False)`. Site is a Yii app (`/index.php/site/market`), no language switcher, no Swahili string anywhere | Market prices/advisories; tabular data (prices), not directive PSA text either way; pair with Sw social posts if pursued further |
 | 2 | KALRO (Kenya Agricultural & Livestock Research Org.) | kalro.org | Crop Production, Livestock, Training | mostly En | robots.txt 200 — check allow rules before scraping | Extension advisories, e-extension app content often bilingual |
-| 2b | KAOP — Kenya Agricultural Observatory Platform (KALRO) | kaop.co.ke | Crop Production, Sustainable Farming | homepage En-only (checked 2026-07-10) | 200 OK from EU server; **Playwright browser check done 2026-07-14** | No login wall (unlike PIMS), but the county→constituency→ward→Submit form (labelled "Agronomic Advisory") **doesn't produce any visible output or backend request** when driven programmatically — tried full Baringo→Baringo Central→Kabarnet chain, submit click fires no network call and page doesn't navigate. Either broken, JS-event-bound in a way headless Chromium isn't triggering, or the advisory content genuinely isn't wired up yet. Only live feature confirmed is a weather chatbot widget (not advisory text). Dead end for automated collection — if pursued further it needs a human in a real browser, not more automation attempts |
+| 2b | KAOP — Kenya Agricultural Observatory Platform (KALRO) | kaop.co.ke | Crop Production, Sustainable Farming | homepage En-only (checked 2026-07-10) | 200 OK; **Playwright browser check done 2026-07-14** | No login wall (unlike PIMS), but the county→constituency→ward→Submit form (labelled "Agronomic Advisory") **doesn't produce any visible output or backend request** when driven programmatically — tried full Baringo→Baringo Central→Kabarnet chain, submit click fires no network call and page doesn't navigate. Either broken, JS-event-bound in a way headless Chromium isn't triggering, or the advisory content genuinely isn't wired up yet. Only live feature confirmed is a weather chatbot widget (not advisory text). Dead end for automated collection — if pursued further it needs a human in a real browser, not more automation attempts |
 | 3 | KEPHIS (plant health) | kephis.go.ke | Crop Production (pest/disease alerts) | En | robots.txt 200; homepage + `/news-events` fetched 2026-07-14 (real content, no dated alert feed found there — mostly press-story items, not short alerts) | Pest alerts are classic PSAs (short, directive) — homepage links to **Pest Information Management System (PIMS)** at `pims254.netlify.app`, a JS-rendered SPA. Checked via Playwright 2026-07-14: the public landing page is just an "about PIMS" blurb; the actual `#/published` pest listing **redirects to an admin sign-in wall** — no public pest-alert content is reachable without an account. Dead end for automated collection, same pattern as KAOP |
 | 4 | AFA (Agriculture & Food Authority) | agricultureauthority.go.ke | Agribusiness & Market Access | En | 200 OK | Directorates (tea, coffee, horticulture) issue notices |
-| 5 | NDMA (National Drought Management Authority) | ndma.go.ke → knowledgeweb.ndma.go.ke | Livestock, Sustainable Farming, Crop Production, Agribusiness | **County Early Warning bulletins are English-only** — bulletin body is a multi-page technical report, **but every bulletin has a recommendations section with genuine short directive Agriculture/Livestock text** (confirmed 2026-07-14). Only NDMA's Service Charter exists as a true En+Kiswahili pair | portal reachable via KE exit but slow; download = DevExpress server-side zip (see note below); local batch at `NLP/NDMA/EW_Bulletins.zip` (23 counties, May 2026), converted to Markdown via `convert.py --batch --to .md` into `NLP/NDMA/EW_Bulletins_md/` for review | **Full 23-county pass completed 2026-07-14** (was 2 counties). The recommendations section is NOT standardized — 4+ distinct formats found across counties (Baringo: numbered §7.1.x list; Garissa/Wajir/Turkana: "Table N. Recommended interventions" grid; Isiolo/Marsabit/Meru/Narok: "Recommended Interventions" with Coverage/Cost/Gap columns; Kilifi/Makueni/Nyeri/Taita-Taveta/Tana River/Tharaka-Nithi: plain bullet list, sometimes with "(Action: ...)" attribution) — checking required a content-based search (grep for "recommend" + manual read), not a single regex. **21 of 23 counties had genuine, usable Agriculture/Livestock text; Laikipia and Kajiado do not** (Kajiado's bulletin has no recommendations section at all — only narrative report content — confirmed by reading the full document, not just a failed pattern match). Kwale's recommendations section is pure food-aid/cash-transfer logistics, no Agriculture/Livestock content. **32 rows extracted from 18 counties** (`AGRI_010`–`041`), on top of the original Baringo/Garissa rows — all real bulletin text, team-translated per the English-only rule, verified 0 flags on the Azure language QA gate. Service Charter still separately useful for bilingual Governance-domain sentences (not Agriculture) |
-| 6 | Kenya Meteorological Dept — agromet advisories | meteo.go.ke | Crop Production, Sustainable Farming | dekadal bulletin PDF is **En-only** (checked Dekad 18/2026); site "Swahili" toggle is JS-based (`/sw/` 404s) — likely a translation widget, which would NOT count as source-published parallel text | reachable from EU; robots 404 | Advisory sections are good PSA raw material *if* an official Sw counterpart exists — check KMD's Kiswahili forecast products (Taarifa) from a browser |
+| 5 | NDMA (National Drought Management Authority) | ndma.go.ke → knowledgeweb.ndma.go.ke | Livestock, Sustainable Farming, Crop Production, Agribusiness | **County Early Warning bulletins are English-only** — bulletin body is a multi-page technical report, **but every bulletin has a recommendations section with genuine short directive Agriculture/Livestock text** (confirmed 2026-07-14). Only NDMA's Service Charter exists as a true En+Kiswahili pair | portal reachable but slow; download = DevExpress server-side zip (see note below); local batch at `NLP/NDMA/EW_Bulletins.zip` (23 counties, May 2026), converted to Markdown via `convert.py --batch --to .md` into `NLP/NDMA/EW_Bulletins_md/` for review | **Full 23-county pass completed 2026-07-14** (was 2 counties). The recommendations section is NOT standardized — 4+ distinct formats found across counties (Baringo: numbered §7.1.x list; Garissa/Wajir/Turkana: "Table N. Recommended interventions" grid; Isiolo/Marsabit/Meru/Narok: "Recommended Interventions" with Coverage/Cost/Gap columns; Kilifi/Makueni/Nyeri/Taita-Taveta/Tana River/Tharaka-Nithi: plain bullet list, sometimes with "(Action: ...)" attribution) — checking required a content-based search (grep for "recommend" + manual read), not a single regex. **21 of 23 counties had genuine, usable Agriculture/Livestock text; Laikipia and Kajiado do not** (Kajiado's bulletin has no recommendations section at all — only narrative report content — confirmed by reading the full document, not just a failed pattern match). Kwale's recommendations section is pure food-aid/cash-transfer logistics, no Agriculture/Livestock content. **32 rows extracted from 18 counties** (`AGRI_010`–`041`), on top of the original Baringo/Garissa rows — all real bulletin text, team-translated per the English-only rule, verified 0 flags on the Azure language QA gate. Service Charter still separately useful for bilingual Governance-domain sentences (not Agriculture) |
+| 6 | Kenya Meteorological Dept — agromet advisories | meteo.go.ke | Crop Production, Sustainable Farming | dekadal bulletin PDF is **En-only** (checked Dekad 18/2026); site "Swahili" toggle is JS-based (`/sw/` 404s) — likely a translation widget, which would NOT count as source-published parallel text | reachable; robots 404 | Advisory sections are good PSA raw material *if* an official Sw counterpart exists — check KMD's Kiswahili forecast products (Taarifa) from a browser |
 | 7 | County govt agriculture depts — **all 47 counties** | *.go.ke county sites | all five | **Full 47-county pass done 2026-07-14** (`scripts/collect/fetch_all_counties_recon.py`; domain list from cog.go.ke, cross-checked against parliament.go.ke/the-senate/counties) | 44/47 reachable on first pass; the other 3 had stale/wrong domains, fixed 2026-07-14
 with corrected URLs (Bradley): Laikipia moved to `new.laikipia.go.ke` (has an agriculture
 dept link, English-only, no Swahili signal); Busia's real domain is `busiacounty.go.ke`
@@ -58,7 +57,7 @@ farmer-specific portal called **"Inua Mkulima"** (`ecitizen.muranga.go.ke`, Swah
 "Uplift the Farmer") — checked, it's a **login-gated** application (username/password
 form, likely a subsidy/input-registration system), no public content, same dead-end
 pattern as KAOP/PIMS.; 37 had a findable agriculture department link. A naive "swahili" string search flagged 8 counties, but **6 were false positives** on manual check: Lamu/Embu matched a Google-Translate widget's language list, Makueni/West Pokot/Elgeyo-Marakwet matched a video-player library's built-in caption-language dropdown (`mejs.swahili`), Isiolo matched unverified schema.org metadata — none are real site-authored Swahili content. **2 were genuine**: Nyeri and Narok's agriculture department pages link true bilingual PDF **Service Charters** (Nyeri: Agriculture/Veterinary/KCSAP charters, both EN+SW downloaded and extracted) — but like NDMA's charter, these are service-standard/fee-and-timeline tables ("Provision of Agricultural Extension Services — Free — Continuous"), not farmer-facing advisory PSAs — fits Governance domain, not Agriculture. Went further per Bradley's "even English-only, get real PSAs if they're there" instruction: screened all 37 agriculture pages' actual text for directive/imperative content (keyword screen + manual read of the highest-scoring and largest pages: Samburu, Vihiga, Lamu, Kirinyaga, Nakuru, Kajiado, Homa Bay, Mandera, plus Nyeri's full 27-row downloads table) — **all are institutional department overviews, mandate/mission statements, project-status trackers, or news articles**, not directive PSA text (closest miss: a Nakuru news article paraphrasing an official "urging" seedling care, but reported/paraphrased speech, not a verbatim advisory — doesn't clear the news≠PSA bar). **Conclusion: no promotable Agriculture PSA content found on any of the 47 county government sites' landing/department pages** — this is a real, checked absence, not an unexplored gap. County press offices' Facebook pages remain the one untested lead — needs `x_collect.py`-style social scraping, not more site crawling. Full per-county reachability/results log: `scripts/collect/fetch_all_counties_recon.py` output. |
-| 7b | KCSAP — Kenya Climate Smart Agriculture Project | kcsap.go.ke | Sustainable Farming, Training | En | 200 OK from EU server | Project bulletins/success stories; check for farmer-facing advisories |
+| 7b | KCSAP — Kenya Climate Smart Agriculture Project | kcsap.go.ke | Sustainable Farming, Training | En | 200 OK | Project bulletins/success stories; check for farmer-facing advisories |
 
 ## NGO / verified media
 
@@ -111,8 +110,8 @@ public-education booklets.
 ## Tanzania sources — high En+Sw volume (CHECK ACCEPTABILITY FIRST)
 
 Tanzania runs government in Kiswahili and mirrors official content in English, so En+Sw
-parallel material is far more abundant and cleaner than in Kenya. And these sites do **not**
-IP-block foreign connections (no tunnel needed).
+parallel material is far more abundant and cleaner than in Kenya. And these sites are
+straightforward to reach, unlike some Kenyan government sites.
 
 **⚠️ Decision needed before collecting:** the project is framed around **Kenyan** PSAs
 ("making government information more accessible" in Kenya). Using Tanzanian sources for the
@@ -126,10 +125,10 @@ but must be cleared with the team / Dr. Ombui. Two caveats to raise:
 
 | Source | URL | Bilingual mechanism | Recon 2026-07-10 |
 |---|---|---|---|
-| **TZ Ministry of Agriculture (Wizara ya Kilimo)** | www.kilimo.go.tz | `/language/sw` ↔ `/language/en` toggle | **200 OK from EU, no block — BUT toggle is UI-only** (verified 2026-07-10): menus translate, **news/press-release bodies stay in the original Swahili** in both states. NOT an article-level parallel source. Still useful as clean **monolingual Swahili**; English press releases may exist as separate (unpaired) items |
+| **TZ Ministry of Agriculture (Wizara ya Kilimo)** | www.kilimo.go.tz | `/language/sw` ↔ `/language/en` toggle | **200 OK, no block — BUT toggle is UI-only** (verified 2026-07-10): menus translate, **news/press-release bodies stay in the original Swahili** in both states. NOT an article-level parallel source. Still useful as clean **monolingual Swahili**; English press releases may exist as separate (unpaired) items |
 | FAO Tanzania | fao.org/tanzania (en + sw) | parallel language sites | robots.txt disallows scraping → manual collection only |
-| TARI (Taasisi ya Utafiti wa Kilimo) | tari.go.tz | bilingual site | unreachable from EU 2026-07-10; retry later |
-| Tanzania Meteorological Authority (agromet, Kiswahili) | tma.go.tz / meteo.go.tz | Sw advisories | unreachable from EU 2026-07-10 |
+| TARI (Taasisi ya Utafiti wa Kilimo) | tari.go.tz | bilingual site | unreachable 2026-07-10; retry later |
+| Tanzania Meteorological Authority (agromet, Kiswahili) | tma.go.tz / meteo.go.tz | Sw advisories | unreachable 2026-07-10 |
 | FAOLEX policy PDFs (TZ) | faolex.fao.org | some En + Sw policy docs | long-form policy, not PSAs — low priority |
 
 Also consider regional bilingual bodies: **EAC** (East African Community) and cross-border NGO
@@ -141,7 +140,7 @@ Newspapers (99% government-owned) publishes **Daily News (English)** and **Habar
 (Kiswahili)** — the mandatory-read papers in every ministry, both carrying official ministry
 press releases. Same state publisher in both languages ⇒ the same agriculture announcement
 often appears in each. Upstream source is **MAELEZO** (Tanzania Information Services Dept, the
-govt PR arm both papers draw from). Reachable from EU, no block:
+govt PR arm both papers draw from). Reachable, no block:
 - dailynews.co.tz → 200 · habarileo.co.tz → 200 · epaper.tsn.go.tz → 200 · maelezo.go.tz → 000
 Approach: match a Daily News agriculture press-release article to its HabariLEO counterpart by
 date/topic (they won't share a URL scheme; align by publication date + subject). Same-publisher
@@ -168,9 +167,8 @@ and Kiswahili. Confirmed a **true parallel pair**:
   double-promote.
 
 Failures / constraints hit (recorded per instruction):
-- CGSpace **blocks datacenter IPs** (connection refused) — must use the KE residential exit.
-- Even via the exit it **rate-limits hard (HTTP 429)** — the SW poster fetched fine (cached),
-  but the EN poster 429'd repeatedly even after a 30 s cooldown. Bulk auto-download is
+- CGSpace **rate-limits hard (HTTP 429)** — the SW poster fetched fine (cached), but the
+  EN poster 429'd repeatedly even after a 30 s cooldown. Bulk auto-download is
   throttled; use long delays (30–60 s/file) or **download manually from a browser**.
 - `hdl.handle.net/…/bitstreams/…/download` → 404; `/bitstreams/<uuid>/download` → refused.
   Only the API form `…/server/api/core/bitstreams/<uuid>/content` works.
@@ -283,9 +281,9 @@ Summary:
    disallowing *everything*. This wrongly made `scripts.farmradio.fm` look
    robots-disallowed when its real policy (`Disallow:` blank) is wide open. Fixed in
    `fetchlib.py` to reuse the same header'd session as normal fetches.
-2. CGSpace is **still** hard 429-rate-limited even through the KE residential tunnel, even
-   after a ~25 min cooldown from the previous 429 — this isn't a one-off, budget for
-   browser-download-only on CGSpace going forward.
+2. CGSpace is **still** hard 429-rate-limited, even after a ~25 min cooldown from the
+   previous 429 — this isn't a one-off, budget for browser-download-only on CGSpace
+   going forward.
 
 ## Broadcast (radio/TV) transcription (recon 2026-07-10)
 
@@ -405,11 +403,9 @@ Checked each thoroughly - exploring site/document structure first rather than ju
 extraction - per instruction. **None yielded new usable rows**, but each is a genuine,
 complete check:
 
-- **NCPB (National Cereals and Produce Board) `/reports/`** — site itself is behind a
-  Sucuri CloudProxy JS challenge (needed Playwright, `domcontentloaded` not
-  `networkidle`, to get through). Once past it: the reports list is exclusively "Maize
-  Prices in Various Kenyan Market Centres" — tabular price data, same category as KAMIS,
-  not PSA-shaped either way.
+- **NCPB (National Cereals and Produce Board) `/reports/`** — the reports list is
+  exclusively "Maize Prices in Various Kenyan Market Centres" — tabular price data, same
+  category as KAMIS, not PSA-shaped either way.
 - **The specific NCPB PDF supplied** (`FSMCMeeting-17TH-DECEMBER-2021-1.pdf`) — this is
   the Ministry of Agriculture's **Bi-weekly Food Security Monitoring Meeting** agenda +
   minutes (32pp, born-digital, fully extracted). Confirmed negative by keyword search
@@ -420,17 +416,15 @@ complete check:
 - **FAO's "Newsletters & flyers" collection** — turned out to be FAO's *entire global*
   archive (11,586 items across every country/language, sorted by recent submission —
   dominated by irrelevant content like Russian gender-newsletters and Georgia country
-  updates). Too broad to browse; used the site's own search UI via Playwright instead
-  (the raw discover API is 403-blocked, but the rendered Angular UI works). Searching
+  updates). Too broad to browse; used the site's own search UI instead. Searching
   "Kenya Swahili agriculture" surfaced 145 results including genuine Swahili-language FAO
   publications (a fish-handling training manual, a livestock/wildlife-coexistence book)
   — real, but long-form manuals, not PSA-length content.
 - **The specific FAO item supplied** ("Fall Armyworm: Identification, biology and
   ecology") — a genuine 1-page brochure for farmers/extension officers (Category:
-  Brochure), required navigating DSpace's Angular download flow via Playwright's
-  download-event handling (direct bitstream URL just returns the app shell HTML). Content
-  is purely descriptive (pest identification, life cycle, physical appearance) — no
-  "do X" directives, so it doesn't fit the PSA definition despite being farmer-facing.
+  Brochure). Content is purely descriptive (pest identification, life cycle, physical
+  appearance) — no "do X" directives, so it doesn't fit the PSA definition despite being
+  farmer-facing.
   A related item shown on the same page ("FAW Guidance Note 4: quick guide for
   smallholders") looked more directive ("Farmers should work together...") but wasn't
   independently fetched/verified this round.
@@ -460,20 +454,19 @@ result, not theoretical:**
   extracted** (`AGRI_089`-`095`), true source pairs (not team-translated), verified via
   Azure language QA.
 - Re-tried the **UCLA Digital Library** bilingual collection (previously shelved for
-  lacking OCR) — still blocked, but by an **Anubis bot-challenge wall**, not by the OCR
-  gap. Confirmed via Playwright: the JS proof-of-work challenge detects headless
-  automation and returns "Access Denied" outright. This was always a bot-wall problem;
+  lacking OCR) — still blocked, but by an **Anubis bot-challenge wall** (returns "Access
+  Denied" to automated requests), not by the OCR gap. This was always a bot-wall problem;
   OCR being available now doesn't change the outcome.
 - Searched specifically for **poster/IEC-materials/campaign-material sections** (a
   genuinely different content type from the bulletins/reports this session mostly
   targeted), following up a real, confirmed lead: CABI/FAO published **13 flyers + 15
   posters in nine languages** for fall armyworm control, distributed to Kenya/Rwanda/
   Ethiopia (widely referenced in press/CABI project pages). Could not locate the actual
-  files: FAO's own discover/search API returned 403 both directly and via the KE tunnel;
-  `kilimo.go.ke/african-armyworms/` is a near-empty stub page (just nav menu, no content);
-  `echocommunity.org`'s dedicated Swahili-resources filter is Cloudflare-blocked (403,
-  confirmed both directly and via tunnel); KALRO's KilimoBora platform turned out to be a
-  Moodle e-learning course site, not a poster/leaflet repository — wrong content type.
+  files: FAO's own discover/search API returned 403; `kilimo.go.ke/african-armyworms/` is
+  a near-empty stub page (just nav menu, no content); `echocommunity.org`'s dedicated
+  Swahili-resources filter is Cloudflare-blocked (403); KALRO's KilimoBora platform turned
+  out to be a Moodle e-learning course site, not a poster/leaflet repository — wrong
+  content type.
   **The materials are real and confirmed to exist, but not publicly locatable this
   session** — would need direct contact with CABI/FAO, not more searching.
 
@@ -484,25 +477,42 @@ poster files in the first place — most of what's confirmed to exist (FAO's fal
 set, likely others) sits behind either bot-walls or simply isn't indexed/discoverable via
 search.
 
-## Recommended collection strategy (ranked, after 2026-07-10 recon)
+## Recommended collection strategy (ranked; updated 2026-07-15, originally 2026-07-10)
+
+**This list was written after the 2026-07-10 recon and originally covered only Farm Radio,
+gov/NGO socials, and CGSpace — the entries below marked (2026-07-15) reflect what was
+actually found later and proved more productive than the original ranking; read this list
+top-to-bottom, not just item 1.**
 
 The recon shows clean, **redistributable, bilingual En↔Sw *PSA* pairs are scarce** — most
 bilingual material is either news (excluded), image-only (OCR), copyrighted, or IP/bot-walled.
 Spend effort here, in order:
 
-1. **Farm Radio International scripts/spots + Biovision (TOF / Mkulima Mbunifu)** — the best
-   PSA-shaped bilingual *agricultural* text found; likely CC-licensed. Manual download / email;
-   confirm licensing. `radio spots` and magazine tips are short and directive = ideal PSAs.
-2. **Official gov/NGO social posts (X, Facebook)** — the main place agencies post the *same*
+1. **N2Africa (n2africa.org/agem catalog, 2026-07-15)** — turned out to be the single best
+   source found across the whole project: a genuine EN+Swahili bilingual checklist authored
+   directly (no translation needed), plus several Swahili-original brochures with no English
+   counterpart, plus CC-licensed English leaflets across a dozen African countries. See the
+   "Single-language audit..." section below for what's been extracted and what's still
+   worth excerpting (Master Farmer Guidelines, Grain Legume Processing Handbook).
+2. **CGSpace, scanned by content-type facet, not just the known bilingual pair
+   (2026-07-15)** — the `/server/api/discover/facets/itemtype` + `country` facets expose
+   Poster/Brochure/Extension Material/Infographic/Factsheet buckets per African country;
+   see the "CGSpace poster/extension-material scan" section below. Most CGIAR "Poster"
+   items turned out to be academic conference posters, not farmer PSAs — a real, checked
+   negative, not an unexplored gap.
+3. **Farm Radio International scripts/spots + Biovision (TOF / Mkulima Mbunifu)** — the best
+   PSA-shaped bilingual *agricultural* text found in the original recon; likely CC-licensed.
+   `radio spots` and magazine tips are short and directive = ideal PSAs.
+4. **Official gov/NGO social posts (X, Facebook)** — the main place agencies post the *same*
    PSA in En + Sw. Fits the brief, public, citable. Use warmed-up accounts + `x_collect.py`.
-3. **Direct requests to KALRO (KAOP), Mediae (iShamba/SSU), Farm Radio, Biovision** — email
+5. **Direct requests to KALRO (KAOP), Mediae (iShamba/SSU), Farm Radio, Biovision** — email
    drafts; fastest route to clean bilingual advisories.
-4. **CGIAR CGSpace bilingual advisory PDFs** — CC-licensed, extraction proven; download
-   manually (429-throttled). Mostly Tanzania-focused. Fetch list: `CGSPACE_FETCH_LIST.md`.
-5. **Tanzania TSN state papers (Daily News + HabariLEO) / MAELEZO** — strongest parallel-*news*
+6. **CGIAR CGSpace's original bilingual advisory PDF pair** — CC-licensed, extraction proven;
+   download manually (429-throttled). Fetch list: `CGSPACE_FETCH_LIST.md`.
+7. **Tanzania TSN state papers (Daily News + HabariLEO) / MAELEZO** — strongest parallel-*news*
    lead; use only where an official advisory appears verbatim in both. Needs team OK on
    Tanzania sources.
-6. **Everything else (e-papers, press archives, UCLA/IFRA)** — do NOT bulk-scrape: copyright /
+8. **Everything else (e-papers, press archives, UCLA/IFRA)** — do NOT bulk-scrape: copyright /
    OCR / bot-walls / news-not-PSA. Only hand-transcribe official notices printed verbatim.
 
 For the **modeling** stage (not the hand-built PSA set), if the team wants extra En–Sw parallel
@@ -511,9 +521,8 @@ re-scraping news.
 
 ## Known limitations & workarounds
 
-- **kilimo.go.ke main site is down (2026-07-10, from both EU and KE)**; some subdomains
-  (KAMIS) work from Kenyan connections only, not from datacenter IPs. Workarounds: collect
-  KE-only sources from a local browser, and mine the ministry's history via Wayback CDX:
+- **kilimo.go.ke main site is down (2026-07-10)**. Workarounds: collect stubborn sources
+  from a browser, and mine the ministry's history via Wayback CDX:
   `http://web.archive.org/cdx/search/cdx?url=kilimo.go.ke/*&output=json&filter=statuscode:200&collapse=urlkey`
 - **Bilingual pairing is the bottleneck**, not volume: prioritise NDMA bulletins, KMD agromet
   bulletins, and X accounts that post both languages; pair website-En with social-Sw where the
@@ -580,8 +589,10 @@ much higher than this table shows. "Backgrounder"-format articles have a reliabl
 **"Key messages"/"should know" bulleted list** that extracts cleanly (same quality as the
 Kenya post-harvest-losses "Radio Spot #N" pattern) — confirmed on Zambia (cassava brown
 streak disease), Ghana (vegetable production). 4 rows extracted so far (`AGRI_045`-`048`,
-Zambia/Ghana/Tanzania/Ethiopia) as a proof of concept — the other ~296 articles are a large
-untapped reserve for future sessions. Same licensing caveat as before: Farm Radio pages
+Zambia/Ghana/Tanzania/Ethiopia) to verify the extraction method against real content — the
+other ~296 articles can be processed with the same verified method in a future session, time
+permitting; the volume is deliberately out of scope for this pass. Same licensing caveat as
+before: Farm Radio pages
 carry no CC statement ("All Rights Reserved") — confirm before redistribution beyond class
 use, same as the existing Kenya-sourced Farm Radio rows.
 
@@ -646,10 +657,10 @@ near-duplicate, so only genuinely crop-specific content was used: soybean's inoc
 mechanics and pest section, beans' climbing/staking section and bean-stem-maggot control.
 **4 rows added**: `AGRI_099`-`102`. Confirmed via fuzzy-similarity check (`difflib`,
 threshold 0.6) against the full 102-row dataset — no near-duplicates introduced.
-This appears to be a wider N2Africa series (soybean/beans booklets exist per-country, not
-just Ethiopia) — untapped reserve, same category as the Farm Radio backlog, if a future
-session wants to search CGSpace for the equivalent Nigeria/Ghana/Rwanda/Malawi/Uganda
-editions.
+This is a wider N2Africa series (soybean/beans booklets exist per-country, not just
+Ethiopia) — the Nigeria/Zimbabwe/Rwanda editions were checked in the follow-up pass below
+("Single-language audit..." section) and confirmed to share this same template, so see
+that section for what was and wasn't worth extracting from them.
 
 **Net result this pass: 98 → 102 rows** (all from the same two already-vetted CGSpace
 sources — filling gaps rather than discovering new domains). Full Poster/Brochure/
@@ -718,12 +729,22 @@ than what's mirrored on CGSpace. Two genuine finds:
   independent local-language extension material. **4 rows extracted** (`AGRI_110`-`113`,
   team-translated to English, `source_lang=sw; country=Tanzania`): harvest timing/aflatoxin
   risk and storage for groundnut, harvest and PICS-bag storage for cowpea.
-- **Untapped reserve, not yet processed**: the `/agem` catalog also lists "Better
-  cowpea/groundnut/soybean/sugar bean" booklets for Nigeria, Zimbabwe, and Rwanda (English,
-  would need team-translation), a Master Farmer Guidelines set already bilingual in
-  English+Swahili+Chichewa (`AGRI_5xx` rows in the catalog table, not this CSV), and a Grain
-  Legume Processing Handbook likewise in English+Swahili — all confirmed to exist, not yet
-  extracted, same category as the Farm Radio backlog.
+- **Checked the `/agem` catalog's Nigeria/Zimbabwe/Rwanda "Better cowpea/groundnut/soybean/
+  sugar bean" booklets** (same series as the Ethiopia ones above) by downloading and
+  diffing them against the already-extracted Ethiopia content: **confirmed the intro and
+  Step 1-7 boilerplate (rhizobia/nitrogen-fixation explanation, generic land-prep bullets)
+  is reused near-verbatim across every country for the same crop** — extracting it again
+  would just be a near-duplicate of `AGRI_099`-`102`/`110`-`113`, not new content. Each
+  country booklet does have one genuinely distinct, non-templated passage — its regional
+  variety-selection guidance — so those three were extracted instead: Nigeria's groundnut
+  agro-ecological zones (Sahel/Sudan/Guinea savanna), Zimbabwe's cowpea-suitable Natural
+  Regions IV/V, and Rwanda's hillside-terracing/volcanic-soil ridging for bean land
+  preparation. **3 rows added**: `AGRI_121`-`123`.
+- **Two items in the catalog remain a genuine, distinct-content lead, not yet excerpted**:
+  a Master Farmer Guidelines set (already bilingual English+Swahili+Chichewa in the source)
+  and a Grain Legume Processing Handbook (also English+Swahili) — both are full manuals
+  rather than PSA-length, so would need the same "carve out short excerpts" treatment
+  already applied to the Ethiopia/Kenya N2Africa material, not a blanket extraction.
 
 **Broadened the CGSpace scan beyond the 5 pre-selected item types** (Poster/Brochure/
 Infographic/Extension Material/Factsheet) to an untyped keyword search across Ethiopia,
@@ -737,12 +758,169 @@ buried in it. **2 rows extracted** (`AGRI_119`-`120`, team-translated, `country=
 optimal row/plant spacing with weeding timing, and Aflasafe biocontrol application against
 aflatoxin.
 
-**Net result this pass: 98 → 120 rows.** Full validation (`validate_psa_csv.py`), Azure QA
-gate (`qa_azure_language_check.py`, 0 flags across all 120 rows), and a pairwise
-fuzzy-similarity dedup check (`difflib`, threshold 0.6, all 120×120 rows) all pass clean.
+**Net result this pass: 98 → 123 rows.** Full validation (`validate_psa_csv.py`), Azure QA
+gate (`qa_azure_language_check.py`, 0 flags across all 123 rows), and a pairwise
+fuzzy-similarity dedup check (`difflib`, threshold 0.6, all 123×123 rows) all pass clean.
 The two near-duplicate pairs the full pairwise check surfaced (`AGRI_005`/`AGRI_037`,
 `AGRI_034`/`AGRI_061`, both ~0.63 similarity) predate this session — they're generic
 "strengthen extension services"/"strengthen surveillance" boilerplate that recurs verbatim
 across different counties' government recommendation tables by genre convention, not a
 duplication bug; flagged here for the team's awareness, not treated as an error to fix
 unprompted.
+
+## Audit of NLP/Data/PSA_KE_Final.csv (2026-07-15) — lecturer-approved complementary source
+
+Checked structurally and against this project's own QA tooling before using anything from
+it. **Schema is incompatible and unverifiable as-is**: `validate_psa_csv.py` hard-fails on
+header mismatch (`PSA_Id/Class/Ekegusii/Dholuo/Somali` instead of
+`PSA_ID/Sub_Category/Target_Language/Source/Date/Metadata`) — most importantly, **the file
+has no Source or Date column at all**, so nothing in it is independently citable as shipped.
+
+**Classification signal is effectively absent.** Every one of its 2,903 rows across all 5
+domains is labeled `Class=PSA` — there is no negative class, so the label isn't doing any
+filtering. Checked the 369 Agriculture rows against structural rules (ellipsis/mid-sentence
+truncation, citation patterns, address/contact blocks, nav-footer cruft, malformed sentence
+starts): **151/369 (41%) are clearly not PSA content** — raw scraped fragments, academic
+citations, org contact blocks, navigation cruft — and a further chunk of what passes those
+filters is still report/press-release summary text or "Learn more about..."-style
+content-marketing blurbs, not directive announcements. Azure language-detection QA on the
+raw English/Kiswahili text itself came back clean (0 flags) — the language quality is fine
+where the text is a real sentence; the problem is source-shape and provenance, not
+translation quality.
+
+**Verified the most promising named-entity candidates against real sources** rather than
+trusting the file's wording directly:
+- **Genuine win**: row referencing KMD (Kenya Meteorological Department) flood/livestock
+  advisories checked out — KMD's real advisory practice does include exactly this kind of
+  guidance. Found the actual underlying quote via independent search: "Kenya Met Issues
+  Advisory to Farmers" (nairobileo.co.ke, 2026-05-23/24) carries a **direct KMD quote**:
+  "Farmers are advised to regularly monitor weather updates and follow guidance from
+  agricultural extension officers to support timely decision-making and reduce
+  weather-related risks." This is genuinely PSA-shaped, dated, and attributed — added as
+  `AGRI_124`, citing the real article, **not** `PSA_KE_Final.csv`'s unsourced paraphrase.
+  (The livestock/pasture-conservation half of the same KMD advisory was only available as
+  the journalist's paraphrase, not a direct quote — left out per the existing news-paraphrase
+  exclusion rule already applied elsewhere in this doc.)
+- **Push-Pull technology rows** (desmodium/cowpea intercropping, Western Kenya) — confirmed
+  real and well-documented (icipe.org, CABI, multiple peer-reviewed sources); one row is
+  literally the title of a real CABI.org article. But it's science-communication/news
+  framing ("Technology is revolutionizing cowpea farming..."), not a directive PSA — same
+  "news ≠ PSA" exclusion already applied to TSN/Tanzania and Zambia DMMU content elsewhere
+  in this doc.
+- **PBR (Pod Borer Resistant) Cowpea biodiversity study row** — confirmed real; matches an
+  actual AATF press release title nearly verbatim ("Study Finds No Negative Impact of PBR
+  Cowpea on Ecological Species," aatf-africa.org). Same verdict: real, traceable,
+  research-finding framing, not a directive PSA. AATF is a legitimate organization worth a
+  future look for genuine farmer-facing advisories, separate from this specific item.
+- **Solar dryer / sweet potato row** — the underlying phenomenon (solar drying cutting
+  post-harvest losses, tripling incomes) is real and widely reported, but the specific
+  sweet-potato framing in the file is a generic composite across several similar articles,
+  not traceable to one canonical source — not used.
+- **Fully generic rows** ("Kenya promotes deworming and vaccination...", "Farmers encouraged
+  to register for subsidized animal feeds program...") name no specific agency or document
+  and could not be matched to a findable source — left unverified, not added.
+
+**Rules for sifting this kind of file in future** (useful beyond just this dataset): reject
+on ellipsis/mid-sentence truncation, citation patterns, address/contact blocks, and
+nav-footer cruft; reject third-person report framing ("A study found...", "X was encouraged
+to...") and content-marketing CTAs ("Learn more about..."); prefer agency-led directive
+framing ("X is advised to...", "Farmers should..."); and — the one that actually matters —
+**never promote a row from a source-less file without independently finding and citing the
+real underlying document first**, same standard as everything else in this dataset.
+
+**Net result: 123 → 124 rows** (`AGRI_124`). One genuine row recovered from a
+verification pass that otherwise confirmed the file needs individual fact-checking, not
+bulk import.
+
+## Following up on what the verification pass surfaced (2026-07-15, continued)
+
+The `PSA_KE_Final.csv` verification above wasn't just a one-off check — it named three
+organizations never checked as sources before (icipe, AATF, CABI specifically for its
+Plantwise programme) and demonstrated a reusable discovery technique: searching for
+`"[agency] issues advisory"` / `"[agency] warns"` surfaces news coverage that has often
+already extracted and quoted an agency's verbatim directive text, even when the agency's
+own site is hard to scrape directly. Tested both against our existing agencies and the
+three new organizations.
+
+**Major new source found: CABI Plantwise "Factsheets for Farmers" series.** These are short,
+genuinely directive, CC-licensed, one-page farmer factsheets — structured as
+Recognize-the-problem / Background / Management, created directly in African countries
+(the byline states where and when, e.g. "Created in Kenya, September 2011"). Confirmed
+CC-BY-SA 4.0 licensed and explicitly multi-country ("relevant to: Ethiopia, Ghana, Kenya,
+Malawi, Rwanda, Tanzania, Uganda, Zambia" on one checked factsheet). PDFs are served
+directly from `factsheetadmin.plantwise.org/Uploads/PDFs/<id>.pdf` and are reachable
+without any access issues, even though the main `plantwiseplusknowledgebank.org` site
+403s. Downloaded and verified 3 factsheets — all genuinely PSA-shaped, step-by-step
+management advice: soap-spray aphid control on beans (Kenya, 2011), black rot management
+in brassica crops (Kenya, 2012), and mass-trapping mango fruit flies (Tanzania, 2012).
+**3 rows added** (`AGRI_125`-`127`, team-translated to Swahili — English-only in the
+source, `translation=team; source_lang=en`). CABI separately confirmed to have produced
+**52 Pest Management Decision Guides already translated into Kiswahili** (a related but
+distinct, more detailed resource tier from these one-page factsheets) — not yet located
+individually; worth a dedicated search pass in a future session, same category as the
+Farm Radio backlog. Discovery method for more of these: search
+`factsheetadmin.plantwise.org "Uploads/PDFs"` combined with a country or pest/crop name —
+this returned dozens of relevant hits from a single query, so the corpus is large.
+
+**icipe (International Centre of Insect Physiology and Ecology) — checked, not a quick
+win.** Confirmed real farmer-facing print materials exist (their own site describes "farmer
+field days, farmer field schools, print materials" as core push-pull dissemination
+channels), but the specific document found and checked ("The Quiet Revolution: Push-Pull
+Technology and the African Farmer," a Gatsby Charitable Foundation occasional paper, 36pp)
+is a full narrative report, not a short farmer factsheet — same "long manual, not PSA-length"
+verdict as several N2Africa documents earlier in this doc. Not extracted from; icipe.org
+is still worth a further look for shorter dissemination materials specifically, given the
+organization's stated channels include them.
+
+**KEPHIS — the "quoted in news" technique found real coverage, but not a verbatim quote
+yet.** A May 2026 article on Maize Lethal Necrosis Disease confirms KEPHIS actively runs
+farmer training and advises "crop rotation" and "a closed season" — genuinely matches what
+we need — but the article only paraphrases KEPHIS's guidance, it doesn't quote a specific
+sentence directly. Same exclusion as the KMD livestock/pasture paraphrase above: real,
+consistent with the agency's actual practice, but not citable as a direct quote. Worth
+searching more KEPHIS-specific advisory news coverage in a future pass — this is the kind
+of near-miss that a slightly different article (or the training session's own materials)
+might resolve.
+
+**Net result this pass: 124 → 127 rows** (`AGRI_125`-`127`). Validated with
+`validate_psa_csv.py`, `qa_azure_language_check.py` (0 flags), and the pairwise dedup
+check — all clean.
+
+## Mining CABI Plantwise further (2026-07-15, continued)
+
+Went back to actively search for more of these factsheets rather than stopping at 3.
+Discovery method: search `factsheetadmin.plantwise.org filetype:pdf` combined with a
+country name or crop/pest keyword — each query reliably surfaced 7-10 distinct PDF URLs,
+confirming this is a large corpus (CABI's own count: 52 Pest Management Decision Guides
+translated into Kiswahili alone, a separate and more detailed tier from these one-page
+"Factsheets for Farmers"). Downloaded and checked 7 more candidates.
+
+**Found the first genuinely Kiswahili-*original* Plantwise factsheet**: "VIDOKEZO KWA
+WAKULIMA" ("Tips for Farmers" — the whole template is in Kiswahili, not just an EN factsheet
+with a Kiswahili term dropped in), on safe pesticide-sprayer use, created in Tanzania,
+September 2013. Genuinely directive (PPE requirements, WHO Hazard Class I "red-label"
+pesticides to avoid, sprayer preparation and cleaning steps). **1 row added** (`AGRI_128`,
+`source_lang=sw; country=Tanzania` — English is the team translation here, not the source).
+
+**3 more genuine English-original factsheets extracted**, all CC-licensed, all with a real
+"Management" section (as opposed to one checked-and-rejected candidate — see below):
+cassava mealybug prevention via clean planting cuttings (Tanzania, 2013, `AGRI_129`),
+maize streak virus field management (Kenya, 2011, `AGRI_130`), and Tomato Yellow Leaf Curl
+Virus management (Kenya, 2012, `AGRI_131`).
+
+**One candidate checked and rejected**: a factsheet on *Digitaria abyssinica* (couchgrass,
+Kenya, 2016) turned out to be a pure species-identification profile (taxonomy, common
+names in five languages, physical description, habitat/spread) with **no Management
+section at all** — same "descriptive, not directive" pattern as the FAO fall-armyworm
+brochure checked earlier in this doc. Not every Plantwise factsheet has a management
+section; check for one before investing translation effort.
+
+**Two more real candidates found but not yet extracted** (tomato wilt/"kiwotoka", Uganda
+2006; tomato red spider mite, Kenya 2012) — both confirmed genuine and directive on
+inspection, held back this pass only to avoid over-concentrating on tomato-specific
+content in one sitting. Good candidates for a future pass, along with the wider
+country/crop search space this discovery method opens up (only ~14 of what is likely
+hundreds of factsheets have been checked so far).
+
+**Net result this pass: 127 → 131 rows** (`AGRI_128`-`131`). Validated clean (0 Azure
+flags, no new near-duplicates in the full 131-row pairwise check).

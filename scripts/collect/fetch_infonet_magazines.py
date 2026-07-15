@@ -30,9 +30,10 @@ import re
 import sys
 
 sys.path.insert(0, __file__.rsplit("/", 1)[0])
-from fetchlib import fetch_url  # noqa: E402
+from fetchlib import fetch_url, confirm_bulk_download  # noqa: E402
 
 BASE = "https://infonet-biovision.org"
+EST_MB_PER_ISSUE = 1.5  # rough average for a TOF/Mkulima Mbunifu back issue PDF
 INDEX_URLS = {
     "tof": f"{BASE}/tof_magazine_issue",
     "mkm": f"{BASE}/mkm_magazine_issue",
@@ -65,6 +66,8 @@ def main(argv):
     if argv[:1] == ["--list"]:
         for slug in list_slugs(argv[1]):
             print(slug)
+        return
+    if not confirm_bulk_download(len(argv), EST_MB_PER_ISSUE, "Infonet-Biovision (TOF/Mkulima Mbunifu)"):
         return
     for slug in argv:
         outdir = "tof_magazine_en" if slug.startswith("tof-issue-no-") else "mkulima_mbunifu_sw"

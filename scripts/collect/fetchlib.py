@@ -14,6 +14,10 @@ so all requests get the same behaviour:
     the source
   - failures raise immediately with a descriptive message (source, status,
     suspected cause) — never return empty results silently
+
+Any script that downloads more than a handful of files (PDFs, images) should call
+confirm_bulk_download() once before its loop, so a re-run always shows an estimated
+download size and asks for confirmation before writing to local disk.
 """
 
 import hashlib
@@ -53,9 +57,9 @@ def _get_session() -> requests.Session:
                       status_forcelist=[429, 500, 502, 503, 504])
         _session.mount("https://", HTTPAdapter(max_retries=retry))
         _session.mount("http://", HTTPAdapter(max_retries=retry))
-        # Optional exit through a Kenyan device for sources that block
-        # datacenter IPs — see scripts/collect/README.md. socks5h:// URLs
-        # need `pip install "requests[socks]"`.
+        # Optional proxy for sources that need a different connection —
+        # see scripts/collect/README.md. socks5h:// URLs need
+        # `pip install "requests[socks]"`.
         proxy = os.environ.get("FETCH_PROXY")
         if proxy:
             _session.proxies = {"http": proxy, "https": proxy}
@@ -105,6 +109,28 @@ def _rate_limit(url: str) -> None:
     if wait > 0:
         time.sleep(wait)
     _last_hit[domain] = time.time()
+
+
+def confirm_bulk_download(item_count: int, est_mb_per_item: float, source_name: str) -> bool:
+    """Print an estimated download size and require explicit confirmation before a
+    bulk fetch of PDFs/images/pages. Every fetch_<source>.py that downloads more than
+    a handful of files should call this once before its download loop.
+
+    Set the environment variable PSA_AUTO_CONFIRM=1 to skip the interactive prompt
+    (e.g. for a scripted re-run where you've already reviewed the estimate once).
+    """
+    est_total_mb = item_count * est_mb_per_item
+    print(f"\nAbout to download {item_count} file(s) from {source_name} — "
+          f"roughly {est_total_mb:.0f} MB total (~{est_mb_per_item:.1f} MB/file). "
+          f"This will be saved to this machine's local disk.")
+    if os.environ.get("PSA_AUTO_CONFIRM") == "1":
+        print("PSA_AUTO_CONFIRM=1 set — continuing without prompt.")
+        return True
+    reply = input("Continue with the download? [y/N]: ").strip().lower()
+    if reply != "y":
+        print("Aborted — no files downloaded.")
+        return False
+    return True
 
 
 def fetch_url(url: str, use_cache: bool = True, verify_tls: bool = True) -> bytes:
