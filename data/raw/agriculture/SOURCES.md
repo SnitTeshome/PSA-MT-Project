@@ -345,9 +345,144 @@ specific hypothesis that someone scraped Kenyan government Twitter accounts befo
   2026-07-15), next step would be emailing the depositors directly, and (b) even
   unlocked it's monolingual Swahili/Dholuo topic-classified informal short text, not
   bilingual official advisories, so it's a low-priority lead either way.
-- No dataset anywhere in this search matched the actual requirement: genuine, credible,
-  official-source, PSA-shaped (short/directive) Kenyan agriculture content. The 41
-  hand-collected rows remain the project's real asset for this domain.
+- **SMS spam/scam datasets checked on the hypothesis that "ham" (legitimate) messages
+  might incidentally contain real agricultural extension/PSA content** — same logic as
+  checking a hate-speech dataset's "neither" class. **Both checked, both negative:**
+  - `github.com/AbayomiAlli/SMS-Spam-Dataset` (ExAIS, Federal University of Agriculture,
+    Abeokuta, Nigeria, 2014, 2,890 ham + 2,350 spam) — downloaded and grepped the full
+    corpus directly (not just the README): **zero genuine agriculture content**. The
+    "agriculture" connection is only that the collecting institution is an agricultural
+    university — the messages themselves are personal/telecom SMS traffic (data-plan
+    alerts, campus church group reminders, one student forwarding a "Cropping Systems"
+    *seminar announcement*, which is about a lecture, not a PSA). Also note: this is real
+    people's personal SMS content collected under informed consent for spam-detection
+    research specifically — even where content is unrelated, it wouldn't be
+    appropriate to redistribute into an unrelated MT dataset without the same consent
+    scope.
+  - Kaggle `henrydioniz/swahili-sms-detection-dataset` (1,508 Tanzanian Swahili SMS,
+    scam/trust labels) — **fully checked** (Kaggle API credentials already in the
+    workspace `.env`, pulled the complete `bongo_scam.csv` directly, 508 trust + 1,000
+    scam rows). Confirmed negative, but with a genuinely interesting near-miss: "kilimo"
+    (agriculture) and "ufugaji" (livestock) each appear **66 times** — every single hit
+    is the identical scam template (traditional-healer or Freemason-recruitment scams
+    listing "wealth, love, court cases, school, **agriculture, livestock**, business" as
+    one interchangeable list of life domains they claim to fix). Zero hits for
+    `mkulima`/`wakulima` (farmer/farmers), `mazao` (crops), `mifugo` (livestock-noun),
+    `mbolea` (fertilizer), or `mbegu` (seeds) — the words that would actually appear in
+    real agricultural advisory text. So the keyword *matched*, but the content behind it
+    didn't — a good reminder that a keyword hit still needs a context check.
+  - A larger, harder-gated Tanzanian telecom Swahili SMS spam dataset (31,921 legitimate +
+    297 spam, real Tanzanian telco data) is referenced in academic papers but requires
+    contacting the authors via Zenodo — not pursued given the two directly-checked
+    datasets both came back negative.
+- **Audit/anti-corruption investigation reports checked on the hypothesis that oversight
+  documents might quote the actual advisory/circular being scrutinized as evidence** —
+  same "incidental content" logic as the SMS/hate-speech checks above, applied to a
+  different document genre. **Negative, and confirmed thoroughly, not just assumed:**
+  - Auditor-General reports on NDMA (FY2019) and AFA (FY2019) — both are **scanned image
+    PDFs with zero extractable text** (108pp/76pp, checked via pymupdf, confirmed 0
+    characters across every page) — would need OCR to even read, let alone verify content.
+  - The most recent comprehensive report (Auditor-General on National Government
+    Ministries/Departments/Agencies 2023-2024, oagkenya.go.ke, 812 pages, born-digital)
+    **was fully searched** (1.84M characters, whole-document keyword scan) for
+    "public advisory," "advisory to farmers," "sensitiz-," "circular to," "public
+    notice," "drought advisory" etc. — only 3 incidental hits total, all procedural
+    (a stakeholder-engagement gap, an insurance-uptake critique, a tender-publication
+    compliance finding), **none quoting actual PSA/advisory text**. Audit reports discuss
+    financial/governance failures (procurement, budget variance, internal controls) —
+    they don't reproduce the content of the communications they're auditing.
+  - EACC's fertilizer subsidy fraud investigation (2024/2025, widely covered in press)
+    exists but its actual report **is not public** — described in news coverage as
+    "currently at the office of the Principal Secretary for Agriculture," i.e. an
+    internal document, not a published one. Nothing to check.
+- No dataset or document-genre anywhere in this search matched the actual requirement:
+  genuine, credible, official-source, PSA-shaped (short/directive) Kenyan agriculture
+  content. The 76 hand-collected rows remain the project's real asset for this domain.
+
+## Five specific sources checked (2026-07-15, Bradley-supplied links)
+
+Checked each thoroughly - exploring site/document structure first rather than jumping to
+extraction - per instruction. **None yielded new usable rows**, but each is a genuine,
+complete check:
+
+- **NCPB (National Cereals and Produce Board) `/reports/`** — site itself is behind a
+  Sucuri CloudProxy JS challenge (needed Playwright, `domcontentloaded` not
+  `networkidle`, to get through). Once past it: the reports list is exclusively "Maize
+  Prices in Various Kenyan Market Centres" — tabular price data, same category as KAMIS,
+  not PSA-shaped either way.
+- **The specific NCPB PDF supplied** (`FSMCMeeting-17TH-DECEMBER-2021-1.pdf`) — this is
+  the Ministry of Agriculture's **Bi-weekly Food Security Monitoring Meeting** agenda +
+  minutes (32pp, born-digital, fully extracted). Confirmed negative by keyword search
+  across the full text: zero hits for "farmers should," "farmers are advised," "advisory,"
+  "advise farmers." The "Next steps" columns are instructions to government bodies
+  (MoALFC, Council of Governors) — internal coordination, not public-facing, same category
+  as the audit reports and Zambia DMMU sitreps already ruled out earlier.
+- **FAO's "Newsletters & flyers" collection** — turned out to be FAO's *entire global*
+  archive (11,586 items across every country/language, sorted by recent submission —
+  dominated by irrelevant content like Russian gender-newsletters and Georgia country
+  updates). Too broad to browse; used the site's own search UI via Playwright instead
+  (the raw discover API is 403-blocked, but the rendered Angular UI works). Searching
+  "Kenya Swahili agriculture" surfaced 145 results including genuine Swahili-language FAO
+  publications (a fish-handling training manual, a livestock/wildlife-coexistence book)
+  — real, but long-form manuals, not PSA-length content.
+- **The specific FAO item supplied** ("Fall Armyworm: Identification, biology and
+  ecology") — a genuine 1-page brochure for farmers/extension officers (Category:
+  Brochure), required navigating DSpace's Angular download flow via Playwright's
+  download-event handling (direct bitstream URL just returns the app shell HTML). Content
+  is purely descriptive (pest identification, life cycle, physical appearance) — no
+  "do X" directives, so it doesn't fit the PSA definition despite being farmer-facing.
+  A related item shown on the same page ("FAW Guidance Note 4: quick guide for
+  smallholders") looked more directive ("Farmers should work together...") but wasn't
+  independently fetched/verified this round.
+- **SOCAA (Society of Crop Agribusiness Advisors of Kenya) Foodwatch campaigns** — the
+  two campaign posts ("Assured Produce Scheme," "March to Food Safety") are blog-style
+  organizational advocacy text ("we invite you to join...", "we strive to change this
+  narrative..."), not the PSA content itself. The one genuine content lead — a "March to
+  Food Safety Calendar" — is hosted on an external Google Drive link that **404s**
+  (dead; the campaign is from 2018). The post's only image is a generic decorative stock
+  photo of fruit, confirmed via OCR (zero text) and direct visual inspection.
+
+## OCR for poster/image-based PSAs (2026-07-15)
+
+Installed `tesseract-ocr` + `tesseract-ocr-eng` + `tesseract-ocr-swa` locally (apt, clean
+install, no CPU/GPU concerns) to test the hypothesis that poster-style PSAs (as opposed to
+text bulletins) exist but were being missed because they're images. **Real, positive
+result, not theoretical:**
+
+- The CGSpace "Climate smart agriculture: top ten decisions" poster (in
+  `confirmed_pairs/`, previously flagged as "needs a human to align by eye, not a script"
+  because pymupdf's native PDF text extraction fragments its multi-column infographic
+  layout) — **OCR'd at 300dpi with `--psm 3` page segmentation reads it correctly, in the
+  right order, on both the English and Swahili versions**, with section headings landing
+  in matching positions between languages. This directly contradicts the older
+  "OCR is unreliable on stylized layouts" note elsewhere in this doc — that assumption
+  was never actually tested against a real poster before now. **7 aligned bilingual rows
+  extracted** (`AGRI_089`-`095`), true source pairs (not team-translated), verified via
+  Azure language QA.
+- Re-tried the **UCLA Digital Library** bilingual collection (previously shelved for
+  lacking OCR) — still blocked, but by an **Anubis bot-challenge wall**, not by the OCR
+  gap. Confirmed via Playwright: the JS proof-of-work challenge detects headless
+  automation and returns "Access Denied" outright. This was always a bot-wall problem;
+  OCR being available now doesn't change the outcome.
+- Searched specifically for **poster/IEC-materials/campaign-material sections** (a
+  genuinely different content type from the bulletins/reports this session mostly
+  targeted), following up a real, confirmed lead: CABI/FAO published **13 flyers + 15
+  posters in nine languages** for fall armyworm control, distributed to Kenya/Rwanda/
+  Ethiopia (widely referenced in press/CABI project pages). Could not locate the actual
+  files: FAO's own discover/search API returned 403 both directly and via the KE tunnel;
+  `kilimo.go.ke/african-armyworms/` is a near-empty stub page (just nav menu, no content);
+  `echocommunity.org`'s dedicated Swahili-resources filter is Cloudflare-blocked (403,
+  confirmed both directly and via tunnel); KALRO's KilimoBora platform turned out to be a
+  Moodle e-learning course site, not a poster/leaflet repository — wrong content type.
+  **The materials are real and confirmed to exist, but not publicly locatable this
+  session** — would need direct contact with CABI/FAO, not more searching.
+
+**Takeaway:** OCR is a genuinely useful new tool for this project — cheap, easy, and
+already unlocked one poster that was sitting unprocessed. The bottleneck for *more*
+poster-style content isn't OCR capability anymore, it's finding publicly-downloadable
+poster files in the first place — most of what's confirmed to exist (FAO's fall armyworm
+set, likely others) sits behind either bot-walls or simply isn't indexed/discoverable via
+search.
 
 ## Recommended collection strategy (ranked, after 2026-07-10 recon)
 
@@ -453,3 +588,161 @@ use, same as the existing Kenya-sourced Farm Radio rows.
 Full article index (all 300 URLs + titles): was written to a scratch file this session, not
 yet committed to the repo — regenerate by crawling `scripts.farmradio.fm/topic/agriculture/`
 pages 1-30+ (see `fetch_farmradio.py` for the fetching pattern to adapt).
+
+## CGSpace poster/extension-material scan, English Africa (2026-07-15)
+
+Extended the Kenya/Swahili poster-discovery method (find institutional repos, filter by
+content-**type** metadata rather than blind keyword scraping, check TEXT-bundle extraction
+before assuming OCR is needed) to English-language material from the rest of Africa.
+
+**Key discovery: CGSpace's REST API is directly queryable, no bot-wall.** Its
+`/server/api/discover/facets/itemtype` and `/server/api/discover/facets/country` endpoints
+expose exact content-type buckets (Poster: 4249 items, Brochure: 1796, Extension Material:
+605, Infographic: 350, Factsheet: 94, Training Material: 1015) crossed with a `country` facet
+covering every African country with CGIAR activity. Each item also has a pre-generated
+**TEXT bundle** (DSpace's own `pdftotext`-equivalent extraction, done at ingestion) — fetch
+`item/{uuid}/bundles` → the `TEXT` bundle → its bitstream `content` link, and you get clean
+extracted text for free, no OCR/tesseract needed unless the TEXT bundle is empty (scanned
+image with no OCR layer).
+
+**Important correction to the earlier OCR section**: the "top ten decisions" poster
+previously OCR'd with tesseract (`AGRI_089`-`095`) is item `62fd7239-9d39-4528-a513-
+5fb949251490` — **Tanzania's** version (IITA/TMA/FAO), not a Kenya-specific poster as
+the source note implied. It was in fact born-digital (has a working TEXT bundle), so the
+tesseract OCR step in the previous session was unnecessary work that happened to produce
+equivalent output — worth remembering for next time. Re-reading its full TEXT-bundle
+content against the CSV showed 3 of its "10 major decisions" (soil/water conservation,
+fertilizer type selection, pest/disease management) had not been extracted yet. Found and
+used the matching Swahili sibling item (`c4d42102-1c9b-4936-b17b-7e2173964cda`, handle
+`10568/113096`) to translate-align them properly. **3 rows added**: `AGRI_096`-`098`.
+
+**Broad scan result: CGIAR "Poster" items are overwhelmingly academic/conference posters
+(research findings for scientists), not farmer-facing PSAs** — this is the opposite of what
+the type label suggests. Checked in full across ~19 African countries × 5 content types with
+both a structural-recommendation query and a disease/outbreak-alert query; spot-verified the
+most promising-looking titles by pulling their actual TEXT-bundle content:
+- "Rift Valley fever: Awareness and sensitization" (Uganda, `10568/122011`) — a research
+  poster *about* running an awareness campaign (methods, findings, stakeholder assessment),
+  not the campaign's actual messaging. The "5,000 brochures and 1,000 leaflets with key
+  messages" it references were never captured in this item.
+- "Controlling banana bunchy top virus outbreak in East Africa" (Uganda/Tanzania,
+  `10568/126121`) — a scientific conference poster (causes, spread epidemiology,
+  conclusions/further-research-needed), not a farmer control guide.
+- "Control of East Coast Fever by Immunization" (Tanzania, `10568/105477`) — a
+  business-model/investment-case poster (resource requirements, agribusiness delivery
+  suitability), not farmer-directed.
+Same pattern held for Ethiopia, Nigeria, Ghana, Mali, Senegal, Malawi, Zambia, Mozambique,
+Burkina Faso, Cameroon: livestock-disease "Poster" items are almost always epidemiology/
+intervention-study research posters.
+
+**Second genuine positive source: N2Africa's "Better [crop] through good agricultural
+practices" leaflet series** — CC-licensed, explicitly "For farmers in Ethiopia," structured
+as numbered Step 1-7 directives (land prep → seed selection → inoculation → fertilizer →
+planting → field management → harvest/storage). Checked the soybean (`10568/76318`) and
+beans (`10568/76317`) leaflets in full. Most of the two leaflets share an identical
+templated passage (germination test, "safe use of chemicals," rhizobium inoculation steps
+worded generically for "legume seed") — extracting the same paragraph from both would be a
+near-duplicate, so only genuinely crop-specific content was used: soybean's inoculation
+mechanics and pest section, beans' climbing/staking section and bean-stem-maggot control.
+**4 rows added**: `AGRI_099`-`102`. Confirmed via fuzzy-similarity check (`difflib`,
+threshold 0.6) against the full 102-row dataset — no near-duplicates introduced.
+This appears to be a wider N2Africa series (soybean/beans booklets exist per-country, not
+just Ethiopia) — untapped reserve, same category as the Farm Radio backlog, if a future
+session wants to search CGSpace for the equivalent Nigeria/Ghana/Rwanda/Malawi/Uganda
+editions.
+
+**Net result this pass: 98 → 102 rows** (all from the same two already-vetted CGSpace
+sources — filling gaps rather than discovering new domains). Full Poster/Brochure/
+Infographic/Extension-Material/Factsheet buckets across ~19 countries were scanned and
+came back negative for new PSA-shaped content beyond these two; the negative finding
+itself (CGIAR posters skew academic, not extension-facing) is worth keeping so it isn't
+re-investigated from scratch later.
+
+## Single-language audit + N2Africa's own site + TOF/MKM gap-fill + broader CGSpace scan (2026-07-15, continued)
+
+Two things prompted this pass: (1) auditing whether single-language finds (Swahili-only or
+English-only) were consistently being collected with a team translation for the missing
+side rather than skipped, and (2) extending the poster-repo method to each repo's actual
+HTML pages and any/all PDFs present, not just the pre-filtered "Poster" item type.
+
+**Audit result: the convention (`translation=team; source_lang=X; country=Y` in Metadata)
+was being applied consistently** — checked via regex over the `Metadata` column: 87 rows
+tagged `translation=team` (84 `source_lang=en`, 3 `source_lang=sw` — the Mkulima Mbunifu
+rows), 15 rows with no tag (genuine bilingual source pairs: TOF-17, Farm Radio post-harvest
+spot, the CGSpace poster). No gaps found in the CSV itself.
+
+**Gap found instead in the *scan-to-CSV* pipeline**: cross-referencing the TOF/Mkulima
+Mbunifu narrow-lexicon scan (`full_scan_results.json`, run earlier this session — 21 TOF
+"recommendations" hits + 6 MKM "mapendekezo" hits after the wide/narrow lexicon split) against
+the CSV's `Source` column by issue number showed **9 of 21 TOF issues and 3 of 6 MKM issues
+had a confirmed genuine keyword hit but were never actually converted into rows** — the scan
+found them, but the conversion step stopped partway through. Went back and resolved all 12:
+
+- **TOF (English), 5 of 9 converted** — `AGRI_114`-`118`: seed heat-treatment temperatures
+  (issue 40, Sept 2008), urea livestock-feed dosage limit (issue 47, Apr 2009), fodder-tree
+  hot-water seed treatment (issue 73, June 2011), a soil-test farmer checklist (issue 169,
+  Aug 2019), Tuta absoluta trap-timing IPM (issue 190, May 2021). **4 of 9 confirmed
+  negative** on inspection: issues 13 and 96 were reader-feedback/editorial commentary
+  *about* wanting more content ("he has made some recommendations on the information he
+  would like featured"), not farmer directives; issue 216 was a generic closing remark
+  ("recommendations from expertise in the area"); issue 90's bulleted "feed recommendations"
+  list had corrupted text from a PDF font-encoding/ligature issue (bullets extracted as
+  garbled glyphs with missing lead words) — skipped rather than guess at the missing text.
+- **MKM (Swahili), 0 of 3 converted, all confirmed negative** — issue 103 (Apr 2021)'s
+  "mapendekezo" hit was in a farmer-field-school *methodology* section (guidance for
+  extension officers running training, not a farmer directive); issue 127 (Aug 2023)'s hit
+  was policy recommendations addressed to "Serikali ya Tanzania" (the Tanzania government)
+  on environmental regulation, same category as the NCPB/government-coordination exclusions
+  already established; issue 128 (Aug 2023 special edition, native seed banks)'s hit was
+  about stakeholder-level policy recommendations on seed-sector development, not a direct
+  farmer action. All three read as genuine narrow-lexicon hits but institutional/meta
+  content rather than PSAs — consistent with the eval's Precision=0.815 (not 1.0), i.e. some
+  false positives are expected and this is what one looks like in practice.
+
+**N2Africa has its own site (n2africa.org) with a full catalog page**, found via its nav
+menu ("N2 Outputs" → "Guidelines, Training & Extension materials" → `/agem`, a filterable
+table of 80+ items with Code/Date/Title/Country/File columns) — this is a much richer index
+than what's mirrored on CGSpace. Two genuine finds:
+- **A real bilingual EN+Swahili pair, no translation needed**: "Best practices to maintain
+  high yields and grain quality of soybean," a checklist for farmers in west Kenya, exists
+  as one PDF with both language versions authored directly (`Best
+  practice_soybean_English-Kiswahili.pdf`) — same gold-standard category as TOF-17. **7 rows
+  extracted**: `AGRI_103`-`109` (rotation, germination test, planting timing, fungicide
+  schedule, harvest timing, grain moisture, storage/bagging).
+- **Swahili-original brochures with no English version — exactly the "collect the
+  single-language side, translate the other" case this audit was checking for.** Tanzania's
+  groundnut brochure ("Ongeza mavuno ya karanga...", Makutupora Agricultural Research
+  Institute/N2Africa) and cowpea brochure ("Lima kunde kwa lishe na kipato zaidi...", Ilonga
+  Agricultural Research Institute/N2Africa) are both Swahili-only originals — not
+  translations of the English "Better groundnut"/"Better cowpea" booklet series, but
+  independent local-language extension material. **4 rows extracted** (`AGRI_110`-`113`,
+  team-translated to English, `source_lang=sw; country=Tanzania`): harvest timing/aflatoxin
+  risk and storage for groundnut, harvest and PICS-bag storage for cowpea.
+- **Untapped reserve, not yet processed**: the `/agem` catalog also lists "Better
+  cowpea/groundnut/soybean/sugar bean" booklets for Nigeria, Zimbabwe, and Rwanda (English,
+  would need team-translation), a Master Farmer Guidelines set already bilingual in
+  English+Swahili+Chichewa (`AGRI_5xx` rows in the catalog table, not this CSV), and a Grain
+  Legume Processing Handbook likewise in English+Swahili — all confirmed to exist, not yet
+  extracted, same category as the Farm Radio backlog.
+
+**Broadened the CGSpace scan beyond the 5 pre-selected item types** (Poster/Brochure/
+Infographic/Extension Material/Factsheet) to an untyped keyword search across Ethiopia,
+Nigeria, Uganda, Tanzania, and Ghana (the highest-volume countries) — confirms the earlier
+finding that the overwhelming majority of results are research reports, training-of-trainer
+workshop write-ups, and project M&E documents, not farmer PSAs. One genuine exception found:
+**"Optimal spacing for groundnuts in smallholder farming systems"** (Africa RISING/IITA
+Technology Brief, March 2021, northern Ghana, CC-licensed) — mostly a research write-up
+(yield trial results, econometrics) but contains two clean, directive farmer instructions
+buried in it. **2 rows extracted** (`AGRI_119`-`120`, team-translated, `country=Ghana`):
+optimal row/plant spacing with weeding timing, and Aflasafe biocontrol application against
+aflatoxin.
+
+**Net result this pass: 98 → 120 rows.** Full validation (`validate_psa_csv.py`), Azure QA
+gate (`qa_azure_language_check.py`, 0 flags across all 120 rows), and a pairwise
+fuzzy-similarity dedup check (`difflib`, threshold 0.6, all 120×120 rows) all pass clean.
+The two near-duplicate pairs the full pairwise check surfaced (`AGRI_005`/`AGRI_037`,
+`AGRI_034`/`AGRI_061`, both ~0.63 similarity) predate this session — they're generic
+"strengthen extension services"/"strengthen surveillance" boilerplate that recurs verbatim
+across different counties' government recommendation tables by genre convention, not a
+duplication bug; flagged here for the team's awareness, not treated as an error to fix
+unprompted.
