@@ -47,20 +47,22 @@ native-speaker check before final submission.
 All bulk-download scripts print an estimated file count/size and ask for confirmation before
 writing anything to disk (skip with `PSA_AUTO_CONFIRM=1`).
 
-## Pipeline: how the 131 rows got here
+## Pipeline: how the 170 rows got here
 
 ```mermaid
 flowchart TD
     subgraph solid["Sources that produced rows (solid = used)"]
         direction TB
         S1["Kenya gov bulletins<br/>(NDMA, KMD via news, KEPHIS-adjacent)"]
-        S2["Africa-wide gov agencies<br/>(Rwanda, Ghana, Gambia, Liberia,<br/>Namibia, Lesotho, Zimbabwe)"]
-        S3["Farm Radio International<br/>(EN+SW script pairs)"]
+        S2["Africa-wide gov agencies<br/>(Rwanda, Ghana, Gambia, Liberia, Namibia,<br/>Lesotho, Zimbabwe, Nigeria, Uganda, Zambia)"]
+        S3["Farm Radio International<br/>(EN+SW script pairs +<br/>English-hub, team-translated)"]
         S4["Biovision: TOF / Mkulima Mbunifu<br/>(narrow-lexicon scan)"]
         S5["CGSpace / CCAFS-IITA poster<br/>(OCR + EN+SW alignment)"]
         S6["N2Africa<br/>(EN+SW pair + SW-original brochures)"]
         S7["CABI Plantwise factsheets<br/>(EN + 1 SW-original)"]
         S8["PSA_KE_Final.csv<br/>(individually fact-checked)"]
+        S9["FAO technical guidance<br/>(Fall Armyworm note)"]
+        S10["Malawi gov news<br/>(Chichewa-original)"]
     end
 
     S1 --> X[Extraction]
@@ -71,13 +73,17 @@ flowchart TD
     S6 --> X
     S7 --> X
     S8 --> X
+    S9 --> X
+    S10 --> X
 
-    X --> T{"Source already<br/>bilingual?"}
-    T -->|yes| V
-    T -->|no, English only| TR["Team-translate to Kiswahili<br/>(tagged translation=team in Metadata)"]
-    T -->|no, Swahili only| TR2["Team-translate to English<br/>(tagged translation=team, source_lang=sw)"]
+    X --> T{"Source language(s)?"}
+    T -->|already bilingual EN+SW| V
+    T -->|English only| TR["Team-translate to Kiswahili<br/>(tagged translation=team in Metadata)"]
+    T -->|Swahili only| TR2["Team-translate to English<br/>(tagged translation=team, source_lang=sw)"]
+    T -->|"Chichewa only<br/>(Malawi, new 2026-07-15)"| TR3["Team-translate to English AND Kiswahili<br/>(tagged translation=team, source_lang=ny —<br/>flagged for native-speaker check)"]
     TR --> V
     TR2 --> V
+    TR3 --> V
 
     V["validate_psa_csv.py"] --> Q["qa_azure_language_check.py"]
     Q --> D["Pairwise dedup check (difflib)"]
@@ -86,10 +92,12 @@ flowchart TD
     U1["Farm Radio: ~293 more English-hub<br/>articles (index committed, unprocessed)"]
     U3["CABI: 52 Kiswahili PMDG guides<br/>(Cloudflare-blocked, needs a browser)"]
     U4["KEPHIS/NDMA/KALRO: verbatim<br/>news quotes (technique proven once)"]
+    U5["CABI: ~22 of likely hundreds<br/>of factsheets checked so far"]
 
     U1 -.->|untapped, real lead| X
     U3 -.->|untapped, real lead| X
     U4 -.->|untapped, real lead| X
+    U5 -.->|untapped, real lead| X
 ```
 
 ## How it was actually done (brief)
