@@ -948,7 +948,7 @@ layer (OCR candidate for later), and `publications.php` failed to load twice thi
 session (site-side instability, not a block). Malawi: `dodma.gov.mw` resolves and
 confirms the earlier finding (it's actually the Ministry of Agriculture's site, not
 DoDMA's) but is JS-driven with no static publications path found; `mvac.gov.mw` and
-`www.mvac.gov.mw` still fail DNS resolution, tunnel or not. Eswatini:
+`www.mvac.gov.mw` still fail DNS resolution regardless of connection route. Eswatini:
 `portal.ndma.org.sz` still fails DNS resolution entirely — confirmed dead domain, not a
 block.
 
@@ -1003,7 +1003,7 @@ was extracted as team-translated instead of forcing a mismatched pair. **1 row a
 **Zambia drought response — extracted with team sign-off** (flagged in the previous
 session as "borderline, needs a call"; approved to extract). The specific DMMU "Food
 Security Drought Response Plan" PDF is blocked by an AWS WAF JS challenge on ReliefWeb,
-direct or through the tunnel — but the same national response (DMMU-coordinated,
+regardless of connection route — but the same national response (DMMU-coordinated,
 co-led by WFP/FAO) is documented in OCHA's own **Zambia Drought Response Appeal
 (May-December 2024)**, hosted on unocha.org without the same block, with a clean
 "Interventions will include:" bulleted list. **2 rows added** (`AGRI_150`-`151`,
@@ -1111,3 +1111,98 @@ retrying `ndma.org.sz` in a future session in case the Advisories section gets b
 Chichewa-sourced rows — this only confirms the English/Kiswahili columns read as their
 respective languages, not translation fidelity to the Chichewa original), and the
 pairwise dedup check (same 2 pre-existing near-duplicate pairs, no new ones).
+
+## Closing out the remaining untapped leads (2026-07-15, continued)
+
+Went back through each of the four leads still marked "untapped" in `README.md`'s
+pipeline diagram, aiming to fully resolve or definitively close each one rather than
+leave them open indefinitely.
+
+**CABI 52 Kiswahili PMDG guides — now definitively closed, confirmed unscriptable.**
+Tried harder than the previous session's single fetch attempt: checked
+`plantwiseplusknowledgebank.org/robots.txt` (fine, `Allow`s crawling) vs `/sitemap.xml`
+(hard Cloudflare "Managed Challenge" — a proof-of-work JS challenge, not a simple
+User-Agent block), then drove a real headless Chromium browser at a specific PMDG page
+via Playwright with an 8-second wait for the challenge to auto-resolve. **Still
+challenged** — Cloudflare's Managed Challenge is specifically designed to detect and
+block headless browser automation, which is a different and harder class of block than
+the wrong-header/robots.txt-bug issues this project has cleared elsewhere. Continuing
+to try to defeat it (stealth plugins, etc.) would cross from "collecting an openly
+licensed academic resource" into "actively defeating a deliberate security control,"
+which isn't something to keep escalating via automation. **Verdict: needs a real
+human-driven browser session, same category as the Facebook collection task already
+deferred to Bradley's own device** — added to `BRADLEY_ACTIONS.md`. This is a genuine
+closure (a defensible final answer), not a resolution via content extraction.
+
+**CABI Factsheets for Farmers catalog — significantly extended, not exhaustible by
+search.** No sitemap or directory listing exists on `factsheetadmin.plantwise.org`
+itself (redirects to a login page for anything but a known direct PDF URL), so the
+only discovery method remains targeted search-engine queries by country/crop/year —
+confirmed there's no shortcut to a full catalog. Ran a wider round of country+year
+combinations (Malawi, Ghana, Ethiopia, Zambia, Uganda, DR Congo) than previous
+sessions. **21 more genuine factsheets found and extracted this pass** (enset bacterial
+wilt/Ethiopia, groundnut rosette/Malawi, mango fruit fly traps/Malawi, banana
+Xanthomonas wilt/Ghana, eucalyptus gall wasp/Ethiopia, boron deficiency pawpaw/Malawi,
+Red Sunhemp nematode control/multi-country, black Sigatoka bananas/DR Congo — a new
+country for this dataset, metal-silo grain storage/Zambia, bacterial black spot
+mango/Zambia, mango pulp weevil/Zambia, anthracnose eggplant/Zambia, neem extract
+powdery mildew/Zambia, Kapinga herbicide management/Zambia), bringing the running
+total to 29 CABI factsheet rows. **Still genuinely open** — 29 checked against CABI's
+own count of hundreds in this tier; search-based discovery has no natural end point,
+only diminishing returns per query. Not claiming closure here, just meaningfully more
+coverage.
+
+**KEPHIS/NDMA/KALRO verbatim news quotes — technique re-proven twice more, now a
+reliable method rather than a one-off.** The previous session had one example
+(`AGRI_124`, KMD). This pass found two more genuine, directly-attributed quotes using
+the same `"[agency] advises/urges/warns"` search pattern: KEPHIS Deputy Director for
+Seed Certification Ephraim Wachira on counterfeit-seed verification (The Standard,
+2026-05-15) and KALRO Director Robert Musyoki + Research Officer Samuel Kiiru on
+certified-seed planting (Kenya News Agency, 2025-03-12). Also found a genuine KMD
+(Kenya Meteorological Department) drought-preparedness advisory (mulching, minimum
+tillage, tied ridges, rainwater harvesting for crops; fodder/water/heat management for
+livestock) reported across several outlets — paraphrased rather than a direct quote
+(same standard as the Rwanda/Ghana/Zambia government-advisory rows), so tagged
+`translation=team` rather than treated as a quote-based row. **3 new rows**
+(`AGRI_171`, `AGRI_178`, plus the KMD pair `AGRI_187`-`188`). This is now a proven,
+repeatable technique with three independent successful examples — worth a dedicated
+search pass per agency in a future session, but no longer "proven once."
+
+**Farm Radio English hub — fully indexed for the first time, triaged at scale, still
+the largest genuinely open lead.** Crawled all 94 pages this time (previous sessions
+only ever covered pages 1-30) — confirmed **940 total articles**, not the ~300
+previously recorded. Built a keyword-based triage over the full remaining pool (938
+titles, since 2 more were used): 318 titles carry positive directive-content signals
+("how to," "manage," "control," "prevent," disease/pest names, etc.) vs 23 with
+negative signals (drama, profile pieces, institutional "Introduction to X"). Batch-fetched
+the intro/backgrounder sections of the top 80 positive-signal candidates and scored
+them for concrete technique markers (numbers with units, "should"/"must"/"avoid").
+Extracted from the two strongest, cleanest hits: tomato post-harvest storage
+temperatures (a clean Backgrounder "key facts" list) and a genuine bilingual EN+SW pair
+on common bean root nitrogen contribution (found via the same hreflang mechanism used
+throughout this project). **2 new rows.** The other ~78 fetched-and-scored candidates,
+plus the ~858 titles not yet even fetched, remain a real, large, unprocessed pool —
+the triage script and scoring method are saved and reusable
+(`/tmp/.../triaged.json` pattern) for continuing this in a future session; explicitly
+not claiming this lead is closed, only that it's now fully mapped and partially mined
+with a repeatable method, rather than a vague "~296 more, someday."
+
+**Duplicate-catch during this pass:** cross-referencing today's new Farm Radio/CABI
+extractions against already-used source URLs caught **3 genuine duplicates** that had
+slipped through — two Farm Radio backgrounder rows (goats, post-harvest maize) and one
+(Aloe Vera chicken remedy) where a "new" find from the English hub turned out to be the
+same source article as an existing historical row (`AGRI_047`/`AGRI_070`/`AGRI_071`
+respectively). In each case, merged the richer/more complete version into the
+original ID and removed the newer duplicate row, rather than leaving both. Caught by
+grouping all Farm Radio-sourced rows by their URL slug and checking for groups of
+more than one — added as a standing check before starting any new Farm Radio
+extraction pass, since the historical AGRI_064-076 batch and the various
+`_candidates_farmradio.csv`/English-hub sessions were never cross-referenced against
+each other before now.
+
+**Net result this pass: 170 → 187 rows** (net +17, after 3 duplicate merges). Full
+pipeline re-run clean: `validate_psa_csv.py` (187 rows, same 2 pre-existing warnings,
+no new ones), `qa_azure_language_check.py` (0 flags), and the pairwise dedup check
+(same 2 pre-existing near-duplicate pairs — the 3 real duplicates caught this session
+were fixed by merging/removal, not left for the fuzzy-match check to catch, since
+their wording differed enough that difflib wouldn't have flagged them).

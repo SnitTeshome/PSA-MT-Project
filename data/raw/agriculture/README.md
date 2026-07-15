@@ -5,17 +5,17 @@ research log (every source checked, what was rejected and why, methodology decis
 [`SOURCES.md`](SOURCES.md) in this same folder — that file is the detailed record; this one
 is the fast way to find things.
 
-**Current state: 170 rows** in `agriculture_psas.csv`, full pipeline re-run clean
+**Current state: 187 rows** in `agriculture_psas.csv`, full pipeline re-run clean
 (`validate_psa_csv.py`, `qa_azure_language_check.py`, pairwise dedup — see `SOURCES.md`
-for the 2026-07-15 continuation log). Note: 2 rows (`AGRI_169`-`170`) are translated from
+for the 2026-07-15 continuation logs). Note: 2 rows (`AGRI_169`-`170`) are translated from
 Chichewa, not English — the project's first non-English/Kiswahili source — flagged for a
 native-speaker check before final submission.
 
 | Sub-category | Rows |
 |---|---|
-| Crop Production | 92 |
-| Livestock | 40 |
-| Sustainable Farming | 30 |
+| Crop Production | 109 |
+| Livestock | 39 |
+| Sustainable Farming | 31 |
 | Agribusiness | 8 |
 
 ## What's where
@@ -27,7 +27,7 @@ native-speaker check before final submission.
 | `CGSPACE_FETCH_LIST.md` | Specific CGSpace bitstream UUIDs identified as bilingual pairs or Swahili-original, with download links. |
 | `farmradio_manual/` | Downloaded source material — see its own `README.md` for the breakdown. `confirmed_pairs/` (4 files) has the true bilingual pairs used directly; `tof_magazine_en/` (248 files) and `mkulima_mbunifu_sw/` (129 files) are the bulk-fetched magazine archives narrow-lexicon-scanned for usable content; `farm_radio_scripts/` (3 files) is an early hand-picked sample. |
 | `_candidates_farmradio.csv` | Gitignored — bulk-crawled Farm Radio EN+SW pairs from the Swahili-locale "kilimo" hub. Human-reviewed 2026-07-15: 13 of 52 promoted into the main CSV (drama/dialogue-only rows without a clear standalone directive were left out; see `SOURCES.md`). |
-| `FARMRADIO_ENGLISH_HUB_INDEX.md` | Full 300-article index of the separate English-language `topic/agriculture/` hub (pages 1-30 of 94) — 7 promoted so far, ~293 unprocessed leads for a future pass. |
+| `FARMRADIO_ENGLISH_HUB_INDEX.md` | Index of the separate English-language `topic/agriculture/` hub — now fully crawled (all 94 pages, 940 articles total, not the ~300 previously recorded). ~21 rows promoted from it across sessions; top 80 candidates triaged by keyword scoring this session, ~858 titles not yet even fetched. Large real lead for a future pass. |
 
 ## Scripts (`../../scripts/`)
 
@@ -47,7 +47,7 @@ native-speaker check before final submission.
 All bulk-download scripts print an estimated file count/size and ask for confirmation before
 writing anything to disk (skip with `PSA_AUTO_CONFIRM=1`).
 
-## Pipeline: how the 170 rows got here
+## Pipeline: how the 187 rows got here
 
 ```mermaid
 flowchart TD
@@ -87,17 +87,17 @@ flowchart TD
 
     V["validate_psa_csv.py"] --> Q["qa_azure_language_check.py"]
     Q --> D["Pairwise dedup check (difflib)"]
-    D --> CSV[("agriculture_psas.csv<br/>170 rows")]
+    D --> CSV[("agriculture_psas.csv<br/>187 rows")]
 
-    U1["Farm Radio: ~293 more English-hub<br/>articles (index committed, unprocessed)"]
-    U3["CABI: 52 Kiswahili PMDG guides<br/>(Cloudflare-blocked, needs a browser)"]
-    U4["KEPHIS/NDMA/KALRO: verbatim<br/>news quotes (technique proven once)"]
-    U5["CABI: ~22 of likely hundreds<br/>of factsheets checked so far"]
+    U1["Farm Radio: full 940-article hub now<br/>indexed + triaged; ~858 titles unfetched"]
+    U4["KEPHIS/NDMA/KALRO verbatim news quotes:<br/>method proven 3x, more agencies untried"]
+    U5["CABI: 29 of likely hundreds<br/>of factsheets checked so far"]
 
     U1 -.->|untapped, real lead| X
-    U3 -.->|untapped, real lead| X
     U4 -.->|untapped, real lead| X
     U5 -.->|untapped, real lead| X
+
+    CLOSED["CABI: 52 Kiswahili PMDG guides —<br/>CLOSED, confirmed Cloudflare-blocked<br/>(needs Bradley's own browser, see<br/>BRADLEY_ACTIONS.md)"]
 ```
 
 ## How it was actually done (brief)
