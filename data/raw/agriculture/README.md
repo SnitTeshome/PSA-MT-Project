@@ -5,14 +5,15 @@ research log (every source checked, what was rejected and why, methodology decis
 [`SOURCES.md`](SOURCES.md) in this same folder — that file is the detailed record; this one
 is the fast way to find things.
 
-**Current state: 131 rows** in `agriculture_psas.csv`, 0 validator/QA warnings, 0 duplicates.
+**Current state: 167 rows** in `agriculture_psas.csv` (validation pending re-run after this
+session's additions — see `SOURCES.md` for the 2026-07-15 continuation log).
 
 | Sub-category | Rows |
 |---|---|
-| Crop Production | 70 |
-| Livestock | 31 |
-| Sustainable Farming | 23 |
-| Agribusiness | 7 |
+| Crop Production | 90 |
+| Livestock | 40 |
+| Sustainable Farming | 29 |
+| Agribusiness | 8 |
 
 ## What's where
 
@@ -22,7 +23,8 @@ is the fast way to find things.
 | `SOURCES.md` | Full research log — every source checked, confirmed matches, rejected leads, and why. Read this for "why is X included/excluded." |
 | `CGSPACE_FETCH_LIST.md` | Specific CGSpace bitstream UUIDs identified as bilingual pairs or Swahili-original, with download links. |
 | `farmradio_manual/` | Downloaded source material — see its own `README.md` for the breakdown. `confirmed_pairs/` (4 files) has the true bilingual pairs used directly; `tof_magazine_en/` (248 files) and `mkulima_mbunifu_sw/` (129 files) are the bulk-fetched magazine archives narrow-lexicon-scanned for usable content; `farm_radio_scripts/` (3 files) is an early hand-picked sample. |
-| `_candidates_farmradio.csv` | Gitignored — bulk-crawled Farm Radio EN+SW pairs awaiting human review before promotion into the main CSV. |
+| `_candidates_farmradio.csv` | Gitignored — bulk-crawled Farm Radio EN+SW pairs from the Swahili-locale "kilimo" hub. Human-reviewed 2026-07-15: 13 of 52 promoted into the main CSV (drama/dialogue-only rows without a clear standalone directive were left out; see `SOURCES.md`). |
+| `FARMRADIO_ENGLISH_HUB_INDEX.md` | Full 300-article index of the separate English-language `topic/agriculture/` hub (pages 1-30 of 94) — 7 promoted so far, ~293 unprocessed leads for a future pass. |
 
 ## Scripts (`../../scripts/`)
 
@@ -76,15 +78,13 @@ flowchart TD
 
     V["validate_psa_csv.py"] --> Q["qa_azure_language_check.py"]
     Q --> D["Pairwise dedup check (difflib)"]
-    D --> CSV[("agriculture_psas.csv<br/>131 rows")]
+    D --> CSV[("agriculture_psas.csv<br/>167 rows")]
 
-    U1["Farm Radio: ~296 more articles<br/>(method proven, not yet run)"]
-    U2["N2Africa: Nigeria/Zimbabwe/Rwanda<br/>full manuals (template-heavy)"]
-    U3["CABI: 52 Kiswahili guides +<br/>most of the factsheet catalog"]
+    U1["Farm Radio: ~293 more English-hub<br/>articles (index committed, unprocessed)"]
+    U3["CABI: 52 Kiswahili PMDG guides<br/>(Cloudflare-blocked, needs a browser)"]
     U4["KEPHIS/NDMA/KALRO: verbatim<br/>news quotes (technique proven once)"]
 
     U1 -.->|untapped, real lead| X
-    U2 -.->|untapped, real lead| X
     U3 -.->|untapped, real lead| X
     U4 -.->|untapped, real lead| X
 ```

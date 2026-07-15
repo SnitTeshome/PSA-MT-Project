@@ -924,3 +924,138 @@ hundreds of factsheets have been checked so far).
 
 **Net result this pass: 127 → 131 rows** (`AGRI_128`-`131`). Validated clean (0 Azure
 flags, no new near-duplicates in the full 131-row pairwise check).
+
+## Clearing the "proven leads, not yet fully mined" backlog (2026-07-15, continued)
+
+Worked through the specific backlog items flagged as pending in the previous session:
+unresolved country reachability, the held-back CABI candidates, the N2Africa manuals,
+Zambia's drought plan, and the Farm Radio backlog (both the 52-row Swahili-locale
+candidates file and the separate 300-article English hub). An alternate connection route
+(`FETCH_PROXY`) was available this session — used for the reachability retries.
+
+**Reachability retries.** Nigeria: `naerls.gov.ng` (NAERLS) is now reachable (was
+previously "on-paper strong candidate, not verified") and its Factsheet page has two
+genuine "N-LEWS" (Nigerian Livestock Early Warning System) climate factsheets — real
+farmer-facing directives ("What farmers need to do") on livestock heat-stress management,
+fish-farm water management, and livestock-feed crop planting. **4 rows added**
+(`AGRI_132`-`135`). `nimet.gov.ng` is still blocked — confirmed via the alternate
+connection route that it's a genuine JS/bot-challenge, not a reachability issue, so
+switching connection didn't help either.
+Uganda: `necoc.opm.go.ug` is now reachable **through the alternate route** (was
+Cloudflare 522 before; direct access still gets a 403) — but its one downloadable
+bulletin (`May 2026 Monthly Weather Update.pdf`) is a scanned image PDF with no text
+layer (OCR candidate for later), and `publications.php` failed to load twice this
+session (site-side instability, not a block). Malawi: `dodma.gov.mw` resolves and
+confirms the earlier finding (it's actually the Ministry of Agriculture's site, not
+DoDMA's) but is JS-driven with no static publications path found; `mvac.gov.mw` and
+`www.mvac.gov.mw` still fail DNS resolution, tunnel or not. Eswatini:
+`portal.ndma.org.sz` still fails DNS resolution entirely — confirmed dead domain, not a
+block.
+
+**FAO "FAW Guidance Note 4" — verified, genuinely directive.** Located via its real
+title ("How to Manage Fall Armyworm: A Quick Guide for Smallholders," CA0435EN/1/07.18,
+FAO 2018) on the FAO Knowledge Repository. Unlike the identification-only fall-armyworm
+brochure checked earlier in this doc, this one has real "Prevent / Monitor / Know / Act"
+sections with farmer directives (quality seed, avoid late planting, weekly field
+scouting, hand-crushing egg masses, avoiding unnecessary pesticide use). **3 rows added**
+(`AGRI_136`-`138`), complementary to the existing pesticide-safety row (`AGRI_048`), not
+overlapping with it.
+
+**2 held-back CABI Plantwise candidates extracted**, both confirmed genuine and CC-BY-SA
+4.0 as flagged: "Tomato wilt or kiwotoka" (Uganda, July 2006) and "Tomato red spider
+mite" (Kenya, October 2012). **2 rows added** (`AGRI_139`-`140`).
+
+**More CABI Plantwise factsheets found via targeted crop/country searches** (potato,
+cassava, mango — countries not yet represented: Rwanda, Zambia): 6 new genuine factsheets
+with real Management sections (potato bacterial wilt/Rwanda, cassava Brown Leaf
+Spot/Uganda, cassava mealybug warm-water treatment/Zambia, cassava mosaic
+uprooting/Tanzania, pawpaw-leaf snail trap/Zambia, mango bacterial black spot/Uganda).
+**6 rows added** (`AGRI_141`-`146`). One candidate (Tanzania cassava-mealybug cuttings)
+turned out to be an exact duplicate PDF of the already-extracted `AGRI_129` — caught by
+checking the source PDF ID before extracting, not added twice. One (Oxalis latifolia
+weed ID, Uganda 2016) had no Management section — same "descriptive, not directive"
+rejection as the couchgrass factsheet earlier in this doc.
+
+**The 52 Kiswahili "Pest Management Decision Guides" are confirmed genuinely
+inaccessible, not just unexplored** — these live on `plantwiseplusknowledgebank.org`
+(a different, more detailed tier from the one-page "Factsheets for Farmers"), which
+returns an AWS-style Cloudflare Turnstile "Just a moment..." JS challenge on every
+fetch attempt, direct or through an alternate connection route. Same class of dead-end as
+UCLA/PIMS/KAOP earlier in this doc — would need a real logged-in browser session, not
+a scripted fetch. The "Factsheets for Farmers" tier (`factsheetadmin.plantwise.org`,
+no CC-blocked) remains open and still has hundreds of unchecked factsheets.
+
+**N2Africa Master Farmer Guidelines + Grain Legume Processing Handbook.** Found via the
+`/agem` catalog listing (not the web search results, which pointed at the wrong,
+English-only PDFs) that both documents exist as **separate English and Kiswahili PDFs**
+on n2africa.org — genuine parallel translations, not machine-paraphrased. Located the
+matching "Utumizi bora wa chanjo cha mikunde" (making the best use of legume inoculants)
+checklist in both language versions and extracted it as a true bilingual pair, no
+`translation=team` tag needed. **2 rows added** (`AGRI_147`-`148`). The Kiswahili
+edition of the Grain Legume Processing Handbook turned out to be a shorter, distinct
+presentation-format resource (13pp, Woomer & Mulei 2011) rather than a literal
+translation of the 44-page English handbook (Woomer et al. 2013) — sentence-level
+alignment wasn't reliable, so one further row (groundnut aflatoxin-prevention during
+harvest/drying, a genuine safety-relevant directive, English-only in the 44pp handbook)
+was extracted as team-translated instead of forcing a mismatched pair. **1 row added**
+(`AGRI_149`).
+
+**Zambia drought response — extracted with team sign-off** (flagged in the previous
+session as "borderline, needs a call"; approved to extract). The specific DMMU "Food
+Security Drought Response Plan" PDF is blocked by an AWS WAF JS challenge on ReliefWeb,
+direct or through the tunnel — but the same national response (DMMU-coordinated,
+co-led by WFP/FAO) is documented in OCHA's own **Zambia Drought Response Appeal
+(May-December 2024)**, hosted on unocha.org without the same block, with a clean
+"Interventions will include:" bulleted list. **2 rows added** (`AGRI_150`-`151`,
+Sustainable Farming: seeds/crop diversification; Livestock: disease surveillance,
+feed, water infrastructure).
+
+**Farm Radio `_candidates_farmradio.csv` (52-row Swahili-locale backlog) — human
+trimming pass completed.** Reviewed all 52 rows (1 already promoted as `AGRI_008`-`009`
+in an earlier session). 4 were clean "Backgrounder" format with a "Key facts" list —
+the same reliable structure noted earlier in this doc — and are **true bilingual pairs**
+(genuine Kiswahili translations, not team-translated): companion planting/mutualism,
+post-harvest maize loss reduction, raising goats, and soil cover in conservation
+agriculture. **4 rows added** (`AGRI_152`-`155`). The other 47 are dialogue/interview
+scripts (10,000-45,000 characters each) requiring individual reading to find the actual
+directive buried in the narrative frame. Read all 47 backgrounder/intro sections;
+9 had a clean, self-contained, non-redundant technique worth extracting: raised-table
+rice-seed drying (Bangladesh method via Farm Radio), cassava mosaic disease management
+(Malawi varieties), a condensed local-chicken feed formulation (Dodoma, Tanzania),
+sawdust potato storage (Kenya), pounded-maize-cob weevil protection (Benin), striga
+hand-weeding technique, poultry coccidiosis/mycoplasmosis hygiene prevention, phosphorus
+replacement after improved fallows, and a Tephrosia vogelii local-pesticide recipe for
+beans (Tanzania). **9 rows added** (`AGRI_156`-`164`, all team-translated, English-only
+in the source). The remaining ~38 rows were reviewed and **not** extracted, each for a
+specific, checked reason — not left unexamined: pure human-interest/narrative framing
+with no standalone directive (e.g. "Kenyan woman embraces conservation farming",
+"Adventures of Neddy"), institutional/meta content about radio-campaign methodology
+rather than farming practice (AFRRI project background, "Introduction to Value Chains"),
+topical overlap with content already in the dataset (conservation-tillage benefits vs.
+the already-extracted soil-cover row; Fall Armyworm biology vs. the FAO rows above), or
+a 5-part drama serial ("Beans, a family affair") whose content is social/gender-dynamics
+framing rather than a technique. This list is a legitimate stopping point, not an
+unexamined backlog — see the CSV's own rows for the full 52-title index if revisiting.
+
+**Farm Radio English-language `topic/agriculture/` hub — bigger than previously
+recorded, partially indexed.** The hub actually has **94 pages (~940 articles)**, not
+the ~300 implied by the earlier "30 pages crawled" note. Re-crawled pages 1-30 (300
+articles, confirmed same count) and committed the full index as
+`FARMRADIO_ENGLISH_HUB_INDEX.md` (previously only in an uncommitted scratch file, per
+the doc-hygiene backlog). Unlike the Swahili-locale "kilimo" hub, most of these English
+articles hreflang-pair to **French**, not Kiswahili — genuine bilingual EN+SW pairs are
+the exception here, not the rule, so most usable content needs team-translation.
+Checked a sample of ~10 titles in depth; 3 had clean, self-contained, non-redundant
+directives: a circular/regenerative-agriculture radio spot (pre-planting/growing/
+post-harvest practices, Uganda), an Aloe Vera home remedy for chicken diarrhea
+(Karagwe, Tanzania, with the vet-consultation caveat kept in), and Gliricidia sepium
+agroforestry spacing guidance (Eastern Province, Zambia). **3 rows added**
+(`AGRI_165`-`167`). The remaining ~293 articles (of the 300 indexed; ~640 more
+unindexed beyond page 30) are a real, large, unprocessed lead — flagged here rather
+than left implicit, same as the Farm Radio Swahili backlog above.
+
+**Net result this session: 131 → 167 rows** (`AGRI_132`-`167`, 36 rows). Full pipeline
+re-run clean: `validate_psa_csv.py` (167 rows, same 2 pre-existing warnings on
+`AGRI_008`/`AGRI_060`, no new ones), `qa_azure_language_check.py` (0 flags across all
+167 rows), and the pairwise fuzzy-dedup check (only the same 2 pre-existing
+near-duplicate pairs from before this session, no new ones introduced).
