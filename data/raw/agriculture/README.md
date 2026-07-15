@@ -5,14 +5,17 @@ research log (every source checked, what was rejected and why, methodology decis
 [`SOURCES.md`](SOURCES.md) in this same folder — that file is the detailed record; this one
 is the fast way to find things.
 
-**Current state: 167 rows** in `agriculture_psas.csv` (validation pending re-run after this
-session's additions — see `SOURCES.md` for the 2026-07-15 continuation log).
+**Current state: 170 rows** in `agriculture_psas.csv`, full pipeline re-run clean
+(`validate_psa_csv.py`, `qa_azure_language_check.py`, pairwise dedup — see `SOURCES.md`
+for the 2026-07-15 continuation log). Note: 2 rows (`AGRI_169`-`170`) are translated from
+Chichewa, not English — the project's first non-English/Kiswahili source — flagged for a
+native-speaker check before final submission.
 
 | Sub-category | Rows |
 |---|---|
-| Crop Production | 90 |
+| Crop Production | 92 |
 | Livestock | 40 |
-| Sustainable Farming | 29 |
+| Sustainable Farming | 30 |
 | Agribusiness | 8 |
 
 ## What's where
@@ -78,7 +81,7 @@ flowchart TD
 
     V["validate_psa_csv.py"] --> Q["qa_azure_language_check.py"]
     Q --> D["Pairwise dedup check (difflib)"]
-    D --> CSV[("agriculture_psas.csv<br/>167 rows")]
+    D --> CSV[("agriculture_psas.csv<br/>170 rows")]
 
     U1["Farm Radio: ~293 more English-hub<br/>articles (index committed, unprocessed)"]
     U3["CABI: 52 Kiswahili PMDG guides<br/>(Cloudflare-blocked, needs a browser)"]

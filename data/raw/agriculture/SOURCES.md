@@ -1059,3 +1059,55 @@ re-run clean: `validate_psa_csv.py` (167 rows, same 2 pre-existing warnings on
 `AGRI_008`/`AGRI_060`, no new ones), `qa_azure_language_check.py` (0 flags across all
 167 rows), and the pairwise fuzzy-dedup check (only the same 2 pre-existing
 near-duplicate pairs from before this session, no new ones introduced).
+
+## OCR/deeper-navigation pass on the three unresolved countries (2026-07-15, continued)
+
+Followed up specifically on Uganda, Malawi, and Eswatini — the three reachability items
+above that were left open rather than resolved.
+
+**Uganda — resolved, OCR successful.** The NECOC "Weather Update for May 2026" PDF
+(9 pages, no text layer, previously flagged as an OCR candidate) OCR'd cleanly at 300dpi
+with `--psm 3` (same method already proven on the CGSpace poster earlier in this doc).
+It's a genuine Ministry of Water and Environment bulletin with a real "Government and
+public advisories" section, including an explicit agriculture directive ("harvest
+rainwater and maximize agricultural production") among general flood-safety advice, plus
+a dedicated "Agriculture and food security" impacts section (naming Fall Armyworm as an
+excess-rainfall risk). **1 row added** (`AGRI_168`).
+
+**Malawi — resolved, but not by OCR.** `dodma.gov.mw`'s "Publications"/"Reports"/
+"Policies" nav items were re-checked with a real browser (Playwright): confirmed they're
+inert placeholder links (`href="#!"`, not clickable, no AJAX request fires) — genuinely
+unbuilt site sections, not JS-hidden content. But the site's News section has one real,
+substantive post: a Chichewa-language Ministry of Agriculture article, "Kuzindikira ndi
+kulimbana ndi matenda a nanzikambe mu chimanga" (Recognizing and fighting downy mildew
+disease in maize), dated 2025-12-31, with a genuine directive "before planting / when
+seedlings emerge / at harvest" structure (certified seed, plant spacing, crop rotation,
+fungicide seed treatment, uprooting infected plants, residue disposal). **2 rows added**
+(`AGRI_169`-`170`) — translated Chichewa → English → Kiswahili. **Flag for the team:**
+this is the first source in the whole dataset in a language other than English/Kiswahili
+at the source; Chichewa translation competence hasn't been established for this pipeline
+the way English has, so these two rows specifically would benefit from a native-speaker
+or second-opinion check before final submission, more so than the English-sourced rows.
+
+**Eswatini — corrected, not resolved.** `portal.ndma.org.sz` (the subdomain checked in
+every previous session) is genuinely dead — resolves via DNS but the server never
+completes a TCP connection, direct or through the alternate route. But the **bare domain**
+`ndma.org.sz` (no `portal.` prefix) is live and had never been tried. It's a real,
+current NDMA Eswatini WordPress site with "Advisories," "Preparedness Tips," and "Heat
+Wave Safety" cards that look promising — but checked thoroughly (page HTML, a
+JS-rendered Playwright pass, the WordPress REST API's `/posts` and `/media` endpoints)
+and confirmed **none of those cards have real content behind them** — no matching post,
+no matching media file. The site's only actual downloadable PDFs (via `/wp-json/wp/v2/
+media`) are legislation (Disaster Management Act 2006) and COVID-era procurement
+notices — not PSA content. The "Preparedness"/"Mitigation" pages that do have real URLs
+are generic mandate/mission-statement text, same category as the Kenya county pages
+ruled out earlier in this doc. **Net: corrects "DNS failure" to "reachable but no
+content published yet"** — a real, checked negative, not an unexplored gap. Worth
+retrying `ndma.org.sz` in a future session in case the Advisories section gets built out.
+
+**Net result this pass: 167 → 170 rows** (`AGRI_168`-`170`). Full pipeline re-run clean:
+`validate_psa_csv.py` (170 rows, same 2 pre-existing warnings, no new ones),
+`qa_azure_language_check.py` (0 flags across all 170 rows, including the two
+Chichewa-sourced rows — this only confirms the English/Kiswahili columns read as their
+respective languages, not translation fidelity to the Chichewa original), and the
+pairwise dedup check (same 2 pre-existing near-duplicate pairs, no new ones).
