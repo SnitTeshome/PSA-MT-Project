@@ -1206,3 +1206,37 @@ no new ones), `qa_azure_language_check.py` (0 flags), and the pairwise dedup che
 (same 2 pre-existing near-duplicate pairs — the 3 real duplicates caught this session
 were fixed by merging/removal, not left for the fuzzy-match check to catch, since
 their wording differed enough that difflib wouldn't have flagged them).
+
+## "Ekegusii Corpus" import (2026-07-22) — promoted into agriculture_psas.csv
+
+**Source: "Ekegusii Corpus"**, a lecturer-provided dataset (course pivot: the whole class
+now targets Ekegusii, not a per-group variable third language). 925 agriculture-relevant
+English→Ekegusii rows classified from its full English column (source's own Domain label
+not trusted — see `EKEGUSII_CORPUS_IMPORT.md` for method and the mislabeling numbers);
+11 removed as address-block/website-navigation content the classifier wrongly flagged, 1
+removed as a source duplicate. Kiswahili (missing from this En→Ekegusii-only source) was
+filled via a 3-tool comparison + round-trip QA + manual read-through —
+`translate_and_qa.py` (new shared tool, works on any domain), full method and findings in
+`EKEGUSII_CORPUS_IMPORT.md`.
+
+**913 rows merged into `agriculture_psas.csv`** (renumbered `AGRI_191`–`1103`) →
+**net 187 → 1,100 rows**. Full pipeline re-run clean: `validate_psa_csv.py` (1,100 rows,
+17 soft warnings, no new hard failures) and a pairwise fuzzy-dedup check across the
+combined set (0 exact duplicates, 63 near-duplicates flagged for review — see
+`EKEGUSII_CORPUS_IMPORT.md`).
+
+**Follow-up dedup pass (2026-07-23):** built a second classifier (word-level diff against
+a domain gazetteer of disease/crop/livestock/audience terms, distinguishing "same
+template, different real-world case" from genuine redundancy) and ran it on all 63
+near-duplicate pairs: **26 confirmed distinct** (kept both — different disease/crop/
+audience each side), **7 confirmed genuine duplicates** (near-total overlap, only a
+stray non-distinguishing word differed — one side of each removed, `AGRI_753/306/369/
+425/437/499/510`, **1,100 → 1,093 rows**), **30 left unresolved** (mostly a
+"Climate-smart agriculture (CSA) is an approach..." cluster reworded ~10 different ways
+making the same generic claim — plausibly paraphrase-generated rather than
+independently-sourced, but not confirmed; flagged for a human read, not removed).
+Also re-checked the 2 pre-existing near-dup pairs (`AGRI_005`/`037`, `AGRI_034`/`061`)
+with a length-scaled similarity threshold (short sentences need much higher overlap to
+count as duplicate than long ones) — both pass as genuinely distinct despite the ~0.63
+raw ratio, confirming the original decision to keep both was correct. Full findings:
+`ekegusii_internal/dedup_option_ab_findings.md`.

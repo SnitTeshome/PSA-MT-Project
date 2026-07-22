@@ -109,10 +109,11 @@ def main(paths: list[Path]) -> None:
         print(f"Team-translated rows: {team_translated.sum()} / {len(df)} "
               f"({100 * team_translated.mean():.1f}%)")
         print(f"Genuine source-pair rows: {(~team_translated).sum()} / {len(df)}")
-    if "Target_Language" in df.columns:
-        filled = df["Target_Language"].fillna("").str.strip() != ""
-        print(f"Rows with Target_Language already filled: {filled.sum()} / {len(df)} "
-              f"(expected ~0 pre-Week-3 — these are still placeholders per the schema)")
+    if "Ekegusii" in df.columns:
+        filled = df["Ekegusii"].fillna("").str.strip() != ""
+        print(f"Rows with Ekegusii already filled: {filled.sum()} / {len(df)} "
+              f"(expected ~0 pre-Week-3 aside from imported sourced rows — see "
+              f"data/raw/agriculture/EKEGUSII_CORPUS_IMPORT.md)")
 
     fig, ax = plt.subplots()
     df["Domain"].value_counts().plot(kind="bar", ax=ax)

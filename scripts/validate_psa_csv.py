@@ -5,7 +5,7 @@ Usage:
 
 Checks (hard failures exit 1 with a descriptive message):
   - exact header match with the shared schema
-  - every mandatory field filled (Target_Language is the only optional one)
+  - every mandatory field filled (Ekegusii is the only optional one)
   - PSA_ID format <PREFIX>_### and uniqueness (IDs are retired, not reused, when a
     duplicate row is merged and removed — so gaps in the numbering are expected and
     the highest ID is not a row count; this script's own summary stats are)
@@ -29,9 +29,9 @@ import pandas as pd
 
 SCHEMA = [
     "PSA_ID", "Domain", "Sub_Category", "English", "Kiswahili",
-    "Target_Language", "Source", "Date", "Metadata",
+    "Ekegusii", "Source", "Date", "Metadata",
 ]
-MANDATORY = [c for c in SCHEMA if c != "Target_Language"]
+MANDATORY = [c for c in SCHEMA if c != "Ekegusii"]
 ID_PATTERN = re.compile(r"^[A-Z]+_\d{3,}$")
 MAX_WORDS = 80
 

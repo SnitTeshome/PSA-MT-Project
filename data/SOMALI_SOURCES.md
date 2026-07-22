@@ -1,5 +1,12 @@
 # Somali source recon (2026-07-12)
 
+**SUPERSEDED (2026-07-22):** the lecturer has since asserted the whole class targets
+**Ekegusii**, not a per-group variable third language — Somali is no longer the plan.
+Kept as-is below for the historical record (real recon work, not to be erased), but
+treat every "if the group confirms Somali" next-step as moot. See
+`docs/ekegusii_transfer_learning.md` and `data/raw/agriculture/EKEGUSII_CORPUS_IMPORT.md`
+for the current Ekegusii-focused planning.
+
 Context: the group has not yet formally chosen the third target language, but
 [`language_choice_somali.md`](../../NLP/Project/language_choice_somali.md) (Bradley's
 recommendation memo, private workspace doc, not in this repo) argues for Somali on
