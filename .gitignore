@@ -12,6 +12,8 @@ accounts.db
 
 __pycache__/
 *.pyc
+.venv/
+venv/
 .ipynb_checkpoints/
 .DS_Store
 _candidates_x.csv
