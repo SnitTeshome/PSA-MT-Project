@@ -9,7 +9,15 @@
 **Project:** Multilingual machine translation of Kenyan Public Service Announcements (PSAs) between English/Kiswahili and Ekegusii, Somali, and Dholuo.
 
 ---
+## Team Members — Group 1
 
+| # | Name | ID Number |
+|---|---|---|
+| 1 | Snit Teshome | 670552 |
+| 2 | Bradley Azegele | 66834 |
+| 3 | Kyeremateng Martin | 669217 |
+| 4 | Kemo Dibassy | 669111 |
+| 5 | Samantha Nyatichi Masaki | — |
 ## 1. Team and Domain Assignments
 
 | # | Name | Assigned Domain | Rows contributed to the merged dataset | Distinct sources documented |
@@ -17,7 +25,7 @@
 | 1 | Kyeremateng Martin | Governance | 891 | 10 |
 | 2 |Snit Teshome| Health | 1,300 | 16 |
 | 3 | Bradley Azegele | Agriculture | 1,795 | 114 |
-| 4 | [Name] | Education | 2,074 | 13 |
+| 4 | Samantha Nyatichi Masaki| Education | 2,074 | 13 |
 | 5 | Kemmo Debassy | Security & Safety | 1,096 | 12 |
 
 Row and source counts are pulled directly from the team's current merged, cleaned dataset (`data/clean_real.csv`), verified by recomputation rather than carried over from memory. Team members whose names are not yet filled in should confirm their row above per the domain they collected for.

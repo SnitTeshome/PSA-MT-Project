@@ -7,6 +7,15 @@
 
 A proof-of-concept multilingual machine translation (MT) system for Kenyan Public Service Announcements (PSAs) — translating between English/Kiswahili and selected under-resourced indigenous languages, and deploying the result as a working demo.
 
+## Team Members — Group 1
+
+| # | Name | ID Number |
+|---|---|---|
+| 1 | Snit Teshome | 670552 |
+| 2 | Bradley Azegele | 66834 |
+| 3 | Kyeremateng Martin | 669217 |
+| 4 | Kemo Dibassy | 669111 |
+| 5 | Samantha Nyatichi Masaki | — |
 ## 1. Project Overview
 
 **Goal:** build a deployable digital public good that translates PSAs between English/Kiswahili and under-resourced Kenyan languages — Ekegusii (Bantu), Dholuo (Nilotic), and Somali (Cushitic) — demonstrating few-shot cross-lingual transfer learning on a curated, domain-specific PSA dataset.
