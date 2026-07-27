@@ -1,0 +1,10 @@
+PSA Dataset Quality Report
+========================================
+Rows in:  50202
+Rows out: 50202
+Rows dropped (unrecoverable): 0
+
+Auto-fixes applied to all rows: double spaces, spacing before
+punctuation, capitalisation, missing terminal punctuation, a/an.
+
+Issue counts (rows may have >1 issue, most were auto-fixed):
