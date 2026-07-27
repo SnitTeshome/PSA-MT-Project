@@ -12,7 +12,7 @@ A proof-of-concept multilingual machine translation (MT) system for Kenyan Publi
 | # | Name | ID Number |
 |---|---|---|
 | 1 | Snit Teshome | 670552 |
-| 2 | Bradley Azegele | 66834 |
+| 2 | Bradley Azegele | 668341 |
 | 3 | Kyeremateng Martin | 669217 |
 | 4 | Kemo Dibassy | 669111 |
 | 5 | Samantha Nyatichi Masaki | — |
