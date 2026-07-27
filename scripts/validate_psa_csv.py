@@ -4,8 +4,11 @@ Usage:
     python scripts/validate_psa_csv.py data/raw/agriculture/agriculture_psas.csv
 
 Checks (hard failures exit 1 with a descriptive message):
-  - exact header match with the shared schema
-  - every mandatory field filled (Ekegusii is the only optional one)
+  - exact header match with the shared schema (Somali/Dholuo added 2026-07-27,
+    once every domain's target-language set stopped being Ekegusii-only)
+  - every mandatory field filled (Ekegusii is the only optional one -- no
+    pretrained MT model exists for it; Somali and Dholuo are both mandatory
+    since facebook/nllb-200-distilled-600M covers both)
   - PSA_ID format <PREFIX>_### and uniqueness (IDs are retired, not reused, when a
     duplicate row is merged and removed — so gaps in the numbering are expected and
     the highest ID is not a row count; this script's own summary stats are)
@@ -14,8 +17,9 @@ Checks (hard failures exit 1 with a descriptive message):
   - English/Kiswahili not identical (would mean a copy-paste, not a translation)
 
 Soft warnings (printed, do not fail):
-  - langdetect disagreement on the English/Kiswahili columns (noisy on short
-    directive sentences, so advisory only)
+  - langdetect disagreement on the English/Kiswahili/Somali columns (noisy on
+    short directive sentences, so advisory only; Dholuo isn't checked here --
+    not in langdetect's 55-language profile set)
   - rows longer than 80 words (schema wants short PSAs, not articles)
 
 Ends with summary stats: rows, sub-category distribution, length stats.
@@ -29,9 +33,14 @@ import pandas as pd
 
 SCHEMA = [
     "PSA_ID", "Domain", "Sub_Category", "English", "Kiswahili",
-    "Ekegusii", "Source", "Date", "Metadata",
+    "Ekegusii", "Source", "Date", "Metadata", "Somali", "Dholuo",
 ]
-MANDATORY = [c for c in SCHEMA if c != "Ekegusii"]
+# Ekegusii is optional (no pretrained MT model exists for it -- see
+# docs/ekegusii_transfer_learning.md). Somali and Dholuo are NOT optional:
+# both have real facebook/nllb-200-distilled-600M coverage, so unlike
+# Ekegusii there's no structural reason a row should ever lack them.
+OPTIONAL = {"Ekegusii"}
+MANDATORY = [c for c in SCHEMA if c not in OPTIONAL]
 ID_PATTERN = re.compile(r"^[A-Z]+_\d{3,}$")
 MAX_WORDS = 80
 
@@ -100,7 +109,9 @@ def main(path: str) -> None:
             warnings += 1
 
     if HAVE_LANGDETECT:
-        expect = {"English": "en", "Kiswahili": "sw"}
+        # Dholuo ('luo') isn't in langdetect's 55-language profile set, so it's
+        # left out here rather than silently mis-checked against the wrong code.
+        expect = {"English": "en", "Kiswahili": "sw", "Somali": "so"}
         for col, code in expect.items():
             for _, r in df.iterrows():
                 try:

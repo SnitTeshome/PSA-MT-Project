@@ -1,8 +1,8 @@
 """Language-detection QA gate for a domain PSA CSV, using Azure Text Analytics.
 
 Complements validate_psa_csv.py's structural checks (schema, IDs, duplicates) with a
-confidence-scored language check on the actual English/Kiswahili text — catching rows
-where the "Kiswahili" column is actually code-switched, mislabeled, or not Swahili at
+confidence-scored language check on the English/Kiswahili/Somali text — catching rows
+where a column is actually code-switched, mislabeled, or not the claimed language at
 all before they're promoted/committed. This is a QA/verification step only: it never
 generates or fills in translation text (the project's hard rule is no invented
 translations) — it only flags mismatches for a human to look at.
@@ -29,8 +29,11 @@ try:
 except ImportError:
     sys.exit("azure-ai-textanalytics not installed — pip install azure-ai-textanalytics")
 
-EXPECTED = {"English": "en", "Kiswahili": "sw"}
+# Dholuo isn't included -- Azure Text Analytics' language-detection coverage
+# doesn't extend to it (same gap as Azure Translator, confirmed 2026-07-27).
+EXPECTED = {"English": "en", "Kiswahili": "sw", "Somali": "so"}
 CONFIDENCE_FLOOR = 0.80  # below this, flag even a "correct" language call for a human look
+AZURE_BATCH = 1000  # Text Analytics detect_language hard caps a request at 1000 documents
 
 
 def get_client() -> "TextAnalyticsClient":
@@ -55,21 +58,26 @@ def main(path: str) -> None:
         if not mask.any():
             continue
         rows = df[mask]
-        results = client.detect_language(documents=rows[col].tolist())
-        for (_, row), result in zip(rows.iterrows(), results):
-            if result.is_error:
-                print(f"FLAG {row['PSA_ID']} [{col}]: Azure error — {result.error.message}")
-                flagged += 1
-                continue
-            lang = result.primary_language
-            if lang.iso6391_name != expected_code:
-                print(f"FLAG {row['PSA_ID']} [{col}]: detected '{lang.iso6391_name}' "
-                      f"(conf={lang.confidence_score:.2f}), expected '{expected_code}' — {row[col][:80]!r}")
-                flagged += 1
-            elif lang.confidence_score < CONFIDENCE_FLOOR:
-                print(f"FLAG {row['PSA_ID']} [{col}]: low confidence ({lang.confidence_score:.2f}) "
-                      f"for expected '{expected_code}' — {row[col][:80]!r}")
-                flagged += 1
+        # chunked -- Azure hard-fails the whole call above 1000 documents, and this
+        # dataset passed 1000 rows on 2026-07-22 without this script ever being
+        # re-run at full scale until now (only ever validated on a 61-row subset)
+        for start in range(0, len(rows), AZURE_BATCH):
+            chunk = rows.iloc[start:start + AZURE_BATCH]
+            results = client.detect_language(documents=chunk[col].tolist())
+            for (_, row), result in zip(chunk.iterrows(), results):
+                if result.is_error:
+                    print(f"FLAG {row['PSA_ID']} [{col}]: Azure error — {result.error.message}")
+                    flagged += 1
+                    continue
+                lang = result.primary_language
+                if lang.iso6391_name != expected_code:
+                    print(f"FLAG {row['PSA_ID']} [{col}]: detected '{lang.iso6391_name}' "
+                          f"(conf={lang.confidence_score:.2f}), expected '{expected_code}' — {row[col][:80]!r}")
+                    flagged += 1
+                elif lang.confidence_score < CONFIDENCE_FLOOR:
+                    print(f"FLAG {row['PSA_ID']} [{col}]: low confidence ({lang.confidence_score:.2f}) "
+                          f"for expected '{expected_code}' — {row[col][:80]!r}")
+                    flagged += 1
 
     print(f"\n{len(df)} rows checked, {flagged} flag(s)")
     if flagged == 0:
