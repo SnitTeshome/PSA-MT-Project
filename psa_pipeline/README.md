@@ -1,6 +1,6 @@
 # Kenyan PSA Synthetic Dataset Pipeline
 
-Generates a 70,000-row dataset of realistic, Kenyan Public Service
+Generates a 50,000-row dataset of realistic, Kenyan Public Service
 Announcements (PSAs) in English, for the DSA 4020A multilingual PSA
 translation project. Built using your group's scraped CSV as reference
 material (mined for real Kenyan authorities and phrasing patterns), not
@@ -11,7 +11,7 @@ Kenya-specific vocabulary.
 
 ## Output
 
-`output/kenyan_psa_synthetic_70000.csv` -- 70,000 rows, columns:
+`output/kenyan_psa_synthetic_50000.csv` -- 50,000 rows, columns:
 `PSA_ID, Domain, English`
 
 Ready to hand to your translation step (Kiswahili, Ekegusii, Somali,
