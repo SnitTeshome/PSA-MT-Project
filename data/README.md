@@ -35,6 +35,18 @@ data/
 | `Date` | Date published/collected (`YYYY-MM-DD`) |
 | `Metadata` | Tone, platform, urgency notes (e.g. `tone=advisory; platform=X; urgency=medium`) |
 
+**Agriculture-domain extension (2026-07-27, not (yet) a team-wide decision):** the
+Agriculture branch's `agriculture_psas.csv` additionally carries `Somali` and `Dholuo`
+columns, both machine-translated via NLLB-200 and QA'd (Azure Translator as an
+independent second opinion for Somali). This was Bradley's own call for his domain,
+reasoning that both languages have real pretrained MT coverage unlike Ekegusii — **it
+has not been proposed to or agreed by the rest of the team**, and `validate_psa_csv.py`
+on the `data/agriculture` branch now hard-requires these two columns as a side effect.
+If this script's changes ever get merged into `main` or another domain branch, that
+requirement would incorrectly apply to health/education/security/governance CSVs too,
+which don't have these columns — **flag this in any PR before merging**, don't let it
+merge silently.
+
 ## Acceptability rules (from the group instructions)
 
 - **Bilingual preferred**: the same PSA in both English and Kiswahili — a true parallel pair,

@@ -3,9 +3,17 @@
 Usage:
     python scripts/validate_psa_csv.py data/raw/agriculture/agriculture_psas.csv
 
+CROSS-DOMAIN WARNING (2026-07-27): SCHEMA below adds Somali/Dholuo as required
+columns. This was the Agriculture domain's own decision (both have real NLLB-200
+coverage, unlike Ekegusii) -- it has NOT been agreed team-wide. If this file's
+changes ever merge into `main` or another domain branch, health/education/
+security/governance CSVs (which don't have these columns) would start failing
+the header-match check below. Flag this in any PR before merging; don't let a
+reviewer discover it as a surprise CI-style failure.
+
 Checks (hard failures exit 1 with a descriptive message):
-  - exact header match with the shared schema (Somali/Dholuo added 2026-07-27,
-    once every domain's target-language set stopped being Ekegusii-only)
+  - exact header match with the shared schema (Somali/Dholuo added 2026-07-27
+    for Agriculture specifically -- see warning above)
   - every mandatory field filled (Ekegusii is the only optional one -- no
     pretrained MT model exists for it; Somali and Dholuo are both mandatory
     since facebook/nllb-200-distilled-600M covers both)
