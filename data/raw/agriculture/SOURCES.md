@@ -1308,6 +1308,67 @@ checkpointed every 80 rows. Ekegusii coverage is unaffected by this — still 58
 the merge above (961/1,658; the 187 original hand-scraped rows, `AGRI_001`–`187`, remain
 the only gap, since Ekegusii has no pretrained MT model to fall back on).
 
+## Synthetic rows integrated, tagged and filterable (2026-07-27)
+
+Revisited the earlier "exclude entirely" call on main's 10,037-row templated
+Agriculture set (`psa_pipeline/output/kenyan_psa_synthetic_50000.csv`, see the
+reconciliation entry above). Decision (Bradley, 2026-07-27): **incorporate them
+into `agriculture_psas.csv` directly rather than a separate file**, but every row
+carries `Metadata` containing `provenance=synthetic; generation_method=
+template_authority_slotfill; source_pipeline=main:psa_pipeline/generate.py` —
+filter on that string to get the real-only 1,658-row set back, or to pull the
+synthetic pool specifically for data-augmentation experiments.
+
+Translated via `facebook/nllb-200-distilled-600M` on a **Kaggle GPU kernel**
+(`ekegusii_internal/kaggle_synthetic/kernel.py`) rather than the ~8-12hr local CPU
+job this volume would have needed — the actual runtime turned into a multi-hour
+debugging session for reasons worth recording so they're not re-discovered:
+
+- Azure's on-demand GPU path was tried first and abandoned: `eastus` (the only
+  region with T4 stock) is blocked by a subscription-level region-allowlist
+  policy separate from the quota numbers `az vm list-usage` reports — quota
+  being non-zero does not mean deployment is permitted. No cost was incurred
+  (both attempted resource groups failed empty).
+- Kaggle kernels ignored `machine_shape: NvidiaTeslaT4` in `kernel-metadata.json`
+  and assigned a Tesla P100 (Pascal, `sm_60`) twice regardless — Kaggle's
+  preinstalled PyTorch build has dropped Pascal support entirely (`sm_70`
+  minimum). Fixed by reinstalling `torch==2.7.1+cu118` at the top of the kernel
+  script before any other import, which retains Pascal-era compute-capability
+  support in the cu118 wheel family regardless of which GPU Kaggle hands out —
+  more robust than fighting the scheduler for a specific accelerator.
+- That reinstall left the preinstalled `torchvision`/`torchaudio` version-mismatched
+  against the new torch, breaking `transformers`' import chain even though
+  vision utilities are irrelevant to a text-only translation job — fixed by
+  uninstalling both rather than version-matching them.
+- `transformers` also hard-refuses to load a non-safetensors checkpoint
+  (`torch.load`) on torch < 2.6 (CVE-2025-32434 gate); `facebook/nllb-200-
+  distilled-600M` ships only `pytorch_model.bin`, no safetensors alternative —
+  resolved by the same torch bump, since `2.7.1+cu118` satisfies both the
+  version floor and Pascal compatibility simultaneously.
+- Seven kernel versions total before a clean run; the last (v7) completed with
+  0% Kiswahili/Somali repetition-loop failures and 0.4% (39/10,037) Dholuo
+  failures — better than the local CPU run's Dholuo rate, since this kernel
+  used beam search + `no_repeat_ngram_size=3` from the first pass rather than
+  needing a retry.
+- Merge itself (`ekegusii_internal/merge_synthetic_rows.py`) surfaced one real
+  MT error: NLLB translated two *different* English rows (a millet-farmers PSA
+  and a beans-farmers PSA, otherwise identical template) to **identical**
+  Kiswahili text — it mistranslated "millet" as "maharagwe" (beans). Caught by
+  `validate_psa_csv.py`'s duplicate-Kiswahili check (the first duplicate found
+  across the whole file). Corrected the word directly (`maharagwe` →
+  `mtama`) and tagged `mt_quality_flag=kiswahili_corrected_millet_mistranslated_
+  as_beans` rather than silently accepting either the error or the duplicate.
+
+**Net: 1,658 → 11,695 rows** (10,037 synthetic, 85.8% of the file by row count —
+substantial enough that the provenance tag is not optional bookkeeping, it's the
+only thing separating "real" from "synthetic" in this file going forward).
+Kiswahili/Somali/Dholuo all 100% filled including the synthetic rows (translated
+as part of the same Kaggle run); **Ekegusii drops to 8.2% (961/11,695)** — this
+is a denominator effect, not a regression: none of the 10,037 synthetic rows have
+Ekegusii coverage (no model exists for it, same reason as everywhere else in this
+file), so the same 961 real rows are now measured against a much larger total.
+`validate_psa_csv.py` passes clean on the full 11,695-row file.
+
 **Repetition-loop fix (2026-07-27):** greedy decoding degenerated into repeated
 token/phrase loops on 75 rows (10 Somali, 65 Dholuo) — a known NLLB low-resource-target
 failure mode. Retried with `no_repeat_ngram_size=3` + beam search
