@@ -82,7 +82,7 @@ DOMAIN_PREFIX = {
 # ----------------------------------------------------------------------
 # Generation target
 # ----------------------------------------------------------------------
-TOTAL_TARGET = 50000
+TOTAL_TARGET = 15000
 N_DOMAINS = len(TAXONOMY)
 N_SUBCATS_PER_DOMAIN = 5
 N_SUBCATS_TOTAL = N_DOMAINS * N_SUBCATS_PER_DOMAIN  # 25
