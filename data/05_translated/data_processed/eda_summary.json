@@ -1,0 +1,52 @@
+{
+  "n_rows_clean": 17896,
+  "n_unique_PSA_ID": 17896,
+  "domains": {
+    "Education": 3769,
+    "Health": 3508,
+    "Agriculture": 3368,
+    "Governance": 3368,
+    "Security & Safety": 3017,
+    "Security": 866
+  },
+  "coverage_rows": {
+    "English": 17896,
+    "Kiswahili": 17893,
+    "Ekegusii": 2892
+  },
+  "complete_pairs": {
+    "English-Kiswahili": 17893,
+    "English-Ekegusii": 2892,
+    "Kiswahili-Ekegusii": 2889
+  },
+  "vocab": [
+    {
+      "language": "English",
+      "sentences": 17896,
+      "tokens": 327616,
+      "vocab_size": 6686,
+      "type_token_ratio": 0.0204
+    },
+    {
+      "language": "Kiswahili",
+      "sentences": 17893,
+      "tokens": 387817,
+      "vocab_size": 6674,
+      "type_token_ratio": 0.0172
+    },
+    {
+      "language": "Ekegusii",
+      "sentences": 2892,
+      "tokens": 55805,
+      "vocab_size": 12278,
+      "type_token_ratio": 0.22
+    }
+  ],
+  "pair_rows_total": 47348,
+  "split_counts_pairs": {
+    "train": 37828,
+    "test": 4806,
+    "dev": 4714
+  },
+  "review_subset_size": 498
+}
