@@ -19,7 +19,7 @@ Covers the Agriculture domain only (this contributor's assigned domain within th
 | Team-translated (one language sourced, other translated in-house) | 160 (85.6%) |
 | Non-English/Kiswahili-original rows | 2 (Chichewa, Malawi source — flagged for native-speaker check) |
 | Hard validation failures | 0 |
-| Azure Text Analytics language-QA flags | 0 |
+| a cloud translation API Text Analytics language-QA flags | 0 |
 
 Sub-category distribution:
 
@@ -31,7 +31,7 @@ Sub-category distribution:
 | Agribusiness | 8 |
 
 Pipeline: every row passed `validate_psa_csv.py` (schema/structure) →
-`qa_azure_language_check.py` (Azure-confidence-scored language ID on both columns) →
+`qa_azure_language_check.py` (a cloud translation API-confidence-scored language ID on both columns) →
 a pairwise `difflib` near-duplicate check, in that order, with zero exceptions.
 
 ## 2. Sample entries

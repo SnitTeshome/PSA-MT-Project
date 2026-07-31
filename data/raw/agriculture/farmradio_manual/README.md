@@ -26,7 +26,7 @@ material — just needs a person to read the two PDFs side by side and hand-pick
 sentences, rather than trusting an automated extraction.
 
 **Farm Radio candidates QA + promotion status (2026-07-14):** ran
-`scripts/qa_azure_language_check.py`-style Azure language detection over all 52 rows of
+`scripts/qa_azure_language_check.py`-style a cloud translation API language detection over all 52 rows of
 `_candidates_farmradio.csv` (both `sw_text` and `en_text` columns) as a pre-screen —
 **0 flagged**, every row's language matches its column label with high confidence, so the
 `fetch_farmradio.py` hreflang-based pairing produced no mislabeled pairs. 2 rows promoted

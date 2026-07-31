@@ -13,7 +13,7 @@ pandas filter on that string always recovers the real-only 1,658-row set). Full 
 re-run clean (`validate_psa_csv.py`, `qa_azure_language_check.py`, pairwise dedup — see
 `SOURCES.md` for the full narrative of every milestone, this file only tracks current
 state). Language coverage: **Kiswahili/Somali/Dholuo 100% filled** (Somali/Dholuo added
-2026-07-27 via NLLB-200, with Azure Translator as an independent second opinion for
+2026-07-27 via NLLB-200, with a cloud translation API as an independent second opinion for
 Somali specifically); **Ekegusii 8.2%** (961/11,695 — a denominator effect, not a
 regression: none of the synthetic rows have Ekegusii coverage since no pretrained MT
 model exists for it; within the real-only 1,658 rows Ekegusii is 58%). 2 rows
@@ -54,7 +54,7 @@ changes going forward.
 | Script | What it does |
 |---|---|
 | `validate_psa_csv.py` | Schema/structure check — run this after any edit to the CSV. Schema now includes Somali/Dholuo as mandatory columns, added 2026-07-27 for agriculture's own use — **not yet a team decision for the other four domains**, flag this before merging this script's changes into `main`. |
-| `qa_azure_language_check.py` | Confirms each English/Kiswahili/Somali cell is actually in the language it claims to be, via Azure Text Analytics (Dholuo isn't covered — Azure has no language-ID support for it, same gap as Azure Translator). |
+| `qa_azure_language_check.py` | Confirms each English/Kiswahili/Somali cell is actually in the language it claims to be, via a cloud translation API Text Analytics (Dholuo isn't covered — a cloud translation API has no language-ID support for it, same gap as a cloud translation API). |
 | `collect/fetchlib.py` | Shared polite-fetch helper (robots.txt, rate-limiting, caching) — every other `fetch_*.py` script routes through this. |
 | `collect/fetch_n2africa.py` | N2Africa's extension-materials catalog (n2africa.org/agem). |
 | `collect/fetch_cgspace.py` | CGSpace (CGIAR) bitstream download + text extraction by UUID. |
@@ -80,11 +80,11 @@ here rather than redrawn into the diagram (full detail always in `SOURCES.md`):
    recovered from main's own parallel data collection (`kilimo.go.ke`/`kilimonews.co.ke`
    + a curated `PSA_KE_Final.csv` subset), after a real-source audit that rejected 34
    citation/contact-block fragments and 8 corrupted duplicates. 1,093 → 1,658 rows.
-3. **Somali + Dholuo added (2026-07-27)**: NLLB-200 for every row, Azure Translator as
+3. **Somali + Dholuo added (2026-07-27)**: NLLB-200 for every row, a cloud translation API as
    an independent second opinion for Somali specifically (62% of rows switched to
-   Azure's better candidate). Both now 100% filled.
+   that service's better candidate). Both now 100% filled.
 4. **Synthetic rows integrated (2026-07-27)**: main's 10,037-row template-generated
-   pool, translated via a Kaggle GPU kernel and merged in tagged
+   pool, translated via a a cloud GPU notebook kernel and merged in tagged
    `provenance=synthetic`. 1,658 → 11,695 rows.
 
 ## Pipeline: how the original 187 rows got here

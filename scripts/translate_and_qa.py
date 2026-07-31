@@ -17,17 +17,17 @@ Tools compared:
   - Helsinki-NLP/opus-mt-en-sw (local, CPU-only, en->sw direction only -- no
     reliable sw->en counterpart was found; skipped automatically for that
     direction)
-  - Azure Translator (cloud; requires your own resource -- see below; also
+  - a cloud translation API (cloud; requires your own resource -- see below; also
     used as the independent round-trip arbiter for every candidate, since
     using a tool to grade its own output would bias the score)
 
 Round-trip scoring: with no gold reference for these rows, each candidate
-translation is translated back to the source language via Azure (independent
+translation is translated back to the source language via a cloud translation API (independent
 of whichever tool produced it) and compared to the original text with
 difflib.SequenceMatcher. This is a heuristic proxy, not a BLEU/chrF claim --
 still read a sample of the winners yourself before treating this as final.
 
-Requires an Azure Translator resource (any tier, including free F0). Get a key
+Requires an a cloud translation API resource (any tier, including free F0). Get a key
 + region from portal.azure.com -> Cognitive Services -> Translator, or via
 `az cognitiveservices account create --kind TextTranslation --sku F0 ...`.
 Set before running:
@@ -108,7 +108,12 @@ class NLLB:
         for i in range(0, len(texts), BATCH):
             chunk = texts[i:i + BATCH]
             inputs = self.tok(chunk, return_tensors="pt", padding=True, truncation=True, max_length=128)
-            gen = self.model.generate(**inputs, forced_bos_token_id=forced_bos, max_length=128)
+            # no_repeat_ngram_size + beam search: greedy decoding was found to
+            # degenerate into repeated-token loops on ~75 rows during the
+            # synthetic-data generation run on remote GPU compute -- same
+            # fix applied here so this shared tool doesn't reintroduce that failure.
+            gen = self.model.generate(**inputs, forced_bos_token_id=forced_bos, max_length=128,
+                                       no_repeat_ngram_size=3, num_beams=4)
             out.extend(self.tok.batch_decode(gen, skip_special_tokens=True))
         return out
 
@@ -166,13 +171,13 @@ def main(path: str, recheck_team: bool) -> None:
     if need_sw.any():
         idx = df[need_sw].index
         en_texts = df.loc[idx, "English"].tolist()
-        print(f"Translating {len(en_texts)} row(s) en->sw with NLLB, OPUS-MT, Azure...")
+        print(f"Translating {len(en_texts)} row(s) en->sw with NLLB, OPUS-MT, a cloud translation API...")
         cands = {
             "nllb": nllb.translate(en_texts, "eng_Latn", "swh_Latn"),
             "opus": opus.translate(en_texts),
-            "azure": azure_translate(en_texts, "en", "sw", key, endpoint, region),
+            "cloud_api": azure_translate(en_texts, "en", "sw", key, endpoint, region),
         }
-        print("Back-translating all three candidates via Azure for scoring...")
+        print("Back-translating all three candidates via a cloud translation API for scoring...")
         backtrans = {t: azure_translate(cands[t], "sw", "en", key, endpoint, region) for t in cands}
 
         for pos, row_idx in enumerate(idx):
@@ -184,13 +189,13 @@ def main(path: str, recheck_team: bool) -> None:
     if need_en.any():
         idx = df[need_en].index
         sw_texts = df.loc[idx, "Kiswahili"].tolist()
-        print(f"Translating {len(sw_texts)} row(s) sw->en with NLLB, Azure (no reliable "
+        print(f"Translating {len(sw_texts)} row(s) sw->en with NLLB, a cloud translation API (no reliable "
               f"OPUS-MT sw->en model)...")
         cands = {
             "nllb": nllb.translate(sw_texts, "swh_Latn", "eng_Latn"),
-            "azure": azure_translate(sw_texts, "sw", "en", key, endpoint, region),
+            "cloud_api": azure_translate(sw_texts, "sw", "en", key, endpoint, region),
         }
-        print("Back-translating both candidates via Azure for scoring...")
+        print("Back-translating both candidates via a cloud translation API for scoring...")
         backtrans = {t: azure_translate(cands[t], "en", "sw", key, endpoint, region) for t in cands}
 
         for pos, row_idx in enumerate(idx):

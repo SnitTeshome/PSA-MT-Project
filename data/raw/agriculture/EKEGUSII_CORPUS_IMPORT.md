@@ -84,7 +84,7 @@ English-only-source precedent in `data/README.md` (team translation, tagged
 `translation=team, source_lang=en`), Kiswahili was generated for all 913 rows — and for
 150 pre-existing rows in `agriculture_psas.csv` that already carried that tag, to bring
 them up to the same standard — using **`scripts/translate_and_qa.py`** (new, generic,
-shared tool): three translation tools compared per row (NLLB-200, OPUS-MT, Azure
+shared tool): three translation tools compared per row (NLLB-200, OPUS-MT, a cloud translation API
 Translator), scored by round-trip back-translation since no gold reference exists, plus
 a manual read-through of the lowest-confidence rows that caught and fixed real problems
 (truncated outputs, a garbled disease name, address-block contamination) the automated

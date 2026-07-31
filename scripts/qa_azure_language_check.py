@@ -1,4 +1,4 @@
-"""Language-detection QA gate for a domain PSA CSV, using Azure Text Analytics.
+"""Language-detection QA gate for a domain PSA CSV, using a cloud translation API Text Analytics.
 
 Complements validate_psa_csv.py's structural checks (schema, IDs, duplicates) with a
 confidence-scored language check on the English/Kiswahili/Somali text — catching rows
@@ -7,9 +7,9 @@ all before they're promoted/committed. This is a QA/verification step only: it n
 generates or fills in translation text (the project's hard rule is no invented
 translations) — it only flags mismatches for a human to look at.
 
-Requires an Azure Cognitive Services / Text Analytics resource (any tier, including the
+Requires an a cloud translation API Cognitive Services / Text Analytics resource (any tier, including the
 free F0 tier). Set these two environment variables before running — get them from your
-own Azure resource (portal.azure.com -> Cognitive Services -> Keys and Endpoint):
+own a cloud translation API resource (portal.azure.com -> Cognitive Services -> Keys and Endpoint):
 
     export AZURE_TEXT_ANALYTICS_KEY=...
     export AZURE_TEXT_ANALYTICS_ENDPOINT=...
@@ -29,8 +29,8 @@ try:
 except ImportError:
     sys.exit("azure-ai-textanalytics not installed — pip install azure-ai-textanalytics")
 
-# Dholuo isn't included -- Azure Text Analytics' language-detection coverage
-# doesn't extend to it (same gap as Azure Translator, confirmed 2026-07-27).
+# Dholuo isn't included -- a cloud translation API Text Analytics' language-detection coverage
+# doesn't extend to it (same gap as a cloud translation API, confirmed 2026-07-27).
 EXPECTED = {"English": "en", "Kiswahili": "sw", "Somali": "so"}
 CONFIDENCE_FLOOR = 0.80  # below this, flag even a "correct" language call for a human look
 AZURE_BATCH = 1000  # Text Analytics detect_language hard caps a request at 1000 documents
@@ -58,7 +58,7 @@ def main(path: str) -> None:
         if not mask.any():
             continue
         rows = df[mask]
-        # chunked -- Azure hard-fails the whole call above 1000 documents, and this
+        # chunked -- a cloud translation API hard-fails the whole call above 1000 documents, and this
         # dataset passed 1000 rows on 2026-07-22 without this script ever being
         # re-run at full scale until now (only ever validated on a 61-row subset)
         for start in range(0, len(rows), AZURE_BATCH):
@@ -66,7 +66,7 @@ def main(path: str) -> None:
             results = client.detect_language(documents=chunk[col].tolist())
             for (_, row), result in zip(chunk.iterrows(), results):
                 if result.is_error:
-                    print(f"FLAG {row['PSA_ID']} [{col}]: Azure error — {result.error.message}")
+                    print(f"FLAG {row['PSA_ID']} [{col}]: a cloud translation API error — {result.error.message}")
                     flagged += 1
                     continue
                 lang = result.primary_language

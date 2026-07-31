@@ -30,7 +30,7 @@ KEPHIS pest/disease alerts) — see their rows below and the Recommended collect
 | 2b | KAOP — Kenya Agricultural Observatory Platform (KALRO) | kaop.co.ke | Crop Production, Sustainable Farming | homepage En-only (checked 2026-07-10) | 200 OK; **Playwright browser check done 2026-07-14** | No login wall (unlike PIMS), but the county→constituency→ward→Submit form (labelled "Agronomic Advisory") **doesn't produce any visible output or backend request** when driven programmatically — tried full Baringo→Baringo Central→Kabarnet chain, submit click fires no network call and page doesn't navigate. Either broken, JS-event-bound in a way headless Chromium isn't triggering, or the advisory content genuinely isn't wired up yet. Only live feature confirmed is a weather chatbot widget (not advisory text). Dead end for automated collection — if pursued further it needs a human in a real browser, not more automation attempts |
 | 3 | KEPHIS (plant health) | kephis.go.ke | Crop Production (pest/disease alerts) | En | robots.txt 200; homepage + `/news-events` fetched 2026-07-14 (real content, no dated alert feed found there — mostly press-story items, not short alerts) | Pest alerts are classic PSAs (short, directive) — homepage links to **Pest Information Management System (PIMS)** at `pims254.netlify.app`, a JS-rendered SPA. Checked via Playwright 2026-07-14: the public landing page is just an "about PIMS" blurb; the actual `#/published` pest listing **redirects to an admin sign-in wall** — no public pest-alert content is reachable without an account. Dead end for automated collection, same pattern as KAOP |
 | 4 | AFA (Agriculture & Food Authority) | agricultureauthority.go.ke | Agribusiness & Market Access | En | 200 OK | Directorates (tea, coffee, horticulture) issue notices |
-| 5 | NDMA (National Drought Management Authority) | ndma.go.ke → knowledgeweb.ndma.go.ke | Livestock, Sustainable Farming, Crop Production, Agribusiness | **County Early Warning bulletins are English-only** — bulletin body is a multi-page technical report, **but every bulletin has a recommendations section with genuine short directive Agriculture/Livestock text** (confirmed 2026-07-14). Only NDMA's Service Charter exists as a true En+Kiswahili pair | portal reachable but slow; download = DevExpress server-side zip (see note below); local batch at `NLP/NDMA/EW_Bulletins.zip` (23 counties, May 2026), converted to Markdown via `convert.py --batch --to .md` into `NLP/NDMA/EW_Bulletins_md/` for review | **Full 23-county pass completed 2026-07-14** (was 2 counties). The recommendations section is NOT standardized — 4+ distinct formats found across counties (Baringo: numbered §7.1.x list; Garissa/Wajir/Turkana: "Table N. Recommended interventions" grid; Isiolo/Marsabit/Meru/Narok: "Recommended Interventions" with Coverage/Cost/Gap columns; Kilifi/Makueni/Nyeri/Taita-Taveta/Tana River/Tharaka-Nithi: plain bullet list, sometimes with "(Action: ...)" attribution) — checking required a content-based search (grep for "recommend" + manual read), not a single regex. **21 of 23 counties had genuine, usable Agriculture/Livestock text; Laikipia and Kajiado do not** (Kajiado's bulletin has no recommendations section at all — only narrative report content — confirmed by reading the full document, not just a failed pattern match). Kwale's recommendations section is pure food-aid/cash-transfer logistics, no Agriculture/Livestock content. **32 rows extracted from 18 counties** (`AGRI_010`–`041`), on top of the original Baringo/Garissa rows — all real bulletin text, team-translated per the English-only rule, verified 0 flags on the Azure language QA gate. Service Charter still separately useful for bilingual Governance-domain sentences (not Agriculture) |
+| 5 | NDMA (National Drought Management Authority) | ndma.go.ke → knowledgeweb.ndma.go.ke | Livestock, Sustainable Farming, Crop Production, Agribusiness | **County Early Warning bulletins are English-only** — bulletin body is a multi-page technical report, **but every bulletin has a recommendations section with genuine short directive Agriculture/Livestock text** (confirmed 2026-07-14). Only NDMA's Service Charter exists as a true En+Kiswahili pair | portal reachable but slow; download = DevExpress server-side zip (see note below); local batch at `NLP/NDMA/EW_Bulletins.zip` (23 counties, May 2026), converted to Markdown via `convert.py --batch --to .md` into `NLP/NDMA/EW_Bulletins_md/` for review | **Full 23-county pass completed 2026-07-14** (was 2 counties). The recommendations section is NOT standardized — 4+ distinct formats found across counties (Baringo: numbered §7.1.x list; Garissa/Wajir/Turkana: "Table N. Recommended interventions" grid; Isiolo/Marsabit/Meru/Narok: "Recommended Interventions" with Coverage/Cost/Gap columns; Kilifi/Makueni/Nyeri/Taita-Taveta/Tana River/Tharaka-Nithi: plain bullet list, sometimes with "(Action: ...)" attribution) — checking required a content-based search (grep for "recommend" + manual read), not a single regex. **21 of 23 counties had genuine, usable Agriculture/Livestock text; Laikipia and Kajiado do not** (Kajiado's bulletin has no recommendations section at all — only narrative report content — confirmed by reading the full document, not just a failed pattern match). Kwale's recommendations section is pure food-aid/cash-transfer logistics, no Agriculture/Livestock content. **32 rows extracted from 18 counties** (`AGRI_010`–`041`), on top of the original Baringo/Garissa rows — all real bulletin text, team-translated per the English-only rule, verified 0 flags on the a cloud translation API language QA gate. Service Charter still separately useful for bilingual Governance-domain sentences (not Agriculture) |
 | 6 | Kenya Meteorological Dept — agromet advisories | meteo.go.ke | Crop Production, Sustainable Farming | dekadal bulletin PDF is **En-only** (checked Dekad 18/2026); site "Swahili" toggle is JS-based (`/sw/` 404s) — likely a translation widget, which would NOT count as source-published parallel text | reachable; robots 404 | Advisory sections are good PSA raw material *if* an official Sw counterpart exists — check KMD's Kiswahili forecast products (Taarifa) from a browser |
 | 7 | County govt agriculture depts — **all 47 counties** | *.go.ke county sites | all five | **Full 47-county pass done 2026-07-14** (`scripts/collect/fetch_all_counties_recon.py`; domain list from cog.go.ke, cross-checked against parliament.go.ke/the-senate/counties) | 44/47 reachable on first pass; the other 3 had stale/wrong domains, fixed 2026-07-14
 with corrected URLs (Bradley): Laikipia moved to `new.laikipia.go.ke` (has an agriculture
@@ -318,7 +318,7 @@ Same acceptability caveat as other TZ sources.
 ## Prior-art check: existing public datasets (2026-07-14/15)
 
 Before collecting more by hand, checked whether an existing published dataset could be
-cited/credited instead of re-scraping — GitHub, Kaggle, HuggingFace, and Zenodo, plus the
+cited/credited instead of re-scraping — GitHub, a cloud GPU notebook service, HuggingFace, and Zenodo, plus the
 specific hypothesis that someone scraped Kenyan government Twitter accounts before the
 2023 API lockdown. **Conclusion: nothing usable found for the hand-curated PSA set.**
 
@@ -357,8 +357,8 @@ specific hypothesis that someone scraped Kenyan government Twitter accounts befo
     research specifically — even where content is unrelated, it wouldn't be
     appropriate to redistribute into an unrelated MT dataset without the same consent
     scope.
-  - Kaggle `henrydioniz/swahili-sms-detection-dataset` (1,508 Tanzanian Swahili SMS,
-    scam/trust labels) — **fully checked** (Kaggle API credentials already in the
+  - a cloud GPU notebook service `henrydioniz/swahili-sms-detection-dataset` (1,508 Tanzanian Swahili SMS,
+    scam/trust labels) — **fully checked** (a cloud GPU notebook service API credentials already in the
     workspace `.env`, pulled the complete `bongo_scam.csv` directly, 508 trust + 1,000
     scam rows). Confirmed negative, but with a genuinely interesting near-miss: "kilimo"
     (agriculture) and "ufugaji" (livestock) each appear **66 times** — every single hit
@@ -452,7 +452,7 @@ result, not theoretical:**
   "OCR is unreliable on stylized layouts" note elsewhere in this doc — that assumption
   was never actually tested against a real poster before now. **7 aligned bilingual rows
   extracted** (`AGRI_089`-`095`), true source pairs (not team-translated), verified via
-  Azure language QA.
+  a cloud translation API language QA.
 - Re-tried the **UCLA Digital Library** bilingual collection (previously shelved for
   lacking OCR) — still blocked, but by an **Anubis bot-challenge wall** (returns "Access
   Denied" to automated requests), not by the OCR gap. This was always a bot-wall problem;
@@ -758,7 +758,7 @@ buried in it. **2 rows extracted** (`AGRI_119`-`120`, team-translated, `country=
 optimal row/plant spacing with weeding timing, and Aflasafe biocontrol application against
 aflatoxin.
 
-**Net result this pass: 98 → 123 rows.** Full validation (`validate_psa_csv.py`), Azure QA
+**Net result this pass: 98 → 123 rows.** Full validation (`validate_psa_csv.py`), a cloud translation API QA
 gate (`qa_azure_language_check.py`, 0 flags across all 123 rows), and a pairwise
 fuzzy-similarity dedup check (`difflib`, threshold 0.6, all 123×123 rows) all pass clean.
 The two near-duplicate pairs the full pairwise check surfaced (`AGRI_005`/`AGRI_037`,
@@ -783,7 +783,7 @@ truncation, citation patterns, address/contact blocks, nav-footer cruft, malform
 starts): **151/369 (41%) are clearly not PSA content** — raw scraped fragments, academic
 citations, org contact blocks, navigation cruft — and a further chunk of what passes those
 filters is still report/press-release summary text or "Learn more about..."-style
-content-marketing blurbs, not directive announcements. Azure language-detection QA on the
+content-marketing blurbs, not directive announcements. a cloud translation API language-detection QA on the
 raw English/Kiswahili text itself came back clean (0 flags) — the language quality is fine
 where the text is a real sentence; the problem is source-shape and provenance, not
 translation quality.
@@ -922,7 +922,7 @@ content in one sitting. Good candidates for a future pass, along with the wider
 country/crop search space this discovery method opens up (only ~14 of what is likely
 hundreds of factsheets have been checked so far).
 
-**Net result this pass: 127 → 131 rows** (`AGRI_128`-`131`). Validated clean (0 Azure
+**Net result this pass: 127 → 131 rows** (`AGRI_128`-`131`). Validated clean (0 a cloud translation API
 flags, no new near-duplicates in the full 131-row pairwise check).
 
 ## Clearing the "proven leads, not yet fully mined" backlog (2026-07-15, continued)
@@ -979,7 +979,7 @@ rejection as the couchgrass factsheet earlier in this doc.
 **The 52 Kiswahili "Pest Management Decision Guides" are confirmed genuinely
 inaccessible, not just unexplored** — these live on `plantwiseplusknowledgebank.org`
 (a different, more detailed tier from the one-page "Factsheets for Farmers"), which
-returns an AWS-style Cloudflare Turnstile "Just a moment..." JS challenge on every
+returns an a cloud compute platform-style Cloudflare Turnstile "Just a moment..." JS challenge on every
 fetch attempt, direct or through an alternate connection route. Same class of dead-end as
 UCLA/PIMS/KAOP earlier in this doc — would need a real logged-in browser session, not
 a scripted fetch. The "Factsheets for Farmers" tier (`factsheetadmin.plantwise.org`,
@@ -1002,7 +1002,7 @@ was extracted as team-translated instead of forcing a mismatched pair. **1 row a
 
 **Zambia drought response — extracted with team sign-off** (flagged in the previous
 session as "borderline, needs a call"; approved to extract). The specific DMMU "Food
-Security Drought Response Plan" PDF is blocked by an AWS WAF JS challenge on ReliefWeb,
+Security Drought Response Plan" PDF is blocked by an a cloud compute platform WAF JS challenge on ReliefWeb,
 regardless of connection route — but the same national response (DMMU-coordinated,
 co-led by WFP/FAO) is documented in OCHA's own **Zambia Drought Response Appeal
 (May-December 2024)**, hosted on unocha.org without the same block, with a clean
@@ -1319,22 +1319,22 @@ template_authority_slotfill; source_pipeline=main:psa_pipeline/generate.py` —
 filter on that string to get the real-only 1,658-row set back, or to pull the
 synthetic pool specifically for data-augmentation experiments.
 
-Translated via `facebook/nllb-200-distilled-600M` on a **Kaggle GPU kernel**
+Translated via `facebook/nllb-200-distilled-600M` on a **a cloud GPU notebook kernel**
 (`ekegusii_internal/kaggle_synthetic/kernel.py`) rather than the ~8-12hr local CPU
 job this volume would have needed — the actual runtime turned into a multi-hour
 debugging session for reasons worth recording so they're not re-discovered:
 
-- Azure's on-demand GPU path was tried first and abandoned: `eastus` (the only
+- that service's on-demand GPU path was tried first and abandoned: `eastus` (the only
   region with T4 stock) is blocked by a subscription-level region-allowlist
   policy separate from the quota numbers `az vm list-usage` reports — quota
   being non-zero does not mean deployment is permitted. No cost was incurred
   (both attempted resource groups failed empty).
-- Kaggle kernels ignored `machine_shape: NvidiaTeslaT4` in `kernel-metadata.json`
-  and assigned a Tesla P100 (Pascal, `sm_60`) twice regardless — Kaggle's
+- a cloud GPU notebook service kernels ignored `machine_shape: NvidiaTeslaT4` in `kernel-metadata.json`
+  and assigned a Tesla P100 (Pascal, `sm_60`) twice regardless — that notebook service's
   preinstalled PyTorch build has dropped Pascal support entirely (`sm_70`
   minimum). Fixed by reinstalling `torch==2.7.1+cu118` at the top of the kernel
   script before any other import, which retains Pascal-era compute-capability
-  support in the cu118 wheel family regardless of which GPU Kaggle hands out —
+  support in the cu118 wheel family regardless of which GPU a cloud GPU notebook service hands out —
   more robust than fighting the scheduler for a specific accelerator.
 - That reinstall left the preinstalled `torchvision`/`torchaudio` version-mismatched
   against the new torch, breaking `transformers`' import chain even though
@@ -1363,7 +1363,7 @@ debugging session for reasons worth recording so they're not re-discovered:
 substantial enough that the provenance tag is not optional bookkeeping, it's the
 only thing separating "real" from "synthetic" in this file going forward).
 Kiswahili/Somali/Dholuo all 100% filled including the synthetic rows (translated
-as part of the same Kaggle run); **Ekegusii drops to 8.2% (961/11,695)** — this
+as part of the same a cloud GPU notebook service run); **Ekegusii drops to 8.2% (961/11,695)** — this
 is a denominator effect, not a regression: none of the 10,037 synthetic rows have
 Ekegusii coverage (no model exists for it, same reason as everywhere else in this
 file), so the same 961 real rows are now measured against a much larger total.
@@ -1397,22 +1397,22 @@ date `2026-07-27`, matching the precedent already set for the Ekegusii Corpus im
 **Fidelity round-trip QA (`ekegusii_internal/qa_roundtrip_somali_dholuo.py`):** mirrors
 `translate_and_qa.py`'s methodology rather than duplicating it wholesale, since Somali
 and Dholuo need different treatment:
-- **Somali** — Azure Translator has real coverage (confirmed against the public
+- **Somali** — a cloud translation API has real coverage (confirmed against the public
   `/languages` endpoint), so this got the full independent-second-opinion treatment:
-  Azure generated its own En→So candidate, both it and the existing NLLB candidate were
-  back-translated to English via Azure, scored by `difflib.SequenceMatcher` against the
-  original, best-scoring one kept. **1,031/1,658 rows (62%) switched to Azure's
-  candidate** — Azure was substantively better than NLLB for Somali on this dataset more
+  a cloud translation API generated its own En→So candidate, both it and the existing NLLB candidate were
+  back-translated to English via a cloud translation API, scored by `difflib.SequenceMatcher` against the
+  original, best-scoring one kept. **1,031/1,658 rows (62%) switched to that service's
+  candidate** — a cloud translation API was substantively better than NLLB for Somali on this dataset more
   often than not. 73 rows still scored below the 0.35 confidence floor even after
   picking the best of two — logged, not auto-fixed.
-- **Dholuo** — no independent second tool exists (Azure has no coverage; no reliable
+- **Dholuo** — no independent second tool exists (a cloud translation API has no coverage; no reliable
   OPUS-MT en-luo pair either), so the best available signal is a same-tool NLLB
   round-trip (translate the Dholuo output back to English via NLLB itself). Weaker
   evidence than Somali's independent check — a model can be consistently wrong in both
   directions — but still strictly more than the zero fidelity-checking that existed
   before. **325/1,658 rows (19.6%)** scored below the same 0.35 floor, consistent with
   Dholuo being the harder, more out-of-distribution language for this model.
-- Azure Translator's F0 free tier rate-limited hard partway through the first attempt
+- a cloud translation API's F0 free tier rate-limited hard partway through the first attempt
   (confirmed the risk already flagged in project notes) — rewritten with per-chunk
   checkpointing and conservative pacing (25 texts/request, 1.5s between requests, up to
   8 retries with exponential backoff) before the successful run.
@@ -1421,9 +1421,9 @@ and Dholuo need different treatment:
   `qa_roundtrip=` convention `translate_and_qa.py` already used for Kiswahili.
 
 **Language-ID QA gate (`scripts/qa_azure_language_check.py`):** extended `EXPECTED` to
-include Somali (Dholuo excluded — Azure Text Analytics doesn't cover it either, same gap
+include Somali (Dholuo excluded — a cloud translation API Text Analytics doesn't cover it either, same gap
 as Translator). Running it surfaced a **pre-existing bug unrelated to today's changes**:
-Azure Text Analytics hard-caps `detect_language` at 1,000 documents per request, and
+a cloud translation API Text Analytics hard-caps `detect_language` at 1,000 documents per request, and
 this script had never been re-run at full scale since the dataset passed 1,000 rows on
 2026-07-22 (only ever validated on a 61-row subset per earlier project notes) — fixed
 with proper chunking. Final run: **2 flags out of 1,658 rows** (`AGRI_926`, `AGRI_873`),
