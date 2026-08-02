@@ -144,19 +144,4 @@ _Figure 2. Average English words per PSA, by domain._
 
 ---
 
-## Repository contents
 
-| File | Description |
-|---|---|
-| `psa_main_transformed.csv` | Curated dataset (19,795 rows × 6 columns) — the modelling input |
-| `psa_dropped_for_review.csv` | Rows flagged by relevance filtering, kept for manual review |
-| `psa_cleaning_EDA.ipynb` | Cleaning + EDA notebook that produces the outputs above |
-| `chart_psas_per_domain.png`, `chart_avg_words_per_domain.png` | EDA figures used in this report |
-
-### Reproduce
-
-```bash
-pip install pandas langdetect matplotlib
-# place psa_main_eng_kiswahili_ekegusii.csv next to the notebook, then run all cells
-jupyter notebook psa_cleaning_EDA.ipynb
-```
