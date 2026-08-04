@@ -15,7 +15,7 @@ A proof-of-concept multilingual machine translation (MT) system for Kenyan Publi
 | 2 | Bradley Azegele | 668341 |
 | 3 | Kyeremateng Martin | 669217 |
 | 4 | Kemo Dibassy | 669111 |
-| 5 | Samantha Nyatichi Masaki | — |
+| 5 | Samantha Nyatichi Masaki | 670455 |
 ## 1. Project Overview
 
 **Goal:** build a deployable digital public good that translates PSAs between English/Kiswahili and under-resourced Kenyan languages — Ekegusii (Bantu), Dholuo (Nilotic), and Somali (Cushitic) — demonstrating few-shot cross-lingual transfer learning on a curated, domain-specific PSA dataset.
