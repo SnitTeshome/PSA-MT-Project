@@ -227,54 +227,54 @@ for the Ekegusii/Kalenjin dictionaries).
   live catalog for "Dholuo" and "Kiswahili dictionary" — **0 relevant results**
   either way. Not pursued further per the explicit time-boxing instruction.
 
-## 6. Production run — Kiswahili (a cloud translation API primary, NLLB-200 automatic fallback)
+## 6. Production run — Kiswahili (cloud translation API primary, NLLB-200 automatic fallback)
 
-The a cloud translation API resource backing this project is an **F0-tier subscription with a
+The cloud translation API resource backing this project is a **free-tier subscription with a
 hard 2,000,000-character-per-month cap** (permanent, not a per-request
 throttle) — verified independently before running anything at this scale, not
 assumed. Translating all 15,000 rows needs roughly **1.85M input characters,
 ~93% of the entire monthly cap**, and some of that cap was already spent by
 this session's own comparison-stage testing (the 160-row benchmark, earlier
-`qa_azure_language_check.py` runs, etc.) — a real risk of running out mid-job,
+QA-check runs against the same API, etc.) — a real risk of running out mid-job,
 not a hypothetical one.
 
 **Plan, and what actually happened**: rather than precompute a budget and stop
-early, `scripts/translate_kiswahili_azure_bulk.py` calls a cloud translation API for real and
-reacts to the actual API response — it keeps going until a cloud translation API itself signals
+early, `scripts/translate_kiswahili_cloud_mt_bulk.py` calls the cloud translation API for real
+and reacts to the actual API response — it keeps going until the API itself signals
 it can't continue (persistent 429 that doesn't clear after patient exponential
 backoff, or any other non-200/429 status), at which point it stops calling
-a cloud translation API entirely and routes every remaining untranslated row to NLLB-200 instead
+that API entirely and routes every remaining untranslated row to NLLB-200 instead
 (this project's established best free/open Kiswahili alternative, chrF 67.7 —
 not Qwen, which already lost decisively in §3). Every row's `Kiswahili_tool`
-is tagged `azure_translator` or `nllb_200` individually — nothing is blended
-silently. The NLLB-200 fallback runs on the same remote-GPU-hosted app used
-for the Dholuo bulk job (§7), not local CPU, since it was already deployed.
+is tagged with a tool identifier for whichever backend produced it (cloud API or
+`nllb_200`) individually — nothing is blended silently. The NLLB-200 fallback runs
+on the same remote-GPU-hosted app used for the Dholuo bulk job (§7), not local CPU,
+since it was already deployed.
 
-**Real outcome**: a cloud translation API did run out partway through, confirming the quota risk
+**Real outcome**: the cloud API did run out partway through, confirming the quota risk
 was real, not overcautious. Final split across all 15,000 rows:
 
 | `Kiswahili_tool` | Rows | Share |
 |---|---|---|
-| `azure_translator` | 10,330 | 68.9% |
+| cloud translation API | 10,330 | 68.9% |
 | `nllb_200` | 4,670 | 31.1% |
 
 `Kiswahili_review_flag`: 0/15,000 flagged degenerate by the automated check —
-a spot-check of both azure_translator and nllb_200 rows across several domains
-found fluent, faithful output in every sample read (see the samples logged
-during this run; consistent with both backends' comparison-stage numbers in
-§3). Output: `psa_pipeline/output/kenyan_psa_kiswahili_azure_15000_translated
-.csv`, checkpointed per-chunk throughout (`.kiswahili_azure_checkpoint.json`)
-so the mid-run quota cutoff cost zero progress.
+a spot-check of both backends' rows across several domains found fluent, faithful
+output in every sample read (see the samples logged during this run; consistent
+with both backends' comparison-stage numbers in §3). Output folded into the
+canonical `data/processed/kenyan_psa_multilingual_dataset.csv`, checkpointed
+per-chunk throughout the run so the mid-run quota cutoff cost zero progress.
 
 ## 7. Production run — Dholuo (NLLB-200 on remote GPU)
 
 NLLB-200-distilled-600M was the unambiguous winner in §4 (chrF 53.7 vs. 16–23
-for the general-purpose LLM backends; a cloud translation API has no Dholuo support at all).
+for the general-purpose LLM backends; the cloud translation API has no Dholuo support at all).
 Run on a remote GPU purely for speed/reliability over the local-CPU path
 already proven in the comparison stage — same model, same decoding config
-(beam=4, `no_repeat_ngram_size=3`), not a different backend decision. a remote GPU platform was
-used (not a remote GPU platform) since a deploy+spawn app was already live and proven
-this session for the comparison stage's GPU testing — reusing that pattern was
+(beam=4, `no_repeat_ngram_size=3`), not a different backend decision. The same
+remote GPU platform used for the comparison stage's GPU testing was reused here,
+since a deploy+spawn app was already live and proven — reusing that pattern was
 more straightforward than standing up a second platform.
 
 `scripts/translate_dholuo_nllb_bulk.py` chunked all 15,000 rows (2,000/chunk)

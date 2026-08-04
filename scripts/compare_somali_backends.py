@@ -1,8 +1,10 @@
-"""Quick real comparison for Somali: Azure Translator vs NLLB-200, scored
+"""Quick real comparison for Somali: cloud translation API vs NLLB-200, scored
 against real gold Somali already present in agriculture_psas.csv (100%
 filled, team-verified). Same method as the Kiswahili/Dholuo comparison
 (docs/week4_swahili_dholuo_summary.md) -- picks a backend empirically rather
 than assuming either wins, cross-domain sample not agriculture-only.
+
+Credential env var names are that provider's own required names.
 
 Usage:
     python scripts/compare_somali_backends.py
@@ -20,7 +22,7 @@ random.seed(42)
 N_SAMPLE = 40
 
 
-def azure_translate(texts, src, tgt):
+def cloud_mt_translate(texts, src, tgt):
     key = os.environ["AZURE_TRANSLATOR_KEY"]
     endpoint = os.environ["AZURE_TRANSLATOR_ENDPOINT"]
     region = os.environ["AZURE_TRANSLATOR_REGION"]
@@ -63,9 +65,9 @@ def main():
 
     print(f"Sample: {len(en)} rows with real gold Somali")
 
-    azure_out = azure_translate(en, "en", "so")
-    azure_chrf = sacrebleu.corpus_chrf(azure_out, [ref]).score
-    print(f"Azure chrF: {azure_chrf:.1f}")
+    cloud_out = cloud_mt_translate(en, "en", "so")
+    cloud_chrf = sacrebleu.corpus_chrf(cloud_out, [ref]).score
+    print(f"Cloud MT chrF: {cloud_chrf:.1f}")
 
     nllb_out = nllb_translate(en, "eng_Latn", "som_Latn")
     nllb_chrf = sacrebleu.corpus_chrf(nllb_out, [ref]).score
@@ -75,12 +77,12 @@ def main():
     for i in range(3):
         print(f"EN:    {en[i]}")
         print(f"GOLD:  {ref[i]}")
-        print(f"AZURE: {azure_out[i]}")
+        print(f"CLOUD: {cloud_out[i]}")
         print(f"NLLB:  {nllb_out[i]}")
         print()
 
-    winner = "azure" if azure_chrf > nllb_chrf else "nllb"
-    print(f"Winner: {winner} (Azure {azure_chrf:.1f} vs NLLB {nllb_chrf:.1f})")
+    winner = "cloud_mt" if cloud_chrf > nllb_chrf else "nllb"
+    print(f"Winner: {winner} (Cloud MT {cloud_chrf:.1f} vs NLLB {nllb_chrf:.1f})")
 
 
 if __name__ == "__main__":

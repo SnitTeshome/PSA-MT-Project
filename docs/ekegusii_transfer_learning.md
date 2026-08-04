@@ -593,9 +593,8 @@ in mechanism (hard guarantee vs. soft probability nudge) from everything ruled o
 Annotate the English source with dictionary-matched substitutions inline before training
 (`"soil"` → `"soil (amaroba)"`), teaching the model a copy-the-parenthetical skill via
 the same architecture as kernel v8 (LoRA + `trainable_token_indices`, nothing else
-changed) — same annotation applied at inference. Real a cloud GPU notebook results
-(`ekegusii_internal/kaggle_finetune_option_b/kernel_option_b.py`, kernel v3 smoke + v4
-real run):
+changed) — same annotation applied at inference. Real results from an internal
+fine-tuning experiment (kernel v3 smoke + v4 real run):
 
 | Config | Recall | chrF | Degenerate |
 |---|---|---|---|
@@ -695,8 +694,8 @@ not just better raw coverage.
 ## 15. Plugging the expanded dictionary into Option B — mixed result, real regression found
 
 Re-ran Option B (same architecture, same 811-row/6-epoch training) with the expanded
-dictionary driving annotation instead of the original 2,155-entry one. Kernel:
-`ekegusii_internal/kaggle_finetune_option_b_expanded/`.
+dictionary driving annotation instead of the original 2,155-entry one, using the same
+internal fine-tuning setup as above.
 
 | Config | Recall | chrF | Degenerate/failed (corrected metric) |
 |---|---|---|---|
@@ -1150,14 +1149,14 @@ own best (morphology-enhanced) condition, with zero degenerate outputs and recal
 on par with the rest.** Spot-checked by hand: several outputs match the reference
 almost phrase-for-phrase (`"kogacha rigesa"`, `"korenda ebirengo biganeiries ase
 rirorio"` -- both near-verbatim matches). **Current frontrunner for the bulk
-multi-domain translation task** -- cheaper than a a general-purpose LLM API production key, no
-self-hosting/GPU-management overhead unlike Lightning, best quality found so far.
-Not yet checked: exact per-token a hosted foundation-model API pricing for this model, and account-level
-throughput quotas at bulk scale (this was 52 sequential calls with no throttling
-hit, not yet stress-tested at thousands of calls). Not yet retested on
-general/non-agriculture content, same open item as the Qwen/Lightning result above.
-Code: `run_bedrock_test.py`; results: `bedrock_results.json`. Full handoff for
-continuing this work: `WEEK3_4_MARATHON_HANDOFF.md`.
+multi-domain translation task** -- cheaper than a general-purpose LLM API's production
+key, no self-hosting/GPU-management overhead unlike a self-hosted GPU platform, best
+quality found so far. Not yet checked: exact per-token pricing for this hosted
+foundation-model API, and account-level throughput quotas at bulk scale (this was 52
+sequential calls with no throttling hit, not yet stress-tested at thousands of calls).
+Not yet retested on general/non-agriculture content, same open item as the prior
+result above. Code and results for this test are logged in the project's internal
+working files (not part of this public repo).
 
 ## 22. Cross-domain retest before the 50,000-row bulk job (2026-07-29) -- real quality gap found, plus a hard throughput ceiling
 
@@ -1213,35 +1212,144 @@ relevant same-domain example for Health/Education/Security/Governance sentences 
 the closest-available agriculture or Bible-register one; also tighten `is_degenerate()` to
 catch short-ngram repetition below its current threshold and untranslated-English-token runs.
 
-**a hosted foundation-model API throughput ceiling -- a hard blocker for the realtime API at this scale, not yet
-known when SS21 was written.** The platform's own quota-check command confirms (this account, region-pinned,
-not adjustable): **40 on-demand requests/minute** and 300,000 tokens/minute for
-`meta.llama3-70b-instruct-v1:0`. At ~1-1.15x call overhead for retries, 50,000 rows through
-the realtime converse-style loop (the same request pattern used for the earlier benchmark run) would take **roughly 24
-hours of continuous sequential calls** -- impractical for a class deadline and this
-container's per-command execution limits. **Fix: use that API's batch inference API instead**
-(`CreateModelInvocationJob`), which supports up to 100,000 records in a single job (`Records
-per batch inference job for Llama 3.1 70B Instruct` quota, adjustable, currently 100,000) --
-the entire 50k dataset fits in one job. Batch inference uses the model's native
-`invoke_model` request body shape, not the Converse API's `system`/`messages` shape
-currently used everywhere in this codebase -- **porting the prompt-building logic to batch
-format is real, not-yet-done engineering work**, not a config change.
+**Hosted foundation-model API throughput ceiling -- a hard blocker for the realtime API at
+this scale, not yet known when SS21 was written.** The platform's own quota-check command
+confirms (this account, region-pinned, not adjustable): **40 on-demand requests/minute** and
+300,000 tokens/minute for the Llama 3 70B Instruct model. At ~1-1.15x call overhead for
+retries, 50,000 rows through the realtime chat-style loop (the same request pattern used for
+the earlier benchmark run) would take **roughly 24 hours of continuous sequential calls** --
+impractical for a class deadline and this container's per-command execution limits. **Fix:
+use the platform's batch inference API instead**, which supports up to 100,000 records in a
+single job (the batch endpoint's own per-job record cap for this model, adjustable, currently
+100,000) -- the entire 50k dataset fits in one job. Batch inference uses the model's native
+request-body shape, not the realtime chat-style API's `system`/`messages` shape currently
+used everywhere in this codebase -- **porting the prompt-building logic to batch format is
+real, not-yet-done engineering work**, not a config change.
 
 **Cost estimate (not yet billed, verify at run time)**: measured real prompt sizes from
 `build_dict_prompted_semantic_messages` (~1,580 system chars + ~180 user chars per call,
-~3 few-shot examples + up to 6 glossary hints) and that API's published on-demand rate for
-this model (**$2.65/1M input tokens, $3.50/1M output tokens**, per a cloud compute platform's pricing page).
-Rough estimate at 50,000 rows x ~1.15 (retry overhead) x ~500 input + ~80 output tokens/call:
-**~$90-120 total** for the full 50k-row job -- higher than SS21's unverified "$35-50, cheaper
-than a general-purpose LLM API" guess, now a real computed number, still to be confirmed against actual
-a hosted foundation-model API billing once the batch job runs (token counts here are a chars/4 heuristic, not an
-exact tokenizer count).
+~3 few-shot examples + up to 6 glossary hints) and the platform's published on-demand rate
+for this model (**$2.65/1M input tokens, $3.50/1M output tokens**, per the provider's
+pricing page). Rough estimate at 50,000 rows x ~1.15 (retry overhead) x ~500 input + ~80
+output tokens/call: **~$90-120 total** for the full 50k-row job -- higher than SS21's
+unverified "$35-50, cheaper than a general-purpose LLM API" guess, now a real computed
+number, still to be confirmed against actual billing once the batch job runs (token counts
+here are a chars/4 heuristic, not an exact tokenizer count).
 
-Code: `run_general_test_bedrock.py`, `run_crossdomain_test_bedrock.py`; results:
-`general_test_results_bedrock.json`, `crossdomain_test_results_bedrock.json`,
-`crossdomain_eval_set.json`. Full handoff for the 50k bulk job specifically (retrieval-bank
-expansion, batch-inference port, branch/push plan): see the dedicated handoff doc referenced
-from `WEEK3_4_MARATHON_HANDOFF.md`.
+Code and results for this test are logged in the project's internal working files (not
+part of this public repo). Full handoff for the 50k bulk job specifically (retrieval-bank
+expansion, batch-inference port, branch/push plan) is likewise kept in internal
+working notes rather than this repo.
+
+## 23. Retrieval-bank expansion re-test — real improvement, gap narrowed not closed (2026-07-29)
+
+§22 identified the fix for the cross-domain quality gap (chrF 45-55 agriculture vs.
+26.6 on real Education/Health/Security/Governance sentences with the
+agriculture+Bible-only retrieval bank): fold the real, lecturer-provided 5-domain
+parallel corpus's ~3,800 non-agriculture rows into the retrieval bank so TF-IDF
+retrieval can surface a genuinely relevant same-domain example instead of the
+closest-available agriculture or Bible-register one. This was implemented the same
+day (`EkegusiiTranslator` now loads three retrieval pools — the 811-row agriculture
+train split, the Bible corpus, and this corpus — 13,497 rows total) and re-tested on
+a fresh 60-row cross-domain eval set (same four non-agriculture domains, same
+scoring code, corpus-derived eval rows excluded from the retrieval pool to avoid a
+circular test) — this result was never written up until now, only left as a raw
+results file.
+
+| Retrieval bank | BLEU | Recall | chrF | Degenerate |
+|---|---|---|---|---|
+| Agriculture + Bible only (§22 baseline) | 3.32 | 0.957 | 26.6 | 0/60 |
+| Agriculture + Bible + 5-domain corpus | **14.52** | 0.881 | **38.6** | 1/60 |
+
+(BLEU computed retroactively via `sacrebleu` on the saved outputs — same tool/method
+used for the mT5/NLLB fine-tuning work, for a direct comparison; see
+`docs/results_summary.md`.)
+
+**Real improvement, not closed**: chrF gained +12 points (26.6→38.6), BLEU gained
++11.2 points (3.32→14.52) from the wider
+retrieval pool, confirming the diagnosis in §22 (the domain gap was substantially a
+retrieval-relevance problem, not a fundamental mechanism failure). Recall dropped
+slightly (0.957→0.881) and one row went degenerate that hadn't before — worth a
+manual read before treating this as a strict win on every axis, not just chrF. The
+result still sits well below the agriculture-domain range (45-55 chrF), so the
+mechanism remains **stronger on Agriculture than on the other four domains even
+after this fix** — a real, quantified residual gap, not closed by this change alone.
+
+**Still open, not yet done**: a matching re-test of the 100-phrase general-vocabulary
+eval set (§21/§22) against this same 3-bank retrieval hasn't been run — only the
+60-row cross-domain PSA-sentence set has a "before vs. after" comparison. Tightening
+`is_degenerate()` for short-ngram repetition and untranslated-English-token runs
+(also recommended in §22) has not been done either — the one new degenerate row in
+this retest was not caught by manual triage in this pass, only by the automated flag.
+
+## 24. A simplified-mechanism regression, root-caused and fixed (2026-07-31)
+
+A follow-up batch of 10,169 previously-untranslated Ekegusii rows was run through a
+**simplified prompt** (flat translator-role system message + optional flat glossary
+string, temperature fixed at 0, no built-in retry loop) instead of the full
+`EkegusiiTranslator` mechanism from §17-21 (retrieval of 3 few-shot examples from a
+13,557-row bank, 3-tier glossary hints, entity protection, retry-on-degenerate with
+escalating temperature). The simplified path was reused deliberately, under a real
+compute-budget constraint, from an already-deployed remote-GPU function built for the
+Week 4 Swahili/Dholuo comparison (`docs/week4_swahili_dholuo_summary.md`) — a real
+trade-off, not an oversight, but it cost quality: **395/10,169 rows (3.9%) flagged
+`Ekegusii_review_flag=degenerate`** after two retry passes (repetition-loop garbage,
+not real translations) — well above the original full-mechanism job's 0-7% range.
+
+**Root cause (checked, not assumed)**: without any real Ekegusii sentence to anchor
+generation style, the underlying model — which has near-zero Ekegusii in its own
+pretraining — has nothing but a word list to work from for structure/rhythm, a known
+LLM failure mode (repetition loops) when freeform-generating in a language it has no
+real fluency in.
+
+**Failure rate by domain** (failed/attempted):
+
+| Domain | Attempted | Failed | Rate |
+|---|---|---|---|
+| Agriculture | 9,983 | 364 | 3.6% |
+| Security & Safety | 95 | 20 | 21.1% |
+| Health | 8 | 2 | 25.0% |
+| Education | 17 | 3 | 17.6% |
+| Governance | 66 | 6 | 9.1% |
+
+Agriculture accounts for 92% of raw failures only because it was 98.2% of all
+attempts — its actual failure *rate* (3.6%) is the **lowest** of the five domains;
+the other domains' higher rates sit on much smaller samples (8-95 rows) and aren't
+yet statistically solid. Within Agriculture, failure correlates with sentence
+length/complexity (failed rows: mean 156 chars/22 words vs. succeeded rows: mean 124
+chars/19 words), and 362/364 failed Agriculture rows are `Provenance=real` — failures
+concentrate in genuine, technical real-source PSAs (multi-clause instructions,
+specific measurements/treatments) rather than shorter, templated synthetic rows.
+Consistent with "no few-shot grounding" as the actual cause, not domain content
+per se.
+
+**Resolution**: before re-running anything, a fresh full-dataset scan with the same
+`is_degenerate()` detector (not just the 395 already flagged) found 131 more
+candidate rows. Manual full-text review split these into three groups: 9 more
+genuine repetition-loop rows the original flagging pass missed (same failure class);
+78 rows where the *English source itself* was a fragmented/ellipsis-truncated
+excerpt and only part of the sentence had been translated (a different root cause —
+a source-corpus alignment gap, not LLM degeneration — with the same visible
+symptom); and 44 false positives (fluent, complete, correct translations that only
+tripped the detector over a retained English institution name or a short exclamatory
+phrase), left untouched.
+
+Net fix batch of 482 rows was re-run through the full `EkegusiiTranslator` mechanism
+(retrieval + 3-tier glossary + entity protection + retry-on-degenerate). Model:
+`Qwen/Qwen2.5-72B-Instruct-AWQ` (4-bit quantized) via vLLM on a remote A100-80GB GPU,
+with retrieval/glossary/entity/retry orchestration running locally (CPU-only) and the
+remote GPU handling generation only on pre-built messages — the larger 72B sibling of
+the 7B model used in §21, since this pass could afford the extra weight for the
+higher-stakes repair batch. **Result: 353 clean on round 1 (temp 0.0) → 72 more on
+round 2 (temp 0.4) → 37 more on round 3 (temp 0.8) → 5 more on round 4 (hardening
+pass, temp 0.7) = 467/482 clean (96.9%)**. The remaining 15 rows were left honestly
+flagged `Ekegusii_review_flag=degenerate` rather than force-accepted — spot-checked as
+genuinely hard cases (long multi-clause technical sentences, or short
+acronym/form-heavy PSAs that kept partially resisting translation). A new tool tag,
+`qwen2.5_72b_instruct_awq_fullmech_refix`, distinguishes this repair pass from both
+the original bulk job and the broken simplified pass. Independently re-verified with
+a fresh `is_degenerate()` run over the CSV on disk (0 mismatches against the written
+flags).
 
 ## Sources
 

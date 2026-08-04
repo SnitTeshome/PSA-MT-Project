@@ -27,9 +27,8 @@ of whichever tool produced it) and compared to the original text with
 difflib.SequenceMatcher. This is a heuristic proxy, not a BLEU/chrF claim --
 still read a sample of the winners yourself before treating this as final.
 
-Requires an a cloud translation API resource (any tier, including free F0). Get a key
-+ region from portal.azure.com -> Cognitive Services -> Translator, or via
-`az cognitiveservices account create --kind TextTranslation --sku F0 ...`.
+Requires a cloud translation API resource (any tier, including the free tier). Get a
+key + region from the provider's portal -> Cognitive Services -> Translator.
 Set before running:
 
     export AZURE_TRANSLATOR_KEY=...

@@ -1,4 +1,5 @@
-"""Language-detection QA gate for a domain PSA CSV, using a cloud translation API Text Analytics.
+"""Language-detection QA gate for a domain PSA CSV, using a cloud translation API's
+text-analytics service.
 
 Complements validate_psa_csv.py's structural checks (schema, IDs, duplicates) with a
 confidence-scored language check on the English/Kiswahili/Somali text — catching rows
@@ -7,9 +8,10 @@ all before they're promoted/committed. This is a QA/verification step only: it n
 generates or fills in translation text (the project's hard rule is no invented
 translations) — it only flags mismatches for a human to look at.
 
-Requires an a cloud translation API Cognitive Services / Text Analytics resource (any tier, including the
-free F0 tier). Set these two environment variables before running — get them from your
-own a cloud translation API resource (portal.azure.com -> Cognitive Services -> Keys and Endpoint):
+Requires a cloud translation API's text-analytics resource (any tier, including the
+free tier). Set these two environment variables before running — get them from your
+own cloud translation API resource (the provider's portal -> Cognitive Services ->
+Keys and Endpoint):
 
     export AZURE_TEXT_ANALYTICS_KEY=...
     export AZURE_TEXT_ANALYTICS_ENDPOINT=...

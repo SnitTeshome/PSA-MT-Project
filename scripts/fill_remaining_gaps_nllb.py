@@ -1,9 +1,10 @@
 """Fill every remaining translation gap in the merged multilingual dataset
-using NLLB-200 (winner for Somali, chrF 83.1 vs Azure's 65.8 on a real
-40-row gold sample from agriculture_psas.csv -- see
+using NLLB-200 (winner for Somali, chrF 83.1 vs the cloud translation API's
+65.8 on a real 40-row gold sample from agriculture_psas.csv -- see
 scripts/compare_somali_backends.py; already-established winner for Dholuo;
 a reasonable, free, no-quota-risk choice for the small remaining Kiswahili
-gap too, given Azure's F0 quota is already substantially spent this session).
+gap too, given the cloud API's free-tier quota is already substantially
+spent this session).
 
 Gaps filled, in order: Somali (wherever null), Dholuo (wherever null),
 Kiswahili (wherever null) -- covers the ~15,000 synthetic rows (missing

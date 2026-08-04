@@ -42,14 +42,19 @@ approach carried forward to Week 4 evaluation/deployment.
 
 ## Backend comparison — same eval set (52 held-out real agriculture PSA sentences), same scoring code
 
-| Backend | Recall | chrF | Degenerate | Notes |
-|---|---|---|---|---|
-| Zero-shot (no dictionary/examples) | 0.013–0.02 | ~15–21 | high | Baseline; effectively can't produce real Ekegusii |
-| Fine-tuned NLLB (Option B, best) | 0.809 | 17.8 | 1/15 | Best fine-tuning result found, still well below prompting |
-| a general-purpose LLM API `command-a-03-2025`, dict-prompted | 0.878 | 49.2 | 1/52 | No morphology hints |
-| a general-purpose LLM API, dict-prompted + morphology | **0.922** | **51.1** | **0/52** | Best a general-purpose LLM API result; real grammar-sourced paradigm data |
-| Open-source 7B model, self-hosted, dict-prompted | 0.910 | 44.7 | 1/52* | *false positive: correct proper-noun preservation |
-| a hosted foundation-model API (`meta.llama3-70b-instruct-v1:0`), dict-prompted | 0.904 | **54.8** | **0/52** | Best chrF overall; no self-hosting; current bulk-job frontrunner |
+BLEU is included alongside chrF (computed retroactively via `sacrebleu` on the saved
+model outputs, same tool/method as the mT5/NLLB modeling work) so this table is
+directly comparable to that work's numbers too — see `docs/results_summary.md` for
+the full cross-team comparison.
+
+| Backend | BLEU | Recall | chrF | Degenerate | Notes |
+|---|---|---|---|---|---|
+| Zero-shot (no dictionary/examples) | 7.13 | 0.013–0.02 | ~15–21 | high | Baseline; effectively can't produce real Ekegusii |
+| Fine-tuned NLLB (Option B, best) | *not recoverable* | 0.809 | 17.8 | 1/15 | Best fine-tuning result found, still well below prompting; raw generations weren't saved to re-score |
+| General-purpose LLM API, dict-prompted | 28.02 | 0.878 | 49.2 | 1/52 | No morphology hints |
+| General-purpose LLM API, dict-prompted + morphology | 29.38 | **0.922** | **51.1** | **0/52** | Best result from this backend; real grammar-sourced paradigm data |
+| Qwen2.5-7B-Instruct-AWQ, self-hosted, dict-prompted | *not recoverable* | 0.910 | 44.7 | 1/52* | *false positive: correct proper-noun preservation; raw generations weren't saved to re-score |
+| Llama 3 70B Instruct, hosted API, dict-prompted | **33.96** | 0.904 | **54.8** | **0/52** | Best BLEU and chrF overall; no self-hosting; current bulk-job frontrunner |
 
 ## Preliminary performance summary — what's proven vs. what's open
 
@@ -66,11 +71,14 @@ outputs confirms real defects specific to non-agriculture content — dropped nu
 facts in health advisories, un-translated English jargon in governance text, and
 at least one likely non-Ekegusii fabrication the automated degeneracy check didn't
 catch. **This means the mechanism is validated for Agriculture specifically, not yet
-for the other 4 domains** — a concrete, scoped fix (expand the retrieval bank with a
-4,816-row real 5-domain parallel corpus that's sat unused, and tighten the degeneracy
-check) is identified but not yet implemented. See `docs/ekegusii_transfer_learning.md`
-§22 for the full finding and `WEEK3_5_50K_TRANSLATION_HANDOFF.md` for the execution
-plan before the team's full 50,000-row dataset gets translated.
+for the other 4 domains.** The scoped fix identified here — expand the retrieval
+bank with the real 5-domain parallel corpus that had sat unused — **was implemented
+and re-tested the same day**: cross-domain chrF improved from 26.6 to **38.6** (a
+real +12 point gain), though it still sits well below the 45-55 agriculture range,
+so the gap is narrowed, not closed. Tightening the degeneracy check for short-ngram
+repetition and untranslated-English-token runs, and re-testing the 100-phrase
+general-vocabulary set against the same expanded bank, are both still open. See
+`docs/ekegusii_transfer_learning.md` §22-23 for the full finding.
 
 ## Success criterion
 

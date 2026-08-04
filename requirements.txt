@@ -1,0 +1,45 @@
+# Consolidated dependency list for scripts/, notebooks/, and experiments/.
+# Compiled from actual imports across the repo (2026-08-04) — no single
+# requirements file existed before this pass; each notebook/script previously
+# declared its own deps inline (see individual file docstrings/cells).
+# Unpinned, matching this repo's existing convention (no version pins found
+# anywhere else in the codebase).
+
+# Core
+pandas
+numpy
+
+# Data cleaning / collection
+beautifulsoup4
+playwright
+rapidfuzz
+langdetect
+requests
+python-dotenv
+
+# Modeling / evaluation
+torch
+transformers
+datasets
+evaluate
+accelerate
+sentencepiece
+peft
+sacrebleu
+mlflow
+
+# Cloud translation / QA (only needed if you run the scripts that call these
+# APIs — each such script documents its own required env vars in its
+# docstring, e.g. scripts/qa_azure_language_check.py, scripts/translate_and_qa.py)
+azure-ai-textanalytics
+azure-core
+
+# Notebooks / demo
+matplotlib
+gdown
+tqdm
+
+# Optional, only needed for specific scripts (see the script's own docstring)
+twscrape       # scripts/collect/x_collect.py — X/Twitter collection
+PyMuPDF        # PDF text extraction (imported as `fitz`)
+streamlit      # docs/ekegusii_transfer_learning.md §19 demo app (not in this repo's scripts/, referenced there)
