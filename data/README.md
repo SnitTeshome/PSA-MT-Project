@@ -47,7 +47,7 @@ requirement would incorrectly apply to health/education/security/governance CSVs
 which don't have these columns — **flag this in any PR before merging**, don't let it
 merge silently.
 
-## Acceptability rules (from the group instructions)
+## Acceptability rules.
 
 - **Bilingual preferred**: the same PSA in both English and Kiswahili — a true parallel pair,
   not two unrelated messages.
