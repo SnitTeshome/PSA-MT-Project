@@ -58,7 +58,9 @@ fine-tuning underperformed prompting/zero-shot for this project's data scale.
 
 | Approach | Setting | BLEU | chrF++ / chrF | Recall | Degenerate | Notes |
 |---|---|---|---|---|---|---|
-| mT5-small | few-shot fine-tune | **5.81** | **26.15** | — | — | `docs/week_3_report_model_building.md`; per-epoch BLEU 3.01→4.61→6.43 |
+| mT5-small | few-shot fine-tune, 3 epochs, 4,000-row subset | **5.81** | **26.15** | — | — | `docs/week_3_report_model_building.md`; per-epoch BLEU 3.01→4.61→6.43. Superseded by the two full-scale rows below, kept for the historical record |
+| mT5-small (combined model) | few-shot fine-tune, 5 epochs, full dataset | 15.42 | 38.01 | — | — | `notebooks/full_pipeline/results/mt5_combined_final.csv`; 2,928-row held-out test set (not the 52-row agriculture set below); COMET 17-21 across directions |
+| NLLB-200-distilled-600M | fine-tuned, 5 epochs, full dataset | **15.84** | **40.34** | — | — | `notebooks/full_pipeline/results/nllb_complete_evaluation.csv`; same 2,928-row test set; COMET 56.68 — best fine-tuned Ekegusii result in the repo by every metric |
 | Fine-tuned NLLB (Option B, best) | terminology-constrained | *not recoverable* | 17.8 | 0.809 | 1/15 | Best fine-tuning result found on the dict-prompt side; raw generations weren't saved to re-score |
 | Zero-shot (no dictionary/examples) | baseline, agriculture eval set (52 rows) | 7.13 | ~15–21 | 0.013–0.02 | high | Effectively can't produce real Ekegusii; BLEU computed retroactively via `sacrebleu` on the saved outputs |
 | General-purpose LLM API, dict-prompted | agriculture eval set (52 rows) | 28.02 | 49.2 | 0.878 | 1/52 | No morphology hints |
@@ -82,6 +84,21 @@ computed after the fact from the saved model outputs, using the same `sacrebleu`
 library the mT5/NLLB work used — same tool, same method, genuinely comparable. The
 general-vocabulary and cross-domain rows use different eval sets (noted in each row)
 and are not directly comparable to the agriculture row despite sharing a metric.
+
+**A fine-tuning-vs-prompting nuance, not a clean win for either side**: on the
+same 52-row agriculture set above, dictionary-prompting's best result (54.8
+chrF) clearly beats every fine-tuned model's best (17.8 chrF, the dict-prompt
+side's own NLLB experiment). But that comparison used an early, small-scale
+fine-tuning attempt. The full-scale fine-tuned NLLB (`notebooks/full_pipeline/`,
+row above, 40.34 chrF on a 2,928-row held-out set spanning all domains) closes
+most of that gap — close to dictionary-prompting's own cross-domain result
+(38.6 chrF, §"Why cross-domain performance varies" below) on a comparably
+broad, multi-domain test set, even though the two still aren't on an
+identical eval set. The honest read: prompting's advantage is real on the
+agriculture-focused comparison this project ran most often, but scaling up
+fine-tuning narrows it considerably rather than fine-tuning simply losing
+outright — worth a genuinely apples-to-apples re-test (same eval set, same
+scoring code, both approaches) as future work.
 
 ### Why cross-domain performance varies by domain
 
