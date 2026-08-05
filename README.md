@@ -167,7 +167,7 @@ Two modeling approaches were run by the group in parallel:
 - **Kiswahili/Dholuo/Somali production translation**: `docs/week4_swahili_dholuo_summary.md` — NLLB-200 wins for Somali (chrF 83.1) and Dholuo (chrF 53.7); a cloud translation API wins for Kiswahili (chrF 80.7) with NLLB-200 as an automatic fallback when the API's quota runs out.
 - **Ekegusii cross-domain generalization**: `docs/ekegusii_transfer_learning.md` §22-23 — the dictionary-prompted mechanism was validated on Agriculture only (chrF 45-55); retested outside Agriculture it dropped to chrF 26.6, root-caused to a too-narrow retrieval bank, and partially fixed by widening it (chrF 38.6, still below the agriculture range — an open, quantified gap, not closed). **Why performance varies by domain**, broken out per-domain with real retrieval-bank row counts: `docs/results_summary.md`'s "Why cross-domain performance varies by domain" section.
 - **Ekegusii production-run regression, root-caused and fixed**: `docs/ekegusii_transfer_learning.md` §24 — 3.9% of a 10,169-row batch came back degenerate after reusing a simplified prompt path under a compute constraint; root-caused (missing few-shot grounding) and 96.9% repaired with the full mechanism.
-- **Deployment**: a working Streamlit translation demo exists (see `docs/ekegusii_transfer_learning.md` §19 for details), plus a standalone Gradio demo for the mT5/NLLB fine-tuned models (`demo/`).
+- **Deployment**: a working Streamlit translation demo exists for the dictionary-prompted Ekegusii mechanism (narrative and known limitations in `docs/ekegusii_transfer_learning.md` §19), plus a standalone Gradio demo for the mT5/NLLB fine-tuned models (`demo/`). Run-it-yourself instructions and current constraints for both: §10 below.
 - **COMET**: now computed for both approaches — dictionary-prompted (72.20 general-vocab / 67.99 agriculture / 59.76 crossdomain) and mT5/NLLB (`notebooks/full_pipeline/results/*comet*.csv`). Scored human/native-speaker evaluation (also named in this project's rubric) is still not run by either effort — see `docs/results_summary.md` for exactly what is and isn't covered.
 
 ## 10. Running the pipeline
@@ -201,6 +201,35 @@ credentials/environment variables in their module docstring — e.g.
 `scripts/compare_somali_backends.py`. None of the cloud translation/LLM API
 credentials needed to *run* these scripts are included in this repo; you will
 need your own.
+
+**Running the demos.** Two interactive demos exist; neither has a single
+top-level "get started" script, so use the instructions below rather than
+searching for one.
+
+- *Fine-tuned mT5/NLLB demo* (`demo/`) — fully self-contained, documented in
+  `demo/README.md`:
+  ```bash
+  pip install -r demo/requirements-deploy.txt
+  python demo/app.py
+  ```
+  Needs the fine-tuned model checkpoints (multiple GB, not committed to this
+  repo) at `PSA-MT-Outputs/models/fine_tuned/mt5/` and
+  `PSA-MT-Outputs-v2/models/fine_tuned/nllb/`; produce them by running the
+  notebooks in `notebooks/full_pipeline/`, or point the path constants near
+  the top of `demo/app.py`/`demo/translate_psa.py` at your own checkpoint
+  directory.
+
+- *Dictionary-prompted Ekegusii demo* (`docs/ekegusii_transfer_learning.md`
+  §19) — the mechanism behind this project's best Ekegusii numbers (chrF
+  54.8, recall 0.90). **Not runnable from this repo as committed.** Its code
+  and dictionary data live in a private `ekegusii_internal/` folder that was
+  deliberately never pushed here: the dictionary CSVs it depends on are
+  paid, licensed personal-access material, not redistributable into a team
+  repo (see §19's licensing note). Making this demo team-runnable needs an
+  explicit decision first — either a smaller, redistributable dictionary
+  subset, or each user obtaining their own access to the source dictionary.
+  This is an open item, not a documentation gap — if you're looking for a
+  setup script for this specific demo, that's why you won't find one yet.
 
 ## 11. Known gaps toward full reproducibility
 
