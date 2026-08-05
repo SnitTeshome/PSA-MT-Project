@@ -2,9 +2,12 @@
 
 A standalone Gradio demo (`app.py`) built on `translate_psa.py`, a
 model-priority inference module: fine-tuned NLLB first, mT5 per-direction
-second, mT5 combined third. Separate from `notebooks/PSA_Translate_FromDriveToAnyone.ipynb`
-(repo root's Google-Drive-hosted demo) and from `ekegusii_internal/llm_dict_prompt/streamlit_app.py`
-(the dictionary-prompted approach's own demo, in a different, private folder).
+second, mT5 combined third. Separate from
+[`../notebooks/PSA_Translate_FromDriveToAnyone.ipynb`](../notebooks/PSA_Translate_FromDriveToAnyone.ipynb)
+(repo root's Google-Drive-hosted demo) and from [`ekegusii/`](ekegusii/) (the
+dictionary-prompted approach's own Streamlit demo — its own folder in this repo,
+runnable with your own dictionary/LLM credentials, see
+[`ekegusii/README.md`](ekegusii/README.md)).
 
 ## Running it
 
