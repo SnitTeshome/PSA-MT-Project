@@ -1,0 +1,5 @@
+model,direction,comet,samples
+mT5-small-per-direction,English_to_Ekegusii,20.6,2928
+mT5-small-per-direction,English_to_Kiswahili,17.06,2928
+mT5-small-per-direction,Ekegusii_to_Kiswahili,16.83,2928
+mT5-small-per-direction,Kiswahili_to_Ekegusii,19.98,2928

@@ -1,0 +1,9 @@
+# Minimal dependencies for running app.py (the Gradio demo) only.
+# For training (the notebook), use requirements.txt instead -- that one includes
+# mlflow, accelerate, datasets, unbabel-comet, etc. which the deployed app doesn't need.
+torch
+transformers>=4.46
+sentencepiece
+gradio
+numpy
+pandas

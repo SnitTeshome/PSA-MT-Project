@@ -1,0 +1,2 @@
+model,setting,direction,bleu,chrf,runtime_min,epochs,freeze_encoder,full_dataset_run
+mT5-small,ablation_full_finetune,English_to_Ekegusii,12.929189339981358,34.990920208406266,33.634473824501036,5,False,True

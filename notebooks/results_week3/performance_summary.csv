@@ -1,0 +1,5 @@
+model,direction,setting,bleu,chrf,n_test
+mT5-small,English_to_Ekegusii,few-shot,3.68,21.43,2963
+NLLB-distilled,English_to_Kiswahili,zero-shot,66.84,80.25,2963
+mT5-small,English_to_Kiswahili,few-shot,69.04,79.17,2963
+NLLB-distilled,Kiswahili_to_English,zero-shot,49.28,69.92,2963

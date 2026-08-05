@@ -1,0 +1,6 @@
+direction,domain,bleu,chrf,n
+English_to_Kiswahili,Agriculture,70.81,80.9,1411
+English_to_Kiswahili,Education,70.06,80.36,416
+English_to_Kiswahili,Governance,70.45,80.93,345
+English_to_Kiswahili,Health,64.28,75.7,396
+English_to_Kiswahili,Security & Safety,61.12,74.05,395

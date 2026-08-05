@@ -1,0 +1,3 @@
+model,setting,direction,bleu,chrf,runtime_min,epochs,freeze_encoder,full_dataset_run
+mT5-small,per_direction,English_to_Ekegusii,13.373422040244105,36.13592004320217,29.75531446536382,5,True,True
+mT5-small,per_direction,Kiswahili_to_Ekegusii,13.466466365075815,35.86339335029292,50.13806337912877,5,True,True

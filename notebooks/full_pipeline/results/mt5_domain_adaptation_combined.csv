@@ -1,0 +1,16 @@
+direction,domain,bleu,chrf,n_examples
+English_to_Ekegusii,Health,18.98,43.42,396
+English_to_Ekegusii,Agriculture,10.69,33.60,1401
+English_to_Ekegusii,Education,20.28,43.49,394
+English_to_Ekegusii,Security & Safety,19.19,39.28,388
+English_to_Ekegusii,Governance,17.34,39.66,349
+English_to_Kiswahili,Health,78.26,84.76,396
+English_to_Kiswahili,Agriculture,76.30,84.48,1401
+English_to_Kiswahili,Education,82.31,88.15,394
+English_to_Kiswahili,Security & Safety,73.28,81.48,388
+English_to_Kiswahili,Governance,79.39,86.43,349
+Ekegusii_to_Kiswahili,Health,66.62,74.03,396
+Ekegusii_to_Kiswahili,Agriculture,72.08,79.82,1401
+Ekegusii_to_Kiswahili,Education,64.02,72.82,394
+Ekegusii_to_Kiswahili,Security & Safety,44.70,57.64,388
+Ekegusii_to_Kiswahili,Governance,47.63,62.08,349

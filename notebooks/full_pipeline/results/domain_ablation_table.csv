@@ -1,0 +1,26 @@
+Model,Direction,Domain,BLEU,chrF,N Examples
+NLLB,English_to_Ekegusii,Health,23.28,48.5,
+NLLB,Kiswahili_to_Ekegusii,Health,24.26,48.07,
+NLLB,English_to_Ekegusii,Education,23.51,47.59,
+NLLB,Kiswahili_to_Ekegusii,Education,23.05,47.22,
+NLLB,Kiswahili_to_Ekegusii,Governance,17.73,42.67,
+NLLB,English_to_Ekegusii,Governance,16.97,42.26,
+NLLB,English_to_Ekegusii,Security & Safety,18.66,42.06,
+NLLB,Kiswahili_to_Ekegusii,Security & Safety,18.73,41.25,
+NLLB,Kiswahili_to_Ekegusii,Agriculture,13.57,39.47,
+NLLB,English_to_Ekegusii,Agriculture,9.89,34.15,
+mT5,English_to_Kiswahili,Education,83.86,89.6,394.0
+mT5,English_to_Kiswahili,Governance,80.31,87.92,349.0
+mT5,English_to_Kiswahili,Health,78.45,85.89,396.0
+mT5,English_to_Kiswahili,Agriculture,77.33,85.63,1401.0
+mT5,English_to_Kiswahili,Security & Safety,75.63,83.93,388.0
+mT5,English_to_Ekegusii,Education,20.78,44.62,394.0
+mT5,English_to_Ekegusii,Health,19.75,42.84,396.0
+mT5,Kiswahili_to_Ekegusii,Education,19.44,42.59,394.0
+mT5,Kiswahili_to_Ekegusii,Health,20.46,42.56,396.0
+mT5,English_to_Ekegusii,Security & Safety,20.36,40.72,388.0
+mT5,English_to_Ekegusii,Governance,16.07,39.68,349.0
+mT5,Kiswahili_to_Ekegusii,Security & Safety,19.03,39.52,388.0
+mT5,Kiswahili_to_Ekegusii,Governance,15.83,38.24,349.0
+mT5,Kiswahili_to_Ekegusii,Agriculture,12.75,34.99,1401.0
+mT5,English_to_Ekegusii,Agriculture,11.58,33.75,1401.0

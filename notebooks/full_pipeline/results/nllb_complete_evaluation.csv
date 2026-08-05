@@ -1,0 +1,3 @@
+bleu,chrf,model,setting,direction,runtime_min,epochs,lr,bf16,comet
+15.84,40.34,NLLB,v2-5epochs,English_to_Ekegusii,49.93,5,5e-05,True,56.68
+17.43,42.29,NLLB,v2-5epochs,Kiswahili_to_Ekegusii,55.38,5,5e-05,True,59.64

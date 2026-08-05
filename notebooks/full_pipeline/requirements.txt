@@ -1,0 +1,12 @@
+transformers>=4.41
+datasets>=2.19
+accelerate>=0.30
+sentencepiece
+sacrebleu
+mlflow
+evaluate
+torch
+gradio
+pandas
+numpy
+openpyxl

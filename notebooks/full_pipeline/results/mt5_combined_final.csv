@@ -1,0 +1,4 @@
+model,direction,setting,bleu,chrf,n_test,runtime_min,full_dataset_run
+mT5-small-combined,English_to_Ekegusii,combined,15.42,38.01,2928,169.67346781889597,True
+mT5-small-combined,English_to_Kiswahili,combined,77.23,84.78,2928,169.67346781889597,True
+mT5-small-combined,Ekegusii_to_Kiswahili,combined,64.36,73.37,2928,169.67346781889597,True

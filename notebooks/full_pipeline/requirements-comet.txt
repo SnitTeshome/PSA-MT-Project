@@ -1,0 +1,9 @@
+# unbabel-comet is kept SEPARATE from requirements.txt on purpose: its old pinned
+# pytorch-lightning/pandas dependencies fail to build when resolved alongside the
+# packages above (hit this exact failure live: pandas==1.1.5 build error,
+# ModuleNotFoundError: No module named 'pkg_resources').
+#
+# Install this only when you actually reach the COMET evaluation cells, in its own
+# command, isolated from everything else:
+#   pip install -r requirements-comet.txt
+unbabel-comet

@@ -83,6 +83,57 @@ library the mT5/NLLB work used — same tool, same method, genuinely comparable.
 general-vocabulary and cross-domain rows use different eval sets (noted in each row)
 and are not directly comparable to the agriculture row despite sharing a metric.
 
+### Why cross-domain performance varies by domain
+
+The cross-domain row above (chrF 38.6) averages five very different domains
+together. Broken out by domain on a single backend (Qwen2.5-72B-Instruct-AWQ,
+same 3-bank retrieval mechanism, run on a cloud GPU platform) for the first
+time:
+
+| Domain | Real rows in retrieval bank | chrF | BLEU | Recall |
+|---|---|---|---|---|
+| Agriculture | 1,818 (811 dedicated + 1,007 shared corpus) | **54.0** | **33.1** | 0.849 |
+| Health | 1,057 | 52.6 | 27.6 | 0.845 |
+| Education | 1,261 | 39.2 | 13.6 | 0.75 (lowest) |
+| Security & Safety | 989 | 30.4 | 1.7 | **1.00 (highest)** |
+| Governance | 502 (least, by far) | 27.8 (lowest) | 2.4 | 0.857 |
+
+This mechanism doesn't fine-tune, so "training data" here means the real
+sentence pairs available to the few-shot retrieval bank at inference time —
+more real rows in a domain means better/more relevant examples get
+retrieved. The breakdown tells three different stories, not one:
+
+- **Governance** fits the thin-data hypothesis cleanly: the least data by a
+  wide margin (502 rows vs. 989-1,261 for every other domain) and the worst
+  chrF. A genuine candidate for synthetic-data augmentation of its retrieval
+  bank specifically.
+- **Education** has more real data than Health and Security yet scores worse
+  than Health, so data volume alone doesn't explain it. Its recall is the
+  lowest of all five domains (0.75), pointing at a dictionary-coverage gap
+  (education-specific terminology underrepresented in the Enchengeria
+  dictionary) rather than a data-availability problem. More retrieval
+  examples wouldn't fix this directly; better dictionary coverage would.
+- **Security & Safety** has perfect recall (1.00 — every dictionary word gets
+  found) but the worst BLEU (1.7) and second-worst chrF. Right words, poor
+  fluency/structure/grammar — not a data-availability problem at all.
+
+Two data-quality issues surfaced while reading the underlying outputs rather
+than trusting the aggregate metric alone. One crossdomain-eval row
+(`EDU_798`) has its Ekegusii reference field identical to the English
+source — never actually translated — artificially deflating its individual
+chrF score; checked across the full 60-row set, this is the only row with
+the bug. Separately, 3 of 60 outputs (`HEA_1432`, `SEC_2847`, `GOV_3414`)
+contain word patterns that read as possibly a different language rather than
+genuine Ekegusii vocabulary — flagged, not confirmed, since judging this
+correctly needs native-speaker review, the evaluation gap already named
+below.
+
+**If pursuing a fix, don't add synthetic data uniformly across domains.**
+Governance is the one case the data actually supports. Education and
+Security's weaknesses look like a coverage problem and a fluency problem
+respectively, not volume problems — read real outputs by hand before
+assuming synthetic data fixes those too.
+
 **Production-scale degenerate-output rate**: after the main bulk translation
 job (10,169 rows via a simplified prompt path, see
 `docs/ekegusii_transfer_learning.md` §24), 395 rows (3.9%) were flagged
@@ -113,16 +164,30 @@ either NLLB-200 or mT5-small runs there).
 
 ## What this table does not include
 
-- **The mT5/NLLB numbers above are not independently reproducible from this
-  repo.** The committed notebook that supposedly produced them
-  (`notebooks/PSA_Week3_Modeling_TransferLearning44.ipynb`) has never been
-  executed — every code cell has an empty output and a null execution count.
-  The real run that produced the BLEU/chrF++ numbers lives in an external,
-  access-controlled Google Colab notebook referenced from
-  `docs/week_3_report_model_building.md`, not in anything committed here.
+- **The mT5/NLLB numbers above trace to `notebooks/full_pipeline/`**, the
+  full-scale run (5 epochs, full dataset) — now executed, with real outputs
+  committed alongside it, including a per-domain breakdown, a freeze-vs-full
+  fine-tuning ablation, and COMET scores. A separate, lighter run also
+  exists in this repo (`notebooks/PSA_Week3_Modeling_TransferLearning44.ipynb`,
+  3 epochs on a 4,000-row few-shot subset) with its own, lower numbers on the
+  same task — see `notebooks/full_pipeline/README.md` for the side-by-side
+  and why they differ. Both are now genuinely reproducible from this repo;
+  neither depends on an external, access-controlled notebook anymore.
 - **Human/native-speaker evaluation** (fluency, adequacy, cultural accuracy —
   called for in the project's own Week 4 rubric) has not been run by either
   side at scale; both sides substitute targeted manual spot-checks of small
   samples (documented inline in the relevant `docs/` files) rather than a
   scored human-eval pass across 100+ sentences.
-- **COMET** (also named in the rubric) was not computed by either side.
+- **COMET** (also named in the rubric) is now computed for both approaches.
+  Dictionary-prompted: 72.20 (general-vocab) / 67.99 (agriculture) / 59.76
+  (crossdomain), all ahead of the fine-tuned models' own COMET scores on a
+  0-100 scale — see `notebooks/full_pipeline/results/nllb_comet.csv` and
+  `mt5_perdirection_comet.csv` for the fine-tuned side's numbers.
+- **A live quality check surfaced a metric/output mismatch** on one
+  fine-tuned checkpoint (the mT5 full-finetune English→Ekegusii ablation,
+  `notebooks/full_pipeline/results/freeze_vs_full_ablation.csv`): a clean
+  12.93 BLEU / 34.99 chrF score, but degenerate repeating output on a live
+  demo sample. Same class of issue as the reference-data bug and
+  wrong-language-drift flag noted above for the dictionary-prompted side —
+  automated metrics alone didn't catch it. Only one sample checked; flagged,
+  not yet quantified as widespread.

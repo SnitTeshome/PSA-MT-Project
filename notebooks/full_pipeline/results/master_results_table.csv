@@ -1,0 +1,5 @@
+Model,Direction,Zero-shot BLEU,Zero-shot chrF,Fine-tuned BLEU,Fine-tuned chrF,BLEU Gain,chrF Gain
+NLLB,English → Ekegusii,1.9,19.32,15.84,40.34,13.94,21.02
+NLLB,Kiswahili → Ekegusii,0.97,18.58,17.43,42.29,16.46,23.71
+mT5,English → Ekegusii,0.0,1.09,13.373422040244105,36.13592004320217,13.37,35.05
+mT5,Kiswahili → Ekegusii,0.01,1.45,13.466466365075815,35.86339335029292,13.46,34.41

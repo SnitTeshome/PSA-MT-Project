@@ -1,0 +1,53 @@
+{
+  "device": "cuda",
+  "dry_run": false,
+  "few_shot_n": 4000,
+  "freeze_encoder": false,
+  "max_len": 128,
+  "mt5_cfg": {
+    "lr": 0.001,
+    "epochs": 3,
+    "batch": 16,
+    "optim": "adafactor"
+  },
+  "nllb_cfg": {
+    "lr": 2e-05,
+    "epochs": 3,
+    "batch": 8,
+    "optim": "adamw_torch"
+  },
+  "results": [
+    {
+      "model": "NLLB-distilled",
+      "direction": "English_to_Kiswahili",
+      "setting": "zero-shot",
+      "bleu": 66.84,
+      "chrf": 80.25,
+      "n_test": 2963
+    },
+    {
+      "model": "NLLB-distilled",
+      "direction": "Kiswahili_to_English",
+      "setting": "zero-shot",
+      "bleu": 49.28,
+      "chrf": 69.92,
+      "n_test": 2963
+    },
+    {
+      "model": "mT5-small",
+      "direction": "English_to_Kiswahili",
+      "setting": "few-shot",
+      "bleu": 69.04,
+      "chrf": 79.17,
+      "n_test": 2963
+    },
+    {
+      "model": "mT5-small",
+      "direction": "English_to_Ekegusii",
+      "setting": "few-shot",
+      "bleu": 3.68,
+      "chrf": 21.43,
+      "n_test": 2963
+    }
+  ]
+}
